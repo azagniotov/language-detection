@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        repositories {
+            maven {
+                url = "https://plugins.gradle.org/m2/"
+            }
+        }
+    }
+    dependencies {
+        classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.2")
+    }
+}
+
+
+apply plugin: "java-library"
+apply plugin: "jvm-test-suite"
+apply plugin: "idea"
+apply plugin: "eclipse"
+apply plugin: "jacoco"
+
+defaultTasks 'clean', 'test', 'build'
+description = 'Gradle configuration for Crispy Couscous'
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters' << '-Xlint:deprecation'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+javadoc {
+    if (JavaVersion.current().isJava8Compatible()) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+java {
+  sourceCompatibility = "${libraryJavaVersion}"
+  targetCompatibility = "${libraryJavaVersion}"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url = "https://maven.restlet.talend.com"
+    }
+}
+
+apply from: "$rootDir/conf/gradle/dependencies.gradle"
+apply from: "$rootDir/conf/gradle/tests.gradle"
+apply from: "$rootDir/conf/gradle/spotless.gradle"
