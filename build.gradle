@@ -13,11 +13,14 @@ buildscript {
 }
 
 
-apply plugin: "java-library"
-apply plugin: "jvm-test-suite"
-apply plugin: "idea"
-apply plugin: "eclipse"
-apply plugin: "jacoco"
+
+plugins {
+    id "java-library"
+    id "idea"
+    id "eclipse"
+    id "jacoco"
+    id "maven-publish"
+}
 
 defaultTasks 'clean', 'test', 'build'
 description = 'Gradle configuration for Crispy Couscous'
@@ -42,6 +45,13 @@ java {
   targetCompatibility = "${libraryJavaVersion}"
 }
 
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -50,6 +60,24 @@ repositories {
     }
 }
 
+def getVersion = { ->
+    def versionFile = file("latest-version.txt")
+    if (!versionFile.exists()) {
+        return "MISSING-VERSION"
+    }
+    def versionFromFile = versionFile.text.trim()
+    return versionFromFile
+}
+
+jar {
+    version = getVersion()
+}
+
+ext {
+    githubPackagesToken = project.findProperty("githubPackagesToken") ?: System.getenv("DEPLOYMENT_TOKEN_GITHUB_PACKAGES")
+}
+
 apply from: "$rootDir/conf/gradle/dependencies.gradle"
 apply from: "$rootDir/conf/gradle/tests.gradle"
 apply from: "$rootDir/conf/gradle/spotless.gradle"
+apply from: "$rootDir/conf/gradle/publish.gradle"

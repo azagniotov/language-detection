@@ -1,0 +1,72 @@
+name: Tag and Publish Release
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  prepare-github-release:
+    permissions:
+      contents: write
+    name: GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.calculate_tag_version.outputs.version_tag }}
+    steps:
+
+      - name: Checkout project sources
+        uses: actions/checkout@v4
+        # https://github.com/marketplace/actions/git-semantic-version#important-note-regarding-the-checkout-action
+        with:
+          fetch-depth: 0
+
+      - name: Manage semantic versioning
+        uses: paulhatch/semantic-version@v5.4.0
+        id: semantic_version
+        with:
+          tag_prefix: ""
+          major_pattern: "[MAJOR]"
+          minor_pattern: "[MINOR]"
+          version_format: "${major}.${minor}.${patch}"
+          bump_each_commit: false
+          search_commit_body: true
+          debug: true
+
+      - name: Bump the version and push a tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.semantic_version.outputs.version_tag }}
+          tag_prefix: ""
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          tag: ${{ steps.semantic_version.outputs.version_tag }}
+          name: ${{ steps.semantic_version.outputs.version_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          makeLatest: true
+          generateReleaseNotes: true
+          skipIfReleaseExists: true
+
+      - name: Set up Azul Zulu OpenJDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "11"
+          distribution: "zulu"
+          cache: gradle
+        if: success()
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        if: success()
+
+      - name: Publish to GitHub Packages
+        env:
+          DEPLOYMENT_TOKEN_GITHUB_PACKAGES: ${{ secrets.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}
+        run: |
+          echo "AAAAAA: ${{ env.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}"
+          ./gradlew publish --no-daemon
+        if: success()
