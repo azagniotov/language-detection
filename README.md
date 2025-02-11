@@ -29,7 +29,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 ## About this library
 
 The library uses 3-gram character and a Bayesian filter with various normalizations and feature sampling.
-The precision is over **99%** for **53** languages.
+The precision is over **99%** for **54** languages.
 
 See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
@@ -37,61 +37,62 @@ See the following PR description to read about the benchmaks done by @yanirs : h
 
 The following is a list of ISO 639-1 languages code recognized:
 
-| Code   | Description                                      |
-|--------|--------------------------------------------------|
-| af     | Afrikaans                                        |
-| ar     | Arabic                                           |
-| bg     | Bulgarian                                        |
-| bn     | Bengali                                          |
-| cs     | Czech                                            |
-| da     | Danish                                           |
-| de     | German                                           |
-| el     | Greek                                            |
-| en     | English                                          |
-| es     | Spanish                                          |
-| et     | Estonian                                         |
-| fa     | Farsi                                            |
-| fi     | Finnish                                          |
-| fr     | French                                           |
-| gu     | Gujarati                                         |
-| he     | Hebrew                                           |
-| hi     | Hindi                                            |
-| hr     | Croatian                                         |
-| hu     | Hungarian                                        |
-| id     | Indonesian                                       |
-| it     | Italian                                          |
-| ja     | Japanese                                         |
-| kn     | Kannada                                          |
-| ko     | Korean                                           |
-| lt     | Lithuanian                                       |
-| lv     | Latvian                                          |
-| mk     | Macedonian                                       |
-| ml     | Malayalam                                        |
-| mr     | Marathi                                          |
-| ne     | Nepali                                           |
-| nl     | Dutch                                            |
-| no     | Norwegian                                        |
-| pa     | Eastern Punjabi                                  |
-| pl     | Polish                                           |
-| pt     | Portuguese                                       |
-| ro     | Romanian                                         |
-| ru     | Russian                                          |
-| sk     | Slovak                                           |
-| sl     | Slovene                                          |
-| so     | Somali                                           |
-| sq     | Albanian                                         |
-| sv     | Swedish                                          |
-| sw     | Swahili                                          |
-| ta     | Tamil                                            |
-| te     | Telugu                                           |
-| th     | Thai                                             |
-| tl     | Tagalog                                          |
-| tr     | Turkish                                          |
-| uk     | Ukrainian                                        |
-| ur     | Urdu                                             |
-| vi     | Vietnamese                                       |
-| zh-cn  | Chinese                                          |
-| zh-tw  | Traditional Chinese (Taiwan, Hongkong and Macau) |
+| Code  | Description                                      |
+|-------|--------------------------------------------------|
+| af    | Afrikaans                                        |
+| ar    | Arabic                                           |
+| bg    | Bulgarian                                        |
+| bn    | Bengali                                          |
+| cs    | Czech                                            |
+| da    | Danish                                           |
+| de    | German                                           |
+| el    | Greek                                            |
+| en    | English                                          |
+| es    | Spanish                                          |
+| et    | Estonian                                         |
+| fa    | Farsi                                            |
+| fi    | Finnish                                          |
+| fr    | French                                           |
+| gu    | Gujarati                                         |
+| he    | Hebrew                                           |
+| hi    | Hindi                                            |
+| hr    | Croatian                                         |
+| hu    | Hungarian                                        |
+| id    | Indonesian                                       |
+| it    | Italian                                          |
+| ja    | Japanese                                         |
+| kn    | Kannada                                          |
+| ko    | Korean                                           |
+| lb    | Luxembourgish                                    |
+| lt    | Lithuanian                                       |
+| lv    | Latvian                                          |
+| mk    | Macedonian                                       |
+| ml    | Malayalam                                        |
+| mr    | Marathi                                          |
+| ne    | Nepali                                           |
+| nl    | Dutch                                            |
+| no    | Norwegian                                        |
+| pa    | Eastern Punjabi                                  |
+| pl    | Polish                                           |
+| pt    | Portuguese                                       |
+| ro    | Romanian                                         |
+| ru    | Russian                                          |
+| sk    | Slovak                                           |
+| sl    | Slovene                                          |
+| so    | Somali                                           |
+| sq    | Albanian                                         |
+| sv    | Swedish                                          |
+| sw    | Swahili                                          |
+| ta    | Tamil                                            |
+| te    | Telugu                                           |
+| th    | Thai                                             |
+| tl    | Tagalog                                          |
+| tr    | Turkish                                          |
+| uk    | Ukrainian                                        |
+| ur    | Urdu                                             |
+| vi    | Vietnamese                                       |
+| zh-cn | Chinese                                          |
+| zh-tw | Traditional Chinese (Taiwan, Hongkong and Macau) |
 
 ### Quick detection of CJK languages
 

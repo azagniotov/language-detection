@@ -213,4 +213,23 @@ public class LanguageDetectorTest {
         assertEquals("und", detector.detectAll("1234567").get(0).getIsoCode639_1());
         assertEquals("und", detector.detectAll("한국어").get(0).getIsoCode639_1());
     }
+
+    @Test
+    public final void languageDetectorTestLuxembourgish() throws Exception {
+        final LanguageDetectionSettings supportedLanguages =
+                LanguageDetectionSettings.fromIsoCodes639_1("de,lb").build();
+        final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
+        final LanguageDetector detector =
+                new LanguageDetector(factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
+
+        assertEquals(
+                "lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
+        assertEquals("de", detector.detectAll("Ich lerne Deutsch").get(0).getIsoCode639_1());
+
+        assertEquals(
+                "lb",
+                detector.detectAll("Schwätzt wannechgelift méi lues").get(0).getIsoCode639_1());
+        assertEquals(
+                "de", detector.detectAll("Bitte sprechen Sie langsamer").get(0).getIsoCode639_1());
+    }
 }
