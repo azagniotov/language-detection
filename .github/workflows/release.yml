@@ -36,7 +36,7 @@ jobs:
           id: tag_version
           uses: mathieudutour/github-tag-action@v6.1
           with:
-            github_token: ${{ secrets.GH_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             custom_tag: ${{ steps.calculate_tag_version.outputs.version_tag }}
             tag_prefix: "v"
 
