@@ -49,3 +49,4 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
           makeLatest: true
           generateReleaseNotes: true
+          skipIfReleaseExists: true
