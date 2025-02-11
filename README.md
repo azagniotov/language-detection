@@ -2,6 +2,7 @@
 
 This is a refined and re-implemented version of the archived plugin for ElasticSearch [elasticsearch-langdetect](https://github.com/jprante/elasticsearch-langdetect), which itself builds upon the original work by Nakatani Shuyo, found at https://github.com/shuyo/language-detection. The aforementioned implementation by Nakatani Shuyo serves as the default language detection component within Apache Solr.
 
+## Table of Contents
 <!-- TOC -->
 * [Crispy Couscous](#crispy-couscous)
   * [About this library](#about-this-library)
@@ -225,6 +226,8 @@ LanguageDetectionSettings
     .build();
 ```
 
+[`Back to top`](#table-of-contents)
+
 ## Local development
 
 ### System requirements
@@ -259,8 +262,6 @@ Formatting the sources can be done with the following command:
 ```bash
 ./gradlew spotlessApply
 ```
-
-[`Back to top`](#table-of-contents)
 
 ### Testing
 
