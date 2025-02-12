@@ -20,6 +20,7 @@ plugins {
     id "eclipse"
     id "jacoco"
     id "maven-publish"
+    id "signing"
 }
 
 defaultTasks 'clean', 'test', 'build'
@@ -61,7 +62,7 @@ repositories {
 }
 
 ext {
-    githubPackagesToken = project.findProperty("githubPackagesToken") ?: System.getenv("DEPLOYMENT_TOKEN_GITHUB_PACKAGES")
+    githubPackagesToken = project.findProperty("githubPackagesToken") ?: ""
 }
 
 apply from: "$rootDir/conf/gradle/dependencies.gradle"

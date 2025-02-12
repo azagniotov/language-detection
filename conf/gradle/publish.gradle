@@ -1,9 +1,15 @@
+java.withSourcesJar()
+java.withJavadocJar()
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
 			groupId = project.findProperty("group").toString()
 			artifactId = project.findProperty("artifactId").toString()
-			from components.java
+
+			artifact sourcesJar
+			artifact javadocJar
+			artifact jar
 
 			afterEvaluate {
 				version = jar.getArchiveVersion().get()
@@ -38,6 +44,10 @@ publishing {
 	}
 	repositories {
 		maven {
+			url = uri("file://${layout.buildDirectory.get().asFile.absolutePath}/${mavenCentralBundleAssetsDir}")
+		}
+
+		maven {
 			name = "GitHubPackages"
 			url = uri(project.findProperty("githubPackagesUrl").toString())
 			credentials {
@@ -47,3 +57,20 @@ publishing {
 		}
 	}
 }
+
+signing {
+	useGpgCmd()
+	sign publishing.publications.mavenJava
+}
+
+task prepMavenCentralBundle(type: Zip) {
+	description = "Creates a ZIP archive of the deployable assets and their checksums"
+
+	archiveBaseName = "${artifactId}"
+	archiveVersion = jar.getArchiveVersion().get()
+	archiveClassifier = "maven-central-bundle"
+	from("${layout.buildDirectory.get().asFile.absolutePath}/${mavenCentralBundleAssetsDir}") {
+		include "**/*"
+	}
+}
+prepMavenCentralBundle.dependsOn publishMavenJavaPublicationToMavenRepository

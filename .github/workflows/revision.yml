@@ -27,8 +27,9 @@ jobs:
           tag_prefix: ""
           major_pattern: "[MAJOR]"
           minor_pattern: "[MINOR]"
+          bump_each_commit: true
+          bump_each_commit_patch_pattern: "[PATCH]"
           version_format: "${major}.${minor}.${patch}"
-          bump_each_commit: false
           search_commit_body: false
           debug: true
 
