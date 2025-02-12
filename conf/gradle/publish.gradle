@@ -42,7 +42,7 @@ publishing {
 			url = uri(project.findProperty("githubPackagesUrl").toString())
 			credentials {
 				username = project.findProperty("projectDeveloperId").toString()
-				password = project.ext.githubPackagesToken ?: System.getenv("DEPLOYMENT_TOKEN_GITHUB_PACKAGES")
+				password = project.ext.githubPackagesToken
 			}
 		}
 	}

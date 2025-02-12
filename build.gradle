@@ -74,7 +74,7 @@ jar {
 }
 
 ext {
-    githubPackagesToken = project.findProperty("githubPackagesToken") ?: ""
+    githubPackagesToken = project.findProperty("githubPackagesToken") ?: System.getenv("DEPLOYMENT_TOKEN_GITHUB_PACKAGES")
 }
 
 apply from: "$rootDir/conf/gradle/dependencies.gradle"
