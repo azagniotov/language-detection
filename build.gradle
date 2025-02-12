@@ -60,19 +60,6 @@ repositories {
     }
 }
 
-def getVersion = { ->
-    def versionFile = file("latest-version.txt")
-    if (!versionFile.exists()) {
-        return "MISSING-VERSION"
-    }
-    def versionFromFile = versionFile.text.trim()
-    return versionFromFile
-}
-
-jar {
-    version = getVersion()
-}
-
 ext {
     githubPackagesToken = project.findProperty("githubPackagesToken") ?: System.getenv("DEPLOYMENT_TOKEN_GITHUB_PACKAGES")
 }
@@ -80,4 +67,5 @@ ext {
 apply from: "$rootDir/conf/gradle/dependencies.gradle"
 apply from: "$rootDir/conf/gradle/tests.gradle"
 apply from: "$rootDir/conf/gradle/spotless.gradle"
+apply from: "$rootDir/conf/gradle/jar.gradle"
 apply from: "$rootDir/conf/gradle/publish.gradle"
