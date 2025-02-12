@@ -13,6 +13,7 @@ buildscript {
 }
 
 
+
 plugins {
     id "java-library"
     id "idea"
@@ -70,6 +71,10 @@ def getVersion = { ->
 
 jar {
     version = getVersion()
+}
+
+ext {
+    githubPackagesToken = project.findProperty("githubPackagesToken") ?: ""
 }
 
 apply from: "$rootDir/conf/gradle/dependencies.gradle"

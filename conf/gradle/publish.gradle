@@ -41,8 +41,8 @@ publishing {
 			name = "GitHubPackages"
 			url = uri(project.findProperty("githubPackagesUrl").toString())
 			credentials {
-				username = project.findProperty("projectDeveloperId") ?: System.getenv("USERNAME")
-				password = project.findProperty("githubToken") ?: System.getenv("GITHUB_TOKEN")
+				username = project.findProperty("projectDeveloperId").toString()
+				password = project.ext.githubPackagesToken ?: System.getenv("DEPLOYMENT_TOKEN_GITHUB_PACKAGES")
 			}
 		}
 	}
