@@ -1,8 +1,6 @@
 name: Commit the latest version
 
-on:
-  pull_request:
-    types: [opened, reopened]
+on: pull_request
 
 jobs:
   commit-latest-version:
@@ -48,3 +46,5 @@ jobs:
           git add latest-version.txt
           git commit -m "Auto-update the latest version to ${{ env.LATEST_VERSION }}"
           git push
+          
+          
