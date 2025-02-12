@@ -1,4 +1,6 @@
 # Crispy Couscous
+[![Maven Central][maven-badge]][maven-link]
+[![GitHub Packages][github-badge]][github-link]
 
 This is a refined and re-implemented version of the archived plugin for ElasticSearch [elasticsearch-langdetect](https://github.com/jprante/elasticsearch-langdetect), which itself builds upon the original work by Nakatani Shuyo, found at https://github.com/shuyo/language-detection. The aforementioned implementation by Nakatani Shuyo serves as the default language detection component within Apache Solr.
 
@@ -275,3 +277,9 @@ To run unit tests, run the following command:
 
 [`Back to top`](#table-of-contents)
 
+
+[maven-badge]: https://img.shields.io/maven-central/v/io.github.azagniotov/crispy-couscous.svg?style=flat&label=maven-central
+[maven-link]: https://central.sonatype.com/search?q=g:io.github.azagniotov%20%20a:crispy-couscous
+
+[github-badge]: https://img.shields.io/github/v/release/azagniotov/crispy-couscous?label=github-packages&color=green
+[github-link]: https://github.com/azagniotov/crispy-couscous/packages/2402101

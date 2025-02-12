@@ -27,6 +27,7 @@ class NGram {
 
     static final int TRI_GRAM_LENGTH = 3;
     private static final char BLANK_CHAR = ' ';
+    private static final String BLANK_SPACE = " ";
 
     private static final String[] CJK_CLASS = {
         "\u4F7C\u6934",
@@ -171,7 +172,7 @@ class NGram {
     private boolean capitalWord;
 
     NGram() {
-        grams = new StringBuilder(" ");
+        grams = new StringBuilder(BLANK_SPACE);
         capitalWord = false;
     }
 
@@ -228,7 +229,7 @@ class NGram {
         ch = normalize(ch);
         char lastchar = grams.charAt(grams.length() - 1);
         if (lastchar == BLANK_CHAR) {
-            grams = new StringBuilder(" ");
+            grams = new StringBuilder(BLANK_SPACE);
             capitalWord = false;
             if (ch == BLANK_CHAR) {
                 return;
