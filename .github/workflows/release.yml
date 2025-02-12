@@ -51,20 +51,3 @@ jobs:
           generateReleaseNotes: true
           skipIfReleaseExists: true
 
-      - name: Set up Azul Zulu OpenJDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: "11"
-          distribution: "zulu"
-          cache: gradle
-        if: success()
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        if: success()
-
-      - name: Publish to GitHub Packages
-        env:
-          DEPLOYMENT_TOKEN_GITHUB_PACKAGES: ${{ secrets.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}
-        run: ./gradlew publish --no-daemon
-        if: success()
