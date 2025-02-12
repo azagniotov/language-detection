@@ -11,8 +11,6 @@ jobs:
       contents: write
     name: GitHub Release
     runs-on: ubuntu-latest
-    env:
-      DEPLOYMENT_TOKEN_GITHUB_PACKAGES: ${{ secrets.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}
     outputs:
       version_tag: ${{ steps.calculate_tag_version.outputs.version_tag }}
     steps:
