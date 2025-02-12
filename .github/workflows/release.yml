@@ -66,7 +66,5 @@ jobs:
       - name: Publish to GitHub Packages
         env:
           DEPLOYMENT_TOKEN_GITHUB_PACKAGES: ${{ secrets.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}
-        run: |
-          echo "AAAAAA: ${{ env.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}"
-          ./gradlew publish --no-daemon
+        run: ./gradlew publish --no-daemon
         if: success()
