@@ -1,0 +1,49 @@
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			groupId = project.findProperty("group").toString()
+			artifactId = project.findProperty("artifactId").toString()
+			from components.java
+
+			afterEvaluate {
+				version = getVersion()
+			}
+
+			pom {
+				name.set(project.findProperty("projectName").toString())
+				description.set(project.findProperty("projectDescription").toString())
+				url.set(project.findProperty("projectWebUrl").toString())
+
+				licenses {
+					license {
+						name.set(project.findProperty("projectLicense").toString())
+						url.set(project.findProperty("projectLicenseUrl").toString())
+					}
+				}
+				developers {
+					developer {
+						id.set(project.findProperty("projectDeveloperId").toString())
+						name.set(project.findProperty("projectDeveloperName").toString())
+						email.set(project.findProperty("projectDeveloperEmail").toString())
+						url.set(project.findProperty("projectDeveloperUrl").toString())
+					}
+				}
+				scm {
+					connection.set(project.findProperty("projectScmConnection").toString())
+					developerConnection.set(project.findProperty("projectScmDeveloperConnection").toString())
+					url.set(project.findProperty("projectScmUrl").toString())
+				}
+			}
+		}
+	}
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/${project.findProperty("group").toString()}")
+			credentials {
+				username = project.findProperty("projectDeveloperId") ?: System.getenv("USERNAME")
+				password = project.findProperty("githubToken") ?: System.getenv("GITHUB_TOKEN")
+			}
+		}
+	}
+}
