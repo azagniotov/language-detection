@@ -1,0 +1,54 @@
+name: Commit the latest version
+
+on: pull_request
+
+jobs:
+  commit-latest-version:
+    permissions:
+      contents: write
+    name: Latest Version
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.calculate_tag_version.outputs.version_tag }}
+    steps:
+
+      - name: Checkout project sources
+        uses: actions/checkout@v4
+        # https://github.com/marketplace/actions/git-semantic-version#important-note-regarding-the-checkout-action
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Manage semantic versioning
+        uses: paulhatch/semantic-version@v5.4.0
+        id: semantic_version
+        with:
+          tag_prefix: ""
+          major_pattern: "[MAJOR]"
+          minor_pattern: "[MINOR]"
+          version_format: "${major}.${minor}.${patch}"
+          bump_each_commit: false
+          search_commit_body: false
+          debug: true
+
+      - name: Set new tag version into ENV
+        run: |
+          CURRENT_VERSION=$(cat latest-version.txt)
+          echo "Current version: $CURRENT_VERSION"
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+
+          LATEST_VERSION=${{ steps.semantic_version.outputs.version_tag }}
+          echo "New version: $LATEST_VERSION"
+          echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
+
+      - name: Save the latest version to file
+        run: |
+          echo "1.1.0" > latest-version.txt
+          git config user.name "Alexander Zagniotov"
+          git config user.email "azagniotov@gmail.com"
+          git add latest-version.txt
+          git commit -m "Auto-update the latest version to ${{ env.LATEST_VERSION }}"
+          git push
+          
+          

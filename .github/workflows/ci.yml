@@ -1,7 +1,6 @@
 name: Build and Test
 
-on:
-  push:
+on: [push, create]
 
 jobs:
   build-and-test:
