@@ -43,8 +43,9 @@ jobs:
           echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
 
       - name: Save the latest version to file
+        if: ${{ env.CURRENT_VERSION != env.LATEST_VERSION }}
         run: |
-          echo "1.1.0" > latest-version.txt
+          echo ${{ env.LATEST_VERSION }} > latest-version.txt
           git config user.name "Alexander Zagniotov"
           git config user.email "azagniotov@gmail.com"
           git add latest-version.txt
