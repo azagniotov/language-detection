@@ -64,7 +64,7 @@ jobs:
         if: success()
 
       - name: Publish to GitHub Packages
-        run: ./gradlew publish --no-daemon
+        run: ./gradlew publish
         with:
           DEPLOYMENT_TOKEN_GITHUB_PACKAGES: ${{ secrets.DEPLOYMENT_TOKEN_GITHUB_PACKAGES }}
         if: success()
