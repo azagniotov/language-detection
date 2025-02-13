@@ -16,7 +16,7 @@ public class LanguageProfileGenerator {
 
   @Test
   public void generateProfile() throws Exception {
-    final String targetCode = "ga";
+    final String targetCode = "az";
     final String resourceName = targetCode + "wiki.txt";
     final File seedDataset = new File("src/test/resources/" + resourceName);
 

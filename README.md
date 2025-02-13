@@ -36,7 +36,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 ## About this library
 
 The library uses 3-gram character and a Bayesian filter with various normalizations and feature sampling.
-The precision is over **99%** for **62** languages.
+The precision is over **99%** for **63** languages.
 
 See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
@@ -50,6 +50,7 @@ The following is a list of ISO 639-1 languages code recognized:
 | sq        | Albanian              |
 | ar        | Arabic                |
 | hy        | Armenian              |
+| az        | Azerbaijani           |
 | eu        | Basque                |
 | bn        | Bengali               |
 | br        | Breton                |
@@ -187,7 +188,7 @@ LanguageDetectionSettings
 #### Maximum text chars
 
 `.withMaxTextChars(Integer)`
-- **Default**: `7,000`. The default limit is set to `7,000` characters (this corresponds to around 3 to 4 page document). For comparison, in Solr, the default maximum text length is set to `20,000` characters.
+- **Default**: `3,000`. The default limit is set to `3,000` characters (this corresponds to around 2 to 3 page document). For comparison, in Solr, the default maximum text length is set to `20,000` characters.
 - **Description**: Restricts the maximum number of characters from the input text that will be processed for language detection by the library. This functionality is valuable because the library does not need to analyze the entire document to accurately detect the language; a sufficient portion of the text is often enough to achieve reliable results.
 
 
