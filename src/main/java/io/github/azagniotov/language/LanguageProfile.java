@@ -1,5 +1,7 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -10,8 +12,10 @@ import com.google.gson.JsonParseException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class LanguageProfile {
     private static final Gson GSON = new GsonBuilder()
@@ -21,12 +25,15 @@ class LanguageProfile {
             .registerTypeAdapter(LanguageProfile.class, new LanguageProfileDeserializer())
             .create();
 
+    private static final double MINIMUM_FREQ = 2.0;
+    private static final double LESS_FREQ_RATIO = 100000.0;
+
     private final String isoCode639_1;
     private final Map<String, Long> freq;
     private final List<Double> nWords;
 
     /** Create a language profile from a JSON input stream. */
-    private LanguageProfile(final String isoCode639_1, final Map<String, Long> freq, final List<Double> nWords) {
+    LanguageProfile(final String isoCode639_1, final Map<String, Long> freq, final List<Double> nWords) {
         this.isoCode639_1 = isoCode639_1;
         this.freq = freq;
         this.nWords = nWords;
@@ -35,6 +42,10 @@ class LanguageProfile {
     /** Create a language profile from a JSON input stream. */
     static LanguageProfile fromJson(final InputStream languageProfile) {
         return GSON.fromJson(new InputStreamReader(languageProfile), LanguageProfile.class);
+    }
+
+    static String toJson(final LanguageProfile languageProfile) {
+        return GSON.toJson(languageProfile);
     }
 
     void add(final String gram) {
@@ -63,6 +74,73 @@ class LanguageProfile {
 
     Map<String, Long> getWordFrequencies() {
         return freq;
+    }
+
+    /**
+     * This function is used during generation of a new language profile.
+     * <p>
+     * It extracts n-grams from the given input and adds their frequency
+     * into the language profile.
+     *
+     * @param input input text to extract n-grams
+     */
+    public void update(final String input) {
+        if (input == null) {
+            return;
+        }
+        final String sanitizedInput = filterOutNonWords(input);
+        final String normalizedInput = NGram.normalizeVietnamese(sanitizedInput);
+
+        final NGram gram = new NGram();
+        for (int i = 0; i < normalizedInput.length(); ++i) {
+            gram.addChar(input.charAt(i));
+            for (int n = 1; n <= NGram.TRI_GRAM_LENGTH; ++n) {
+                add(gram.get(n));
+            }
+        }
+    }
+
+    /**
+     * Eliminate below less frequency n-grams and noisy Latin alphabets
+     */
+    public void omitLessFreq() {
+        if (this.isoCode639_1 == null || this.isoCode639_1.trim().isEmpty()) {
+            return; // Illegal
+        }
+        double threshold = nWords.get(0) / LESS_FREQ_RATIO;
+        if (threshold < MINIMUM_FREQ) {
+            threshold = MINIMUM_FREQ;
+        }
+
+        Set<String> keys = freq.keySet();
+        double roman = 0;
+        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
+            String key = iterator.next();
+            double count = freq.get(key);
+            if (count <= threshold) {
+                final double current = nWords.get(key.length() - 1);
+                nWords.set(key.length() - 1, current - count);
+                iterator.remove();
+            } else {
+                if (key.matches("^[A-Za-z]$")) {
+                    roman += count;
+                }
+            }
+        }
+
+        // roman check
+        if (roman < nWords.get(0) / 3) {
+            Set<String> keys2 = freq.keySet();
+            for (Iterator<String> iterator = keys2.iterator(); iterator.hasNext(); ) {
+                String key = iterator.next();
+                if (key.matches(".*[A-Za-z].*")) {
+                    final double current = nWords.get(key.length() - 1);
+                    nWords.set(key.length() - 1, current - freq.get(key));
+
+                    iterator.remove();
+                }
+            }
+        }
     }
 
     private static class LanguageProfileDeserializer implements JsonDeserializer<LanguageProfile> {

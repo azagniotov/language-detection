@@ -28,3 +28,8 @@ tasks.withType(Test).configureEach {
   } 
 }
 
+test {
+  minHeapSize = "128m"
+  maxHeapSize = "4096m"
+}
+

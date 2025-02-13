@@ -32,7 +32,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 ## About this library
 
 The library uses 3-gram character and a Bayesian filter with various normalizations and feature sampling.
-The precision is over **99%** for **54** languages.
+The precision is over **99%** for **58** languages.
 
 See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
@@ -46,7 +46,10 @@ The following is a list of ISO 639-1 languages code recognized:
 | ar    | Arabic                                           |
 | bg    | Bulgarian                                        |
 | bn    | Bengali                                          |
+| br    | Breton                                           |
+| ca    | Catalan                                          |
 | cs    | Czech                                            |
+| cy    | Welsh                                            |
 | da    | Danish                                           |
 | de    | German                                           |
 | el    | Greek                                            |
@@ -80,6 +83,7 @@ The following is a list of ISO 639-1 languages code recognized:
 | pt    | Portuguese                                       |
 | ro    | Romanian                                         |
 | ru    | Russian                                          |
+| si    | Sinhalese                                        |
 | sk    | Slovak                                           |
 | sl    | Slovene                                          |
 | so    | Somali                                           |
