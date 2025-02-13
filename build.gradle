@@ -18,13 +18,12 @@ plugins {
     id "java-library"
     id "idea"
     id "eclipse"
-    id "jacoco"
     id "maven-publish"
     id "signing"
 }
 
 defaultTasks 'clean', 'test', 'build'
-description = 'Gradle configuration for Crispy Couscous'
+description = 'Gradle configuration for Language Detection'
 
 compileJava {
     options.encoding = 'UTF-8'
