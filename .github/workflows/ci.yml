@@ -43,7 +43,6 @@ jobs:
     if: github.event_name == 'pull_request'
     permissions:
       contents: write
-    name: Next Version
     runs-on: ubuntu-latest
     outputs:
       version_tag: ${{ steps.calculate_tag_version.outputs.version_tag }}

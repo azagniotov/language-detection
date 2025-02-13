@@ -94,7 +94,7 @@ public class LanguageDetectorTest {
   @Test
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
-        LanguageDetectionSettings.fromIsoCodes639_1("br,cy,de,eu,ga,hy,ka,lb").build();
+        LanguageDetectionSettings.fromIsoCodes639_1("az,br,cy,de,eu,ga,hy,ka,lb").build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
@@ -104,6 +104,8 @@ public class LanguageDetectorTest {
 
     // Armenian
     assertEquals("hy", detector.detectAll("Սովորում եմ հայերեն").get(0).getIsoCode639_1());
+    // Azerbaijani
+    assertEquals("az", detector.detectAll("Azərbaycan dilini öyrənirəm").get(0).getIsoCode639_1());
     // Basque
     assertEquals("eu", detector.detectAll("Euskara ikasten ari naiz").get(0).getIsoCode639_1());
     // Breton
@@ -178,6 +180,11 @@ public class LanguageDetectorTest {
   @Test
   public void testIrish() throws Exception {
     testLanguage("irish.txt", "ga", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testAzerbaijani() throws Exception {
+    testLanguage("azerbaijani.txt", "az", DEFAULT_DETECTOR);
   }
 
   @Test

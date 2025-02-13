@@ -9,7 +9,7 @@ import java.util.Objects;
 public class LanguageDetectionSettings {
 
   private static final String ALL_SUPPORTED_ISO_CODES_639_1 =
-      "af,ar,bg,bn,br,ca,cs,cy,da,de,el,en,es,et,eu,fa,fi,fr,ga,gu,he,hi,hr,hu,hy,id,it,ja,ka,kn,ko,lb,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
+      "af,ar,az,bg,bn,br,ca,cs,cy,da,de,el,en,es,et,eu,fa,fi,fr,ga,gu,he,hi,hr,hu,hy,id,it,ja,ka,kn,ko,lb,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
           + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
 
   static final LanguageDetectionSettings DEFAULT_SETTINGS_ALL_LANGUAGES =
@@ -112,7 +112,7 @@ public class LanguageDetectionSettings {
     private Builder(final List<String> isoCodes639_1) {
       this.isoCodes639_1 = List.copyOf(isoCodes639_1);
       this.profile = "merged-average"; // A name of a subdirectory under the resources
-      this.maxTextChars = 7000;
+      this.maxTextChars = 3000;
       this.sanitizeForSearch = true;
       this.sanitizeForSearchThreshold = 128;
       this.classifyChineseAsJapanese = false;
