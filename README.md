@@ -40,66 +40,67 @@ See the following PR description to read about the benchmaks done by @yanirs : h
 
 The following is a list of ISO 639-1 languages code recognized:
 
-| Code  | Description                                      |
-|-------|--------------------------------------------------|
-| af    | Afrikaans                                        |
-| ar    | Arabic                                           |
-| bg    | Bulgarian                                        |
-| bn    | Bengali                                          |
-| br    | Breton                                           |
-| ca    | Catalan                                          |
-| cs    | Czech                                            |
-| cy    | Welsh                                            |
-| da    | Danish                                           |
-| de    | German                                           |
-| el    | Greek                                            |
-| en    | English                                          |
-| es    | Spanish                                          |
-| et    | Estonian                                         |
-| fa    | Farsi                                            |
-| fi    | Finnish                                          |
-| fr    | French                                           |
-| gu    | Gujarati                                         |
-| he    | Hebrew                                           |
-| hi    | Hindi                                            |
-| hr    | Croatian                                         |
-| hu    | Hungarian                                        |
-| id    | Indonesian                                       |
-| it    | Italian                                          |
-| ja    | Japanese                                         |
-| kn    | Kannada                                          |
-| ko    | Korean                                           |
-| lb    | Luxembourgish                                    |
-| lt    | Lithuanian                                       |
-| lv    | Latvian                                          |
-| mk    | Macedonian                                       |
-| ml    | Malayalam                                        |
-| mr    | Marathi                                          |
-| ne    | Nepali                                           |
-| nl    | Dutch                                            |
-| no    | Norwegian                                        |
-| pa    | Eastern Punjabi                                  |
-| pl    | Polish                                           |
-| pt    | Portuguese                                       |
-| ro    | Romanian                                         |
-| ru    | Russian                                          |
-| si    | Sinhalese                                        |
-| sk    | Slovak                                           |
-| sl    | Slovene                                          |
-| so    | Somali                                           |
-| sq    | Albanian                                         |
-| sv    | Swedish                                          |
-| sw    | Swahili                                          |
-| ta    | Tamil                                            |
-| te    | Telugu                                           |
-| th    | Thai                                             |
-| tl    | Tagalog                                          |
-| tr    | Turkish                                          |
-| uk    | Ukrainian                                        |
-| ur    | Urdu                                             |
-| vi    | Vietnamese                                       |
-| zh-cn | Chinese                                          |
-| zh-tw | Traditional Chinese (Taiwan, Hongkong and Macau) |
+| ISO 639-1       | Description                 |
+|-----------------|-----------------------------|
+| af              | Afrikaans                   |
+| sq              | Albanian                    |
+| ar              | Arabic                      |
+| bn              | Bengali                     |
+| br              | Breton                      |
+| bg              | Bulgarian                   |
+| ca              | Catalan                     |
+| zh-cn           | Chinese (Simplified)        |
+| zh-tw           | Chinese (Traditional)       |
+| hr              | Croatian                    |
+| cs              | Czech                       |
+| da              | Danish                      |
+| nl              | Dutch                       |
+| en              | English                     |
+| et              | Estonian                    |
+| fa              | Farsi                       |
+| fi              | Finnish                     |
+| fr              | French                      |
+| de              | German                      |
+| el              | Greek                       |
+| gu              | Gujarati                    |
+| he              | Hebrew                      |
+| hi              | Hindi                       |
+| hu              | Hungarian                   |
+| id              | Indonesian                  |
+| it              | Italian                     |
+| ja              | Japanese                    |
+| kn              | Kannada                     |
+| ko              | Korean                      |
+| lv              | Latvian                     |
+| lt              | Lithuanian                  |
+| lb              | Luxembourgish               |
+| mk              | Macedonian                  |
+| ml              | Malayalam                   |
+| mr              | Marathi                     |
+| ne              | Nepali                      |
+| no              | Norwegian                   |
+| pl              | Polish                      |
+| pt              | Portuguese                  |
+| pa              | Punjabi (Eastern)           |
+| ro              | Romanian                    |
+| ru              | Russian                     |
+| si              | Sinhalese                   |
+| sk              | Slovak                      |
+| sl              | Slovene                     |
+| so              | Somali                      |
+| es              | Spanish                     |
+| sw              | Swahili                     |
+| sv              | Swedish                     |
+| tl              | Tagalog                     |
+| ta              | Tamil                       |
+| te              | Telugu                      |
+| th              | Thai                        |
+| tr              | Turkish                     |
+| uk              | Ukrainian                   |
+| ur              | Urdu                        |
+| vi              | Vietnamese                  |
+| cy              | Welsh                       |
+
 
 ### Quick detection of CJK languages
 
