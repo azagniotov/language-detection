@@ -1,4 +1,4 @@
-# Crispy Couscous
+# Language Detection
 [![Maven Central][maven-badge]][maven-link]
 [![GitHub Packages][github-badge]][github-link]
 
@@ -6,7 +6,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 ## Table of Contents
 <!-- TOC -->
-* [Crispy Couscous](#crispy-couscous)
+* [Language Detection](#language-detection)
   * [About this library](#about-this-library)
     * [Supported ISO 639-1 codes](#supported-iso-639-1-codes)
     * [Quick detection of CJK languages](#quick-detection-of-cjk-languages)
@@ -278,8 +278,8 @@ To run unit tests, run the following command:
 [`Back to top`](#table-of-contents)
 
 
-[maven-badge]: https://img.shields.io/maven-central/v/io.github.azagniotov/crispy-couscous.svg?style=flat&label=maven-central
-[maven-link]: https://central.sonatype.com/search?q=g:io.github.azagniotov%20%20a:crispy-couscous
+[maven-badge]: https://img.shields.io/maven-central/v/io.github.azagniotov/language-detection.svg?style=flat&label=maven-central
+[maven-link]: https://central.sonatype.com/search?q=g:io.github.azagniotov%20%20a:language-detection
 
-[github-badge]: https://img.shields.io/github/v/release/azagniotov/crispy-couscous?label=github-packages&color=green
-[github-link]: https://github.com/azagniotov/crispy-couscous/packages/2402101
+[github-badge]: https://img.shields.io/github/v/release/azagniotov/language-detection?label=github-packages&color=green
+[github-link]: https://github.com/azagniotov/language-detection/packages/2402101
