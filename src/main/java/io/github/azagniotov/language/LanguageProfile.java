@@ -98,7 +98,7 @@ class LanguageProfile {
 
     final NGram gram = new NGram();
     for (int i = 0; i < normalizedInput.length(); ++i) {
-      gram.addChar(input.charAt(i));
+      gram.addChar(normalizedInput.charAt(i));
       for (int n = 1; n <= NGram.TRI_GRAM_LENGTH; ++n) {
         add(gram.get(n));
       }

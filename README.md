@@ -35,10 +35,9 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 ## About this library
 
-The library uses 3-gram character and a Bayesian filter with various normalizations and feature sampling.
-The precision is over **99%** for **63** languages.
+The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from 1 to 3, alongside a Bayesian filter that incorporates various normalization techniques and feature sampling methods.
 
-See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
+The precision is over **99%** for **64** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
 ### Supported ISO 639-1 codes
 
@@ -108,6 +107,7 @@ The following is a list of ISO 639-1 languages code recognized:
 | uk        | Ukrainian             |
 | ur        | Urdu                  |
 | vi        | Vietnamese            |
+| yi        | Yiddish               |
 | cy        | Welsh                 |
 
 ### Model parameters
