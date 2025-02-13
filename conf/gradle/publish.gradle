@@ -74,3 +74,4 @@ task prepMavenCentralBundle(type: Zip) {
 	}
 }
 prepMavenCentralBundle.dependsOn publishMavenJavaPublicationToMavenRepository
+publish.dependsOn prepMavenCentralBundle
