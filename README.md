@@ -24,6 +24,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
       * [Minimum detection certainty](#minimum-detection-certainty)
   * [Local development](#local-development)
     * [System requirements](#system-requirements)
+    * [Pre-commit Hook](#pre-commit-hook)
     * [Build system](#build-system)
       * [List of Gradle tasks](#list-of-gradle-tasks)
       * [Building](#building)
@@ -248,6 +249,16 @@ LanguageDetectionSettings
 - The plugin keeps Java 11 source compatibility at the moment
 - At least JDK 11
 
+### Pre-commit Hook
+
+Before your first commit, run this command in the root project directory:
+
+```
+cp pre-commit .git/hooks
+```
+
+If you forget to do this, there is a Gradle task defined in [build.gradle](./build.gradle) that installs the hook for you.
+
 ### Build system
 
 The plugin uses [Gradle](https://gradle.org/) for as a build system.
@@ -270,10 +281,10 @@ Building and packaging can be done with the following command:
 
 #### Formatting
 
-Formatting the sources can be done with the following command:
+The sources will be auto-formatted using Google Java format upon each commit. But, should there ba  need to manually format, run the following command:
 
 ```bash
-./gradlew spotlessApply
+./gradlew googleJavaFormat
 ```
 
 ### Testing
