@@ -94,7 +94,7 @@ public class LanguageDetectorTest {
   @Test
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
-        LanguageDetectionSettings.fromIsoCodes639_1("az,br,cy,de,eu,ga,hy,ka,lb").build();
+        LanguageDetectionSettings.fromIsoCodes639_1("az,br,cy,de,eu,ga,he,hy,ka,lb,yi").build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
@@ -116,10 +116,14 @@ public class LanguageDetectorTest {
     assertEquals("de", detector.detectAll("Ich lerne Deutsch").get(0).getIsoCode639_1());
     // Irish
     assertEquals("ga", detector.detectAll("Tá mé ag foghlaim Gaeilge").get(0).getIsoCode639_1());
+    // Hebrew
+    assertEquals("he", detector.detectAll("אני לומד עברית").get(0).getIsoCode639_1());
     // Luxembourgish
     assertEquals("lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
     // Welsh
     assertEquals("cy", detector.detectAll("Dw i'n dysgu Cymraeg").get(0).getIsoCode639_1());
+    // Yiddish
+    assertEquals("yi", detector.detectAll("איך לערן זיך ייִדיש").get(0).getIsoCode639_1());
   }
 
   @Test
@@ -185,6 +189,11 @@ public class LanguageDetectorTest {
   @Test
   public void testAzerbaijani() throws Exception {
     testLanguage("azerbaijani.txt", "az", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testYiddish() throws Exception {
+    testLanguage("yiddish.txt", "yi", DEFAULT_DETECTOR);
   }
 
   @Test
