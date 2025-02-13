@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# List of Java files to format:
+files=$(git diff --cached --name-only --diff-filter=AMCR | grep -Ei "\.java$" || true)
+
+# Check if there are Java files to format:
+if [ -z "$files" ]
+then
+  echo "Google Java Formatting skipped - no Java sources to format"
+  exit 0
+fi
+
+# Root directory of this git repository:
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+echo "Executing Google Java Format in ${REPO_ROOT_DIR}"
+
+# Format Java files using Google Java Format:
+
+"${REPO_ROOT_DIR}/gradlew" googleJavaFormat -PgoogleJavaFormat.include="$files" --quiet --stacktrace
+
+if [ $? != 0 ]
+then
+  echo "Error: Failed to format Java files!"
+  exit 255
+fi
+
+# Stage the formatted files:
+git add ${files}
+
+if [ $? != 0 ]
+then
+  echo "Error: Failed to stage formatted Java files!"
+  exit 255
+fi

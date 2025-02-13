@@ -7,12 +7,7 @@ buildscript {
             }
         }
     }
-    dependencies {
-        classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.2")
-    }
 }
-
-
 
 plugins {
     id "java-library"
@@ -20,6 +15,7 @@ plugins {
     id "eclipse"
     id "maven-publish"
     id "signing"
+    id "com.github.sherter.google-java-format" version "${googleJavaFormatVersion}"
 }
 
 defaultTasks 'clean', 'test', 'build'
@@ -66,6 +62,23 @@ ext {
 
 apply from: "$rootDir/conf/gradle/dependencies.gradle"
 apply from: "$rootDir/conf/gradle/tests.gradle"
-apply from: "$rootDir/conf/gradle/spotless.gradle"
 apply from: "$rootDir/conf/gradle/jar.gradle"
 apply from: "$rootDir/conf/gradle/publish.gradle"
+
+tasks.register('copyPreCommitHook', Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from 'pre-commit'
+    into '.git/hooks'
+    eachFile { file ->
+        file.setMode(0755)
+        println("Copying pre-commit file to git hooks.")
+    }
+}
+processResources.finalizedBy copyPreCommitHook
+
+googleJavaFormat {
+    toolVersion = "${googleJavaFormatToolVersion}"
+    exclude '**/distributions/**'
+    exclude '**/src/*/resources/**'
+}
+verifyGoogleJavaFormat.dependsOn(tasks.googleJavaFormat)
