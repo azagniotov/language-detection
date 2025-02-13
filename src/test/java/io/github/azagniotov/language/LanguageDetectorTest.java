@@ -85,6 +85,37 @@ public class LanguageDetectorTest {
     }
 
     @Test
+    public void languageDetectorShortStrings() throws Exception {
+        final LanguageDetectionSettings supportedLanguages = LanguageDetectionSettings.fromIsoCodes639_1(
+                        "br,cy,de,eu,ga,hy,ka,lb")
+                .build();
+        final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
+        final LanguageDetector detector =
+                new LanguageDetector(factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
+
+        // "I am learning <LANGUAGE_NAME>" in various languages
+
+        // Armenian
+        assertEquals("hy", detector.detectAll("Սովորում եմ հայերեն").get(0).getIsoCode639_1());
+        // Basque
+        assertEquals("eu", detector.detectAll("Euskara ikasten ari naiz").get(0).getIsoCode639_1());
+        // Breton
+        assertEquals("br", detector.detectAll("Emaon o teskiñ brezhoneg").get(0).getIsoCode639_1());
+        // Georgian
+        assertEquals("ka", detector.detectAll("ვსწავლობ ქართულს").get(0).getIsoCode639_1());
+        // German
+        assertEquals("de", detector.detectAll("Ich lerne Deutsch").get(0).getIsoCode639_1());
+        // Irish
+        assertEquals(
+                "ga", detector.detectAll("Tá mé ag foghlaim Gaeilge").get(0).getIsoCode639_1());
+        // Luxembourgish
+        assertEquals(
+                "lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
+        // Welsh
+        assertEquals("cy", detector.detectAll("Dw i'n dysgu Cymraeg").get(0).getIsoCode639_1());
+    }
+
+    @Test
     public void testEnglish() throws Exception {
         testLanguage("english.txt", "en", DEFAULT_DETECTOR);
     }
@@ -122,6 +153,26 @@ public class LanguageDetectorTest {
     @Test
     public void testWelsh() throws Exception {
         testLanguage("welsh.txt", "cy", DEFAULT_DETECTOR);
+    }
+
+    @Test
+    public void testGeorgian() throws Exception {
+        testLanguage("georgian.txt", "ka", DEFAULT_DETECTOR);
+    }
+
+    @Test
+    public void testArmenian() throws Exception {
+        testLanguage("armenian.txt", "hy", DEFAULT_DETECTOR);
+    }
+
+    @Test
+    public void testBasque() throws Exception {
+        testLanguage("basque.txt", "eu", DEFAULT_DETECTOR);
+    }
+
+    @Test
+    public void testIrish() throws Exception {
+        testLanguage("irish.txt", "ga", DEFAULT_DETECTOR);
     }
 
     @Test
@@ -227,53 +278,5 @@ public class LanguageDetectorTest {
         assertEquals("und", detector.detectAll("...").get(0).getIsoCode639_1());
         assertEquals("und", detector.detectAll("1234567").get(0).getIsoCode639_1());
         assertEquals("und", detector.detectAll("한국어").get(0).getIsoCode639_1());
-    }
-
-    @Test
-    public void languageDetectorTestLuxembourgish() throws Exception {
-        final LanguageDetectionSettings supportedLanguages =
-                LanguageDetectionSettings.fromIsoCodes639_1("de,lb").build();
-        final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
-        final LanguageDetector detector =
-                new LanguageDetector(factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
-
-        assertEquals(
-                "lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
-        assertEquals("de", detector.detectAll("Ich lerne Deutsch").get(0).getIsoCode639_1());
-
-        assertEquals(
-                "lb",
-                detector.detectAll("Schwätzt wannechgelift méi lues").get(0).getIsoCode639_1());
-        assertEquals(
-                "de", detector.detectAll("Bitte sprechen Sie langsamer").get(0).getIsoCode639_1());
-    }
-
-    @Test
-    public void languageDetectorTestBreton() throws Exception {
-        final LanguageDetectionSettings supportedLanguages =
-                LanguageDetectionSettings.fromIsoCodes639_1("br,de,lb").build();
-        final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
-        final LanguageDetector detector =
-                new LanguageDetector(factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
-
-        assertEquals("br", detector.detectAll("Emaon o teskiñ brezhoneg").get(0).getIsoCode639_1());
-        assertEquals(
-                "br", detector.detectAll("Komzit goustadikoc'h mar plij").get(0).getIsoCode639_1());
-    }
-
-    @Test
-    public void languageDetectorTestWelsh() throws Exception {
-        final LanguageDetectionSettings supportedLanguages =
-                LanguageDetectionSettings.fromIsoCodes639_1("br,cy").build();
-        final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
-        final LanguageDetector detector =
-                new LanguageDetector(factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
-
-        assertEquals("cy", detector.detectAll("Dw i'n dysgu Cymraeg").get(0).getIsoCode639_1());
-        assertEquals(
-                "cy",
-                detector.detectAll("Allwch chi fod yn dawel os gwelwch yn dda")
-                        .get(0)
-                        .getIsoCode639_1());
     }
 }

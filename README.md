@@ -1,4 +1,6 @@
 # Language Detection
+
+[![Build and Test](https://github.com/azagniotov/language-detection/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/azagniotov/language-detection/actions/workflows/ci.yml)
 [![Maven Central][maven-badge]][maven-link]
 [![GitHub Packages][github-badge]][github-link]
 
@@ -7,10 +9,11 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 ## Table of Contents
 <!-- TOC -->
 * [Language Detection](#language-detection)
+  * [Table of Contents](#table-of-contents)
   * [About this library](#about-this-library)
     * [Supported ISO 639-1 codes](#supported-iso-639-1-codes)
-    * [Quick detection of CJK languages](#quick-detection-of-cjk-languages)
     * [Model parameters](#model-parameters)
+    * [Quick detection of CJK languages](#quick-detection-of-cjk-languages)
   * [How to use?](#how-to-use)
     * [Basic usage](#basic-usage)
     * [Methods to build the LanguageDetectionSettings](#methods-to-build-the-languagedetectionsettings)
@@ -32,7 +35,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 ## About this library
 
 The library uses 3-gram character and a Bayesian filter with various normalizations and feature sampling.
-The precision is over **99%** for **58** languages.
+The precision is over **99%** for **62** languages.
 
 See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
@@ -40,77 +43,70 @@ See the following PR description to read about the benchmaks done by @yanirs : h
 
 The following is a list of ISO 639-1 languages code recognized:
 
-| ISO 639-1       | Description                 |
-|-----------------|-----------------------------|
-| af              | Afrikaans                   |
-| sq              | Albanian                    |
-| ar              | Arabic                      |
-| bn              | Bengali                     |
-| br              | Breton                      |
-| bg              | Bulgarian                   |
-| ca              | Catalan                     |
-| zh-cn           | Chinese (Simplified)        |
-| zh-tw           | Chinese (Traditional)       |
-| hr              | Croatian                    |
-| cs              | Czech                       |
-| da              | Danish                      |
-| nl              | Dutch                       |
-| en              | English                     |
-| et              | Estonian                    |
-| fa              | Farsi                       |
-| fi              | Finnish                     |
-| fr              | French                      |
-| de              | German                      |
-| el              | Greek                       |
-| gu              | Gujarati                    |
-| he              | Hebrew                      |
-| hi              | Hindi                       |
-| hu              | Hungarian                   |
-| id              | Indonesian                  |
-| it              | Italian                     |
-| ja              | Japanese                    |
-| kn              | Kannada                     |
-| ko              | Korean                      |
-| lv              | Latvian                     |
-| lt              | Lithuanian                  |
-| lb              | Luxembourgish               |
-| mk              | Macedonian                  |
-| ml              | Malayalam                   |
-| mr              | Marathi                     |
-| ne              | Nepali                      |
-| no              | Norwegian                   |
-| pl              | Polish                      |
-| pt              | Portuguese                  |
-| pa              | Punjabi (Eastern)           |
-| ro              | Romanian                    |
-| ru              | Russian                     |
-| si              | Sinhalese                   |
-| sk              | Slovak                      |
-| sl              | Slovene                     |
-| so              | Somali                      |
-| es              | Spanish                     |
-| sw              | Swahili                     |
-| sv              | Swedish                     |
-| tl              | Tagalog                     |
-| ta              | Tamil                       |
-| te              | Telugu                      |
-| th              | Thai                        |
-| tr              | Turkish                     |
-| uk              | Ukrainian                   |
-| ur              | Urdu                        |
-| vi              | Vietnamese                  |
-| cy              | Welsh                       |
-
-
-### Quick detection of CJK languages
-
-Furthermore, the library offers a highly accurate CJK language detection mode specifically designed for short strings
-where there can be a mix of CJK/Latin/Numeric characters.
-
-The library bypasses the performance bottlenecks of traditional machine learning or n-gram based solutions,
-which are ill-suited for such limited / mixed text. By directly iterating over characters, the library efficiently
-identifies CJK script usage, enabling rapid and precise language classification. This direct character analysis is
-significantly faster and simpler for short texts, avoiding the complexities of statistical models.
+| ISO 639-1 | Description           |
+|-----------|-----------------------|
+| af        | Afrikaans             |
+| sq        | Albanian              |
+| ar        | Arabic                |
+| hy        | Armenian              |
+| eu        | Basque                |
+| bn        | Bengali               |
+| br        | Breton                |
+| bg        | Bulgarian             |
+| ca        | Catalan               |
+| zh-cn     | Chinese (Simplified)  |
+| zh-tw     | Chinese (Traditional) |
+| hr        | Croatian              |
+| cs        | Czech                 |
+| da        | Danish                |
+| nl        | Dutch                 |
+| en        | English               |
+| et        | Estonian              |
+| fa        | Farsi                 |
+| fi        | Finnish               |
+| fr        | French                |
+| ka        | Georgian              |
+| de        | German                |
+| el        | Greek                 |
+| gu        | Gujarati              |
+| he        | Hebrew                |
+| hi        | Hindi                 |
+| hu        | Hungarian             |
+| id        | Indonesian            |
+| ga        | Irish                 |
+| it        | Italian               |
+| ja        | Japanese              |
+| kn        | Kannada               |
+| ko        | Korean                |
+| lv        | Latvian               |
+| lt        | Lithuanian            |
+| lb        | Luxembourgish         |
+| mk        | Macedonian            |
+| ml        | Malayalam             |
+| mr        | Marathi               |
+| ne        | Nepali                |
+| no        | Norwegian             |
+| pl        | Polish                |
+| pt        | Portuguese            |
+| pa        | Punjabi (Eastern)     |
+| ro        | Romanian              |
+| ru        | Russian               |
+| si        | Sinhalese             |
+| sk        | Slovak                |
+| sl        | Slovene               |
+| so        | Somali                |
+| es        | Spanish               |
+| sw        | Swahili               |
+| sv        | Swedish               |
+| tl        | Tagalog               |
+| ta        | Tamil                 |
+| te        | Telugu                |
+| th        | Thai                  |
+| tr        | Turkish               |
+| uk        | Ukrainian             |
+| ur        | Urdu                  |
+| vi        | Vietnamese            |
+| cy        | Welsh                 |
 
 ### Model parameters
 
@@ -129,6 +125,16 @@ probabilistic matching using naive bayes with character n-gram. See also Ted Dun
 | `prob_threshold`  | Default: 0.1                                                                |
 | `conv_threshold`  | Detection is terminated when normalized probability exceeds this threshold, default: 0.99999 |
 | `base_freq`       | Default: 10000                                                              |
+
+### Quick detection of CJK languages
+
+Furthermore, the library offers a highly accurate CJK language detection mode specifically designed for short strings
+where there can be a mix of CJK/Latin/Numeric characters.
+
+The library bypasses the performance bottlenecks of traditional machine learning or n-gram based solutions,
+which are ill-suited for such limited / mixed text. By directly iterating over characters, the library efficiently
+identifies CJK script usage, enabling rapid and precise language classification. This direct character analysis is
+significantly faster and simpler for short texts, avoiding the complexities of statistical models.
 
 ## How to use?
 

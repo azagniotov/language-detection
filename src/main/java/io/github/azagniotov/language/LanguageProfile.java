@@ -9,8 +9,11 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +26,7 @@ class LanguageProfile {
             // Gson's duplicate key exception, as it appears the language
             // profiles may contain duplicate keys.
             .registerTypeAdapter(LanguageProfile.class, new LanguageProfileDeserializer())
+            .registerTypeAdapter(LanguageProfile.class, new LanguageProfileSerializer())
             .create();
 
     private static final double MINIMUM_FREQ = 2.0;
@@ -44,8 +48,8 @@ class LanguageProfile {
         return GSON.fromJson(new InputStreamReader(languageProfile), LanguageProfile.class);
     }
 
-    static String toJson(final LanguageProfile languageProfile) {
-        return GSON.toJson(languageProfile);
+    String toJson() {
+        return GSON.toJson(this);
     }
 
     void add(final String gram) {
@@ -112,7 +116,7 @@ class LanguageProfile {
             threshold = MINIMUM_FREQ;
         }
 
-        Set<String> keys = freq.keySet();
+        final Set<String> keys = freq.keySet();
         double roman = 0;
         for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
             String key = iterator.next();
@@ -146,7 +150,7 @@ class LanguageProfile {
     private static class LanguageProfileDeserializer implements JsonDeserializer<LanguageProfile> {
         @Override
         public LanguageProfile deserialize(
-                JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context)
+                final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
                 throws JsonParseException {
             final JsonObject jsonObject = json.getAsJsonObject();
             final String name = jsonObject.get("name").getAsString();
@@ -161,6 +165,20 @@ class LanguageProfile {
             }
 
             return new LanguageProfile(name, freq, nWords);
+        }
+    }
+
+    private static class LanguageProfileSerializer implements JsonSerializer<LanguageProfile> {
+        @Override
+        public JsonElement serialize(
+                final LanguageProfile languageProfile, final Type typeOfT, final JsonSerializationContext context)
+                throws JsonParseException {
+            final JsonObject object = new JsonObject();
+            object.add("freq", context.serialize(languageProfile.getWordFrequencies()));
+            object.add("n_words", context.serialize(languageProfile.getNGramCounts()));
+            object.add("name", context.serialize(languageProfile.getIsoCode639_1()));
+
+            return object;
         }
     }
 }
