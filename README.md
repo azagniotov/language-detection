@@ -282,4 +282,4 @@ To run unit tests, run the following command:
 [maven-link]: https://central.sonatype.com/search?q=g:io.github.azagniotov%20%20a:language-detection
 
 [github-badge]: https://img.shields.io/github/v/release/azagniotov/language-detection?label=github-packages&color=green
-[github-link]: https://github.com/azagniotov/language-detection/packages/2402101
+[github-link]: https://github.com/azagniotov/language-detection/packages/2402358
