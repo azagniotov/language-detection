@@ -1,6 +1,8 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
+import static io.github.azagniotov.language.NGram.TRI_GRAM_LENGTH;
+import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,7 +61,7 @@ class LanguageProfile {
       return;
     }
     int len = gram.length();
-    if (len < 1 || len > NGram.TRI_GRAM_LENGTH) {
+    if (len < UNI_GRAM_LENGTH || len > TRI_GRAM_LENGTH) {
       return;
     }
     nWords.set(len - 1, nWords.get(len - 1) + 1.0);
@@ -99,7 +101,7 @@ class LanguageProfile {
     final NGram gram = new NGram();
     for (int i = 0; i < normalizedInput.length(); ++i) {
       gram.addChar(normalizedInput.charAt(i));
-      for (int n = 1; n <= NGram.TRI_GRAM_LENGTH; ++n) {
+      for (int n = UNI_GRAM_LENGTH; n <= TRI_GRAM_LENGTH; ++n) {
         add(gram.get(n));
       }
     }

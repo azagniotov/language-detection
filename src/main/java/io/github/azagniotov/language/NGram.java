@@ -25,6 +25,7 @@ class NGram {
 
   private static final Map<Character, Character> CJK_CHAR_TO_CHAR_MAP = new HashMap<>();
 
+  static final int UNI_GRAM_LENGTH = 1;
   static final int TRI_GRAM_LENGTH = 3;
   private static final char BLANK_CHAR = ' ';
   private static final String BLANK_SPACE = " ";
