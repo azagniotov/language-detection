@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -32,7 +33,9 @@ public class LanguageDetectionOrchestratorTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(SETTINGS);
     DEFAULT_DETECTOR =
         new LanguageDetector(
-            factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
+            factory.getSupportedIsoCodes639_1(),
+            factory.getLanguageCorporaProbabilities(),
+            MAX_NGRAM_LENGTH);
   }
 
   @Test

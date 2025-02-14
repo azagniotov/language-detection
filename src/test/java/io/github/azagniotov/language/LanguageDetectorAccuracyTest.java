@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -149,7 +150,9 @@ public class LanguageDetectorAccuracyTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(testSettings);
     final LanguageDetector languageDetector =
         new LanguageDetector(
-            factory.getSupportedIsoCodes639_1(), factory.getLanguageCorporaProbabilities());
+            factory.getSupportedIsoCodes639_1(),
+            factory.getLanguageCorporaProbabilities(),
+            MAX_NGRAM_LENGTH);
 
     final Map<String, List<String>> languageToFullTexts = multiLanguageDatasets.get(datasetName);
     final Set<String> testedLanguages = new TreeSet<>(languageToFullTexts.keySet());
