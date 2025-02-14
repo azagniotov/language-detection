@@ -1,73 +1,98 @@
 package io.github.azagniotov.language;
 
+import static java.util.Collections.nCopies;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class LanguageProfileGenerator {
 
-  private static final int CHUNK_SIZE = 8192;
+  // 32 KB for the char[] elements
+  // 8 bytes for the reference
+  // ~12–16 bytes for the array object overhead
+  // Memory usage for each chunk is: ~ 32 KB + 20–24 bytes
+  private static final int CHUNK_SIZE = 16384;
+  private static final int MAX_GRAM_SIZE = 5;
 
   @Test
+  @Ignore
   public void generateProfile() throws Exception {
-    final String targetCode = "ka";
-    final String resourceName = targetCode + "wiki.txt";
-    final File seedDataset = new File("src/test/resources/" + resourceName);
+    final String targetCode = "en";
+    final String sourcePath =
+        String.format("/Users/azagniotov/Documents/data/%swiki/extracted/AA", targetCode);
 
-    if (!seedDataset.exists()) {
+    if (sourcePath.equals("")) {
       System.out.println("\nSeed dataset is missing. Skipping generation.\n");
       return;
     }
 
-    final List<Double> nWords = Arrays.asList(0.0, 0.0, 0.0);
+    final List<Double> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0).toArray(new Double[0]));
     final LanguageProfile languageProfile =
         new LanguageProfile(targetCode, new HashMap<>(), nWords);
 
-    try (final InputStream datasetInputStream =
-        TestHelper.class.getResourceAsStream("/" + resourceName)) {
-      assert datasetInputStream != null;
+    processFilesInDirectory(sourcePath, languageProfile);
 
-      // BufferedReader to read the stream
-      try (final InputStreamReader inputStreamReader =
-              new InputStreamReader(datasetInputStream, StandardCharsets.UTF_8);
-          final BufferedReader reader = new BufferedReader(inputStreamReader)) {
-        final char[] buffer = new char[CHUNK_SIZE];
-        int bytesRead;
-        while ((bytesRead = reader.read(buffer)) != -1) {
-          final String chunk = new String(buffer, 0, bytesRead);
-          languageProfile.update(chunk);
-        }
-      }
-    }
-
+    System.out.println("\n.getNGramCounts(): " + languageProfile.getNGramCounts());
     languageProfile.omitLessFreq();
+    System.out.println(".getNGramCounts(): " + languageProfile.getNGramCounts() + "\n");
+
     final String languageProfileJson = languageProfile.toJson();
 
     writeProfile("langdetect", targetCode, languageProfileJson);
     writeProfile("langdetect/short-text", targetCode, languageProfileJson);
     writeProfile("langdetect/merged-average", targetCode, languageProfileJson);
 
-    if (seedDataset.exists()) {
-      if (seedDataset.delete()) {
-        System.out.println(
-            "\nSeed dataset deleted successfully: " + seedDataset.getAbsolutePath() + "\n");
-      } else {
-        System.out.println(
-            "\nFailed to delete the seed dataset: " + seedDataset.getAbsolutePath() + "\n");
+    assertEquals("apples", "apples");
+  }
+
+  public void processFilesInDirectory(
+      final String directoryPath, final LanguageProfile languageProfile) throws IOException {
+
+    try (final Stream<Path> paths = Files.list(Paths.get(directoryPath))) {
+      paths
+          .filter(path -> path.toString().endsWith(".txt"))
+          .forEach(
+              path -> {
+                System.out.println("\nReading: " + path + "..");
+                try {
+                  updateProfileInChunks(path.toFile(), languageProfile);
+                  System.out.println("Finished processing!!");
+                } catch (IOException e) {
+                  throw new UncheckedIOException(e);
+                }
+              });
+    }
+  }
+
+  public void updateProfileInChunks(final File file, final LanguageProfile languageProfile)
+      throws IOException {
+    try (final FileInputStream fileInputStream = new FileInputStream(file);
+        final InputStreamReader inputStreamReader =
+            new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+        final BufferedReader reader = new BufferedReader(inputStreamReader)) {
+
+      final char[] buffer = new char[CHUNK_SIZE];
+      int bytesRead;
+      while ((bytesRead = reader.read(buffer)) != -1) {
+        languageProfile.update(new String(buffer, 0, bytesRead), MAX_GRAM_SIZE);
       }
     }
-
-    assertEquals("apples", "apples");
   }
 
   private void writeProfile(final String path, final String targetCode, final String json)

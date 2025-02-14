@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -8,77 +9,85 @@ import org.junit.Test;
 /** */
 public class NGramTest {
 
+  private static final char BLANK_CHAR = ' ';
+
   @Test
   public final void testConstants() {
-    assertEquals(NGram.TRI_GRAM_LENGTH, 3);
+    assertEquals(NGram.UNI_GRAM_LENGTH, 1);
+  }
+
+  @Test
+  public final void testDefaultValue() {
+    final NGram ngram = new NGram(7);
+    assertEquals(ngram.getMaxNGramLength(), 7);
   }
 
   @Test
   public final void testNormalizeWithLatin() {
-    assertEquals(NGram.normalize('\u0000'), ' ');
-    assertEquals(NGram.normalize('\u0009'), ' ');
-    assertEquals(NGram.normalize('\u0020'), ' ');
-    assertEquals(NGram.normalize('\u0030'), ' ');
-    assertEquals(NGram.normalize('\u0040'), ' ');
+    assertEquals(NGram.normalize('\u0000'), BLANK_CHAR);
+    assertEquals(NGram.normalize('\u0009'), BLANK_CHAR);
+    assertEquals(NGram.normalize(BLANK_CHAR), BLANK_CHAR);
+    assertEquals(NGram.normalize('\u0030'), BLANK_CHAR);
+    assertEquals(NGram.normalize('\u0040'), BLANK_CHAR);
     assertEquals(NGram.normalize('\u0041'), '\u0041');
     assertEquals(NGram.normalize('\u005a'), '\u005a');
-    assertEquals(NGram.normalize('\u005b'), ' ');
-    assertEquals(NGram.normalize('\u0060'), ' ');
+    assertEquals(NGram.normalize('\u005b'), BLANK_CHAR);
+    assertEquals(NGram.normalize('\u0060'), BLANK_CHAR);
     assertEquals(NGram.normalize('\u0061'), '\u0061');
     assertEquals(NGram.normalize('\u007a'), '\u007a');
-    assertEquals(NGram.normalize('\u007b'), ' ');
-    assertEquals(NGram.normalize('\u007f'), ' ');
+    assertEquals(NGram.normalize('\u007b'), BLANK_CHAR);
+    assertEquals(NGram.normalize('\u007f'), BLANK_CHAR);
     assertEquals(NGram.normalize('\u0080'), '\u0080');
-    assertEquals(NGram.normalize('\u00a0'), ' ');
+    assertEquals(NGram.normalize('\u00a0'), BLANK_CHAR);
     assertEquals(NGram.normalize('\u00a1'), '\u00a1');
   }
 
   @Test
   public final void testNormalizePunctuation() {
-    assertEquals(NGram.normalize('.'), ' '); // Full stop
-    assertEquals(NGram.normalize(','), ' '); // Comma
-    assertEquals(NGram.normalize('!'), ' '); // Exclamation mark
-    assertEquals(NGram.normalize('?'), ' '); // Question mark
-    assertEquals(NGram.normalize(';'), ' '); // Semicolon
-    assertEquals(NGram.normalize(':'), ' '); // Colon
-    assertEquals(NGram.normalize('-'), ' '); // Hyphen
-    assertEquals(NGram.normalize('—'), ' '); // Em Dash
-    assertEquals(NGram.normalize('–'), ' '); // En Dash
-    assertEquals(NGram.normalize('('), ' '); // Left parenthesis
-    assertEquals(NGram.normalize(')'), ' '); // Right parenthesis
-    assertEquals(NGram.normalize('['), ' '); // Left square bracket
-    assertEquals(NGram.normalize(']'), ' '); // Right square bracket
-    assertEquals(NGram.normalize('{'), ' '); // Left curly bracket
-    assertEquals(NGram.normalize('}'), ' '); // Right curly bracket
-    assertEquals(NGram.normalize('"'), ' '); // Double quotation mark
-    assertEquals(NGram.normalize('\''), ' '); // Single quotation mark
-    assertEquals(NGram.normalize('%'), ' '); // Percent sign
-    assertEquals(NGram.normalize('$'), ' '); // Dollar sign
-    assertEquals(NGram.normalize('&'), ' '); // Ampersand
-    assertEquals(NGram.normalize('@'), ' '); // At symbol
-    assertEquals(NGram.normalize('#'), ' '); // Hash/Pound sign
+    assertEquals(NGram.normalize('.'), BLANK_CHAR); // Full stop
+    assertEquals(NGram.normalize(','), BLANK_CHAR); // Comma
+    assertEquals(NGram.normalize('!'), BLANK_CHAR); // Exclamation mark
+    assertEquals(NGram.normalize('?'), BLANK_CHAR); // Question mark
+    assertEquals(NGram.normalize(';'), BLANK_CHAR); // Semicolon
+    assertEquals(NGram.normalize(':'), BLANK_CHAR); // Colon
+    assertEquals(NGram.normalize('-'), BLANK_CHAR); // Hyphen
+    assertEquals(NGram.normalize('—'), BLANK_CHAR); // Em Dash
+    assertEquals(NGram.normalize('–'), BLANK_CHAR); // En Dash
+    assertEquals(NGram.normalize('('), BLANK_CHAR); // Left parenthesis
+    assertEquals(NGram.normalize(')'), BLANK_CHAR); // Right parenthesis
+    assertEquals(NGram.normalize('['), BLANK_CHAR); // Left square bracket
+    assertEquals(NGram.normalize(']'), BLANK_CHAR); // Right square bracket
+    assertEquals(NGram.normalize('{'), BLANK_CHAR); // Left curly bracket
+    assertEquals(NGram.normalize('}'), BLANK_CHAR); // Right curly bracket
+    assertEquals(NGram.normalize('"'), BLANK_CHAR); // Double quotation mark
+    assertEquals(NGram.normalize('\''), BLANK_CHAR); // Single quotation mark
+    assertEquals(NGram.normalize('%'), BLANK_CHAR); // Percent sign
+    assertEquals(NGram.normalize('$'), BLANK_CHAR); // Dollar sign
+    assertEquals(NGram.normalize('&'), BLANK_CHAR); // Ampersand
+    assertEquals(NGram.normalize('@'), BLANK_CHAR); // At symbol
+    assertEquals(NGram.normalize('#'), BLANK_CHAR); // Hash/Pound sign
 
-    assertEquals(NGram.normalize('、'), ' '); // Ideographic comma (U+3001)
-    assertEquals(NGram.normalize('。'), ' '); // Ideographic full stop (U+3002)
-    assertEquals(NGram.normalize('「'), ' '); // Left corner bracket (U+300C)
-    assertEquals(NGram.normalize('」'), ' '); // Right corner bracket (U+300D)
-    assertEquals(NGram.normalize('『'), ' '); // Left double corner bracket (U+3010)
-    assertEquals(NGram.normalize('』'), ' '); // Right double corner bracket (U+3011)
-    assertEquals(NGram.normalize('（'), ' '); // Left parenthesis (U+FF08)
-    assertEquals(NGram.normalize('）'), ' '); // Right parenthesis (U+FF09)
-    assertEquals(NGram.normalize('【'), ' '); // Left black lenticular bracket (U+3010)
-    assertEquals(NGram.normalize('】'), ' '); // Right black lenticular bracket (U+3011)
-    assertEquals(NGram.normalize('、'), ' '); // Ideographic comma (U+3001)
-    assertEquals(NGram.normalize('〜'), ' '); // Wave dash (U+301C)
-    assertEquals(NGram.normalize('〓'), ' '); // Geta mark (U+3013)
-    assertEquals(NGram.normalize('〆'), ' '); // Japanese iteration mark (U+3016)
-    assertEquals(NGram.normalize('〤'), ' '); // Kanji iteration mark (U+301F)
-    assertEquals(NGram.normalize('＂'), ' '); // Full-width double quotation mark (U+FF02)
-    assertEquals(NGram.normalize('＇'), ' '); // Full-width single quotation mark (U+FF07)
-    assertEquals(NGram.normalize('￥'), ' '); // Yen sign (U+00A5)
-    assertEquals(NGram.normalize('※'), ' '); // Reference mark (U+203B)
-    assertEquals(NGram.normalize('％'), ' '); // Full-width percent sign (U+FF05)
-    assertEquals(NGram.normalize('＠'), ' '); // Full-width at symbol (U+FF20)
+    assertEquals(NGram.normalize('、'), BLANK_CHAR); // Ideographic comma (U+3001)
+    assertEquals(NGram.normalize('。'), BLANK_CHAR); // Ideographic full stop (U+3002)
+    assertEquals(NGram.normalize('「'), BLANK_CHAR); // Left corner bracket (U+300C)
+    assertEquals(NGram.normalize('」'), BLANK_CHAR); // Right corner bracket (U+300D)
+    assertEquals(NGram.normalize('『'), BLANK_CHAR); // Left double corner bracket (U+3010)
+    assertEquals(NGram.normalize('』'), BLANK_CHAR); // Right double corner bracket (U+3011)
+    assertEquals(NGram.normalize('（'), BLANK_CHAR); // Left parenthesis (U+FF08)
+    assertEquals(NGram.normalize('）'), BLANK_CHAR); // Right parenthesis (U+FF09)
+    assertEquals(NGram.normalize('【'), BLANK_CHAR); // Left black lenticular bracket (U+3010)
+    assertEquals(NGram.normalize('】'), BLANK_CHAR); // Right black lenticular bracket (U+3011)
+    assertEquals(NGram.normalize('、'), BLANK_CHAR); // Ideographic comma (U+3001)
+    assertEquals(NGram.normalize('〜'), BLANK_CHAR); // Wave dash (U+301C)
+    assertEquals(NGram.normalize('〓'), BLANK_CHAR); // Geta mark (U+3013)
+    assertEquals(NGram.normalize('〆'), BLANK_CHAR); // Japanese iteration mark (U+3016)
+    assertEquals(NGram.normalize('〤'), BLANK_CHAR); // Kanji iteration mark (U+301F)
+    assertEquals(NGram.normalize('＂'), BLANK_CHAR); // Full-width double quotation mark (U+FF02)
+    assertEquals(NGram.normalize('＇'), BLANK_CHAR); // Full-width single quotation mark (U+FF07)
+    assertEquals(NGram.normalize('￥'), BLANK_CHAR); // Yen sign (U+00A5)
+    assertEquals(NGram.normalize('※'), BLANK_CHAR); // Reference mark (U+203B)
+    assertEquals(NGram.normalize('％'), BLANK_CHAR); // Full-width percent sign (U+FF05)
+    assertEquals(NGram.normalize('＠'), BLANK_CHAR); // Full-width at symbol (U+FF20)
   }
 
   /** Test method for {@link NGram#normalize(char)} with CJK Kanji characters. */
@@ -114,14 +123,14 @@ public class NGramTest {
   /** Test method for {@link NGram#get(int)} and {@link NGram#addChar(char)}. */
   @Test
   public final void testNGram() {
-    final NGram ngram = new NGram();
+    final NGram ngram = new NGram(MAX_NGRAM_LENGTH);
     assertNull(ngram.get(0));
     assertNull(ngram.get(1));
     assertNull(ngram.get(2));
     assertNull(ngram.get(3));
     assertNull(ngram.get(4));
 
-    ngram.addChar(' ');
+    ngram.addChar(BLANK_CHAR);
     assertNull(ngram.get(1));
     assertNull(ngram.get(2));
     assertNull(ngram.get(3));

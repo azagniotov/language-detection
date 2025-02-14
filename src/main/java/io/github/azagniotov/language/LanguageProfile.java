@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
-import static io.github.azagniotov.language.NGram.TRI_GRAM_LENGTH;
 import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 
 import com.google.gson.Gson;
@@ -56,15 +55,17 @@ class LanguageProfile {
     return GSON.toJson(this);
   }
 
-  void add(final String gram) {
+  void add(final String gram, final int maxNGramLength) {
     if (isoCode639_1 == null || gram == null || gram.trim().isEmpty()) {
       return;
     }
     int len = gram.length();
-    if (len < UNI_GRAM_LENGTH || len > TRI_GRAM_LENGTH) {
+    if (len < UNI_GRAM_LENGTH || len > maxNGramLength) {
       return;
     }
-    nWords.set(len - 1, nWords.get(len - 1) + 1.0);
+    int nGramTypeIndex = len - 1;
+    nWords.set(nGramTypeIndex, nWords.get(nGramTypeIndex) + 1.0);
+
     if (freq.containsKey(gram)) {
       freq.put(gram, freq.get(gram) + 1);
     } else {
@@ -91,18 +92,18 @@ class LanguageProfile {
    *
    * @param input input text to extract n-grams
    */
-  public void update(final String input) {
+  public void update(final String input, final int maxNGramLength) {
     if (input == null) {
       return;
     }
     final String sanitizedInput = filterOutNonWords(input);
     final String normalizedInput = NGram.normalizeVietnamese(sanitizedInput);
 
-    final NGram gram = new NGram();
+    final NGram gram = new NGram(maxNGramLength);
     for (int i = 0; i < normalizedInput.length(); ++i) {
       gram.addChar(normalizedInput.charAt(i));
-      for (int n = UNI_GRAM_LENGTH; n <= TRI_GRAM_LENGTH; ++n) {
-        add(gram.get(n));
+      for (int n = UNI_GRAM_LENGTH; n <= gram.getMaxNGramLength(); ++n) {
+        add(gram.get(n), gram.getMaxNGramLength());
       }
     }
   }

@@ -26,7 +26,6 @@ class NGram {
   private static final Map<Character, Character> CJK_CHAR_TO_CHAR_MAP = new HashMap<>();
 
   static final int UNI_GRAM_LENGTH = 1;
-  static final int TRI_GRAM_LENGTH = 3;
   private static final char BLANK_CHAR = ' ';
   private static final String BLANK_SPACE = " ";
 
@@ -169,10 +168,13 @@ class NGram {
     }
   }
 
+  private final int maxNGramLength;
+
   private StringBuilder grams;
   private boolean capitalWord;
 
-  NGram() {
+  NGram(final int maxNGramLength) {
+    this.maxNGramLength = maxNGramLength;
     grams = new StringBuilder(BLANK_SPACE);
     capitalWord = false;
   }
@@ -235,7 +237,7 @@ class NGram {
       if (ch == BLANK_CHAR) {
         return;
       }
-    } else if (grams.length() >= TRI_GRAM_LENGTH) {
+    } else if (grams.length() >= this.maxNGramLength) {
       grams.deleteCharAt(0);
     }
     grams.append(ch);
@@ -253,10 +255,10 @@ class NGram {
       return null;
     }
     int len = grams.length();
-    if (n < 1 || n > TRI_GRAM_LENGTH || len < n) {
+    if (n < UNI_GRAM_LENGTH || n > this.maxNGramLength || len < n) {
       return null;
     }
-    if (n == 1) {
+    if (n == UNI_GRAM_LENGTH) {
       char ch = grams.charAt(len - 1);
       if (ch == BLANK_CHAR) {
         return null;
@@ -265,6 +267,10 @@ class NGram {
     } else {
       return grams.substring(len - n, len);
     }
+  }
+
+  int getMaxNGramLength() {
+    return maxNGramLength;
   }
 
   private static final String[] VI_NORMALIZED_CHARS = {

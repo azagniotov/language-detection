@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
-import static io.github.azagniotov.language.NGram.TRI_GRAM_LENGTH;
 import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 
 import java.util.ArrayList;
@@ -51,6 +50,7 @@ class LanguageDetector {
   // their associated probabilities. These probabilities are calculated as the ratio
   // between the word's frequency and the frequency of its N-grams.
   private final Map<String, double[]> languageCorporaProbabilities;
+  private final int maxNGramLength;
 
   private final int baseFreq;
   private final int numberOfTrials;
@@ -62,9 +62,11 @@ class LanguageDetector {
 
   LanguageDetector(
       final List<String> supportedIsoCodes639_1,
-      final Map<String, double[]> languageCorporaProbabilities) {
+      final Map<String, double[]> languageCorporaProbabilities,
+      final int maxNGramLength) {
     this.supportedIsoCodes639_1 = supportedIsoCodes639_1;
     this.languageCorporaProbabilities = languageCorporaProbabilities;
+    this.maxNGramLength = maxNGramLength;
 
     this.baseFreq = 10000;
     this.iterationLimit = 10000;
@@ -141,13 +143,13 @@ class LanguageDetector {
    * @return n-grams list
    */
   private List<String> extractNGrams(final String input) {
-    final NGram ngram = new NGram();
+    final NGram ngram = new NGram(this.maxNGramLength);
     final List<String> extractedNWords = new ArrayList<>();
 
     for (int i = 0; i < input.length(); ++i) {
       ngram.addChar(input.charAt(i));
 
-      for (int n = UNI_GRAM_LENGTH; n <= TRI_GRAM_LENGTH; ++n) {
+      for (int n = UNI_GRAM_LENGTH; n <= ngram.getMaxNGramLength(); ++n) {
         final String word = ngram.get(n);
         if (word != null && languageCorporaProbabilities.containsKey(word)) {
           extractedNWords.add(word);
