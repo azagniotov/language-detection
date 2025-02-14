@@ -1,6 +1,8 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
+import static io.github.azagniotov.language.NGram.TRI_GRAM_LENGTH;
+import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,7 +147,7 @@ class LanguageDetector {
     for (int i = 0; i < input.length(); ++i) {
       ngram.addChar(input.charAt(i));
 
-      for (int n = 1; n <= NGram.TRI_GRAM_LENGTH; ++n) {
+      for (int n = UNI_GRAM_LENGTH; n <= TRI_GRAM_LENGTH; ++n) {
         final String word = ngram.get(n);
         if (word != null && languageCorporaProbabilities.containsKey(word)) {
           extractedNWords.add(word);

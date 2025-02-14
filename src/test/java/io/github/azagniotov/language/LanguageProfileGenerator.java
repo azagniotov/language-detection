@@ -20,7 +20,7 @@ public class LanguageProfileGenerator {
 
   @Test
   public void generateProfile() throws Exception {
-    final String targetCode = "yi";
+    final String targetCode = "ka";
     final String resourceName = targetCode + "wiki.txt";
     final File seedDataset = new File("src/test/resources/" + resourceName);
 
