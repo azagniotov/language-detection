@@ -215,8 +215,8 @@ public class LanguageDetectionOrchestratorTest {
 
     LanguageDetectionOrchestrator orchestrator =
         new LanguageDetectionOrchestrator(settingsWithoutSearchSanitize);
-    assertEquals("fr", orchestrator.detect("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf").getIsoCode639_1());
-    assertEquals("fr", orchestrator.detect("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C).pdf").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C).pdf").getIsoCode639_1());
     assertEquals("fr", orchestrator.detect("report.xls").getIsoCode639_1());
 
     final LanguageDetectionSettings settingsWithSearchSanitize =

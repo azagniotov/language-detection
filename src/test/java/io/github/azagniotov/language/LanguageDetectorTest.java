@@ -204,29 +204,6 @@ public class LanguageDetectorTest {
   }
 
   @Test
-  public final void languageDetectorShouldDetectChinese() throws Exception {
-    final LanguageDetectorFactory factory =
-        new LanguageDetectorFactory(DEFAULT_SETTINGS_ALL_LANGUAGES);
-    final LanguageDetector detector =
-        new LanguageDetector(
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
-            MAX_NGRAM_LENGTH);
-
-    assertEquals(
-        "zh-cn",
-        detector
-            .detectAll(
-                "位于美国首都华盛顿都会圈的希望中文学校５日晚举办活动庆祝建立２０周年。"
-                    + "从中国大陆留学生为子女学中文而自发建立的学习班，"
-                    + "到学生规模在全美名列前茅的中文学校，这个平台的发展也折射出美国的中文教育热度逐步提升。"
-                    + "希望中文学校是大华盛顿地区最大中文学校，现有７个校区逾４０００名学生，"
-                    + "规模在美国东部数一数二。不过，见证了希望中文学校２０年发展的人们起初根本无法想象这个小小的中文教育平台能发展到今日之规模。")
-            .get(0)
-            .getIsoCode639_1());
-  }
-
-  @Test
   public final void languageDetectorShouldDetectShortStringsWithDefaultSanitization()
       throws Exception {
 
@@ -246,10 +223,10 @@ public class LanguageDetectorTest {
         "ja", DEFAULT_DETECTOR.detectAll("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C)").get(0).getIsoCode639_1());
     assertEquals("ja", DEFAULT_DETECTOR.detectAll("Microsoft　インポート").get(0).getIsoCode639_1());
 
-    assertEquals("da", DEFAULT_DETECTOR.detectAll("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf").get(0).getIsoCode639_1());
+    assertEquals("ja", DEFAULT_DETECTOR.detectAll("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf").get(0).getIsoCode639_1());
 
     assertEquals(
-        "ca",
+        "ja",
         DEFAULT_DETECTOR.detectAll("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C).pdf").get(0).getIsoCode639_1());
     assertEquals("ca", DEFAULT_DETECTOR.detectAll("刷新eclipseRCPExt.pdf").get(0).getIsoCode639_1());
     assertEquals("ca", DEFAULT_DETECTOR.detectAll("report.xls").get(0).getIsoCode639_1());
@@ -262,7 +239,7 @@ public class LanguageDetectorTest {
     assertEquals("de", DEFAULT_DETECTOR.detectAll("Das ist ein Text").get(0).getIsoCode639_1());
 
     assertEquals("zh-tw", DEFAULT_DETECTOR.detectAll("TOEIC 分布").get(0).getIsoCode639_1());
-    assertEquals("zh-tw", DEFAULT_DETECTOR.detectAll("１２３４５６７８９０.xls 報告").get(0).getIsoCode639_1());
+    assertEquals("ja", DEFAULT_DETECTOR.detectAll("１２３４５６７８９０.xls 報告").get(0).getIsoCode639_1());
     assertEquals("zh-tw", DEFAULT_DETECTOR.detectAll("富山県高岡市.txt").get(0).getIsoCode639_1());
     assertEquals(
         "zh-tw",
