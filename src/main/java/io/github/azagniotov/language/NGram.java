@@ -202,6 +202,8 @@ class NGram {
       // Filters out some more CJK punctuation marks
       if (!Character.isLetter(ch) && !Character.isDigit(ch)) {
         return BLANK_CHAR;
+      } else {
+        return '\u30a2';
       }
     } else if (block == ARABIC) {
       // Farsi yeh => Arabic yeh

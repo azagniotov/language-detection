@@ -90,6 +90,18 @@ public class NGramTest {
     assertEquals(NGram.normalize('＠'), BLANK_CHAR); // Full-width at symbol (U+FF20)
   }
 
+  @Test
+  public final void testNormalizeHalfWidthKatakana() {
+    assertEquals(NGram.normalize('ﾅ'), 'ア');
+    assertEquals(NGram.normalize('ｼ'), 'ア');
+  }
+
+  @Test
+  public final void testNormalizeFullWidthLatinJapanese() {
+    assertEquals(NGram.normalize('Ｊ'), 'ア');
+    assertEquals(NGram.normalize('Ｃ'), 'ア');
+  }
+
   /** Test method for {@link NGram#normalize(char)} with CJK Kanji characters. */
   @Test
   public final void testNormalizeWithCJKKanji() {
