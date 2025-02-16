@@ -158,6 +158,14 @@ class NGram {
     "\u55C5\u57A2\u58D5\u59E5\u637A\u74E2\u7CE0\u895F",
     "\u4E19\u4E32\u4E4F\u4E91\u4EC7\u4ED4\u4F0D\u5141\u51E1\u51F6\u51F8\u52AB\u535C\u53C9\u53DB\u540A\u5410\u54C0\u559D\u5750\u5751\u576A\u57E0\u5824\u582A\u5830\u5835\u5851\u5858\u586B\u5954\u59FB\u5A46\u5B5F\u5BB4\u5BD3\u5C16\u5C60\u5CFB\u5D16\u5E16\u5E3D\u5E7D\u5E87\u5ECA\u5FD9\u60DC\u60F9\u6155\u6167\u6234\u626E\u6276\u6284\u633A\u6377\u6492\u649E\u64B0\u6562\u6591\u65A5\u65E6\u65FA\u6602\u670B\u676D\u68AF\u695A\u6B23\u6BC5\u6C70\u6C83\u6CE1\u6D8C\u6DD8\u6E20\u71D5\u72D0\u72D7\u73B2\u73CA\u7433\u7483\u74DC\u74F6\u7554\u764C\u7761\u77DB\u78A7\u7A46\u7A7F\u7A84\u7C97\u7D2F\u7FC1\u7FE0\u8000\u8017\u808C\u80AF\u8404\u8461\u8463\u8475\u8513\u85AA\u8679\u86CB\u871C\u87BA\u88F8\u8C8C\u8DF3\u8FC4\u901D\u9022\u906E\u9075\u9192\u91C7\u966A\u971E\u9910\u9B41\u9F0E\u9F20"
   };
+
+  // 1. A non-breaking space character
+  // 2. A left-pointing double angle quotation mark. It is often used in European languages
+  //    like French and Italian to indicate the start of a quote or a dialogue.
+  // 3. A degree symbol is commonly used to represent temperature (e.g., 25°C), angles (e.g., 90°),
+  //    or in mathematical expressions.
+  // 4. A right-pointing double angle quotation mark. It is used to indicate the end of
+  //    a quotation or dialogue in some European languages.
   private static final String LATIN1_EXCLUDED = "\u00A0\u00AB\u00B0\u00BB";
 
   static {
@@ -186,28 +194,28 @@ class NGram {
       if (ch < 'A' || (ch < 'a' && ch > 'Z') || ch > 'z') {
         return BLANK_CHAR;
       }
-    } else if (block == LATIN_1_SUPPLEMENT) {
+    } else if (block == LATIN_1_SUPPLEMENT) /* e.g.: ä, ö, ü, and ß */ {
       if (LATIN1_EXCLUDED.indexOf(ch) >= 0) {
         return BLANK_CHAR;
       }
     } else if (block == LATIN_EXTENDED_B) {
       if (ch == '\u0219') {
-        return '\u015f'; // Romanian 's' with comma below to 's' with cedilla
+        return '\u015f'; // Romanian 's' with comma below (ș) to 's' with cedilla
       }
       if (ch == '\u021b') {
-        return '\u0163'; // Romanian 't' with comma below to 't' with cedilla
+        return '\u0163'; // Romanian 't' with comma below (ț) to 't' with cedilla
       }
     } else if (block == GENERAL_PUNCTUATION || block == CJK_SYMBOLS_AND_PUNCTUATION) {
       return BLANK_CHAR;
     } else if (block == HALFWIDTH_AND_FULLWIDTH_FORMS) {
       // Filters out some more CJK punctuation marks
-      if (!Character.isLetter(ch) && !Character.isDigit(ch)) {
+      if (!Character.isLetterOrDigit(ch)) {
         return BLANK_CHAR;
       } else {
-        return '\u30a2';
+        return '\u30a2'; // Katakana ア
       }
     } else if (block == ARABIC) {
-      // Farsi yeh => Arabic yeh
+      // Farsi yeh ("ye" in "yes") => Arabic yeh ("ye" in "yes")
       if (ch == '\u06cc') {
         return '\u064a';
       }
@@ -216,9 +224,9 @@ class NGram {
         return '\u1ec3';
       }
     } else if (block == HIRAGANA) {
-      return '\u3042';
+      return '\u3042'; // Hiragana あ
     } else if (block == KATAKANA) {
-      return '\u30a2';
+      return '\u30a2'; // Katakana ア
     } else if (block == BOPOMOFO || block == BOPOMOFO_EXTENDED) {
       return '\u3105';
     } else if (block == CJK_UNIFIED_IDEOGRAPHS) {
