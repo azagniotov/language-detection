@@ -146,12 +146,16 @@ class LanguageDetector {
     final NGram ngram = new NGram(this.maxNGramLength);
     final List<String> extractedNWords = new ArrayList<>();
 
-    for (int i = 0; i < input.length(); ++i) {
-      ngram.addChar(input.charAt(i));
+    for (int idx = 0; idx < input.length(); ++idx) {
+      ngram.addChar(input.charAt(idx));
 
       for (int n = UNI_GRAM_LENGTH; n <= ngram.getMaxNGramLength(); ++n) {
         final String word = ngram.get(n);
-        if (word != null && languageCorporaProbabilities.containsKey(word)) {
+        if (word.isEmpty()) {
+          continue;
+        }
+
+        if (languageCorporaProbabilities.containsKey(word)) {
           extractedNWords.add(word);
         }
       }
@@ -166,13 +170,12 @@ class LanguageDetector {
    * @param word N-gram string
    */
   private void updateLangProb(final double[] prob, final String word, final double alpha) {
-    if (word == null || !languageCorporaProbabilities.containsKey(word)) {
-      return;
-    }
-    double[] wordProbabilities = languageCorporaProbabilities.get(word);
-    double weight = alpha / baseFreq;
-    for (int i = 0; i < prob.length; ++i) {
-      prob[i] *= weight + wordProbabilities[i];
+    if (languageCorporaProbabilities.containsKey(word)) {
+      double[] wordProbabilities = languageCorporaProbabilities.get(word);
+      double weight = alpha / baseFreq;
+      for (int i = 0; i < prob.length; ++i) {
+        prob[i] *= weight + wordProbabilities[i];
+      }
     }
   }
 

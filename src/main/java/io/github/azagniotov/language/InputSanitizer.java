@@ -1,11 +1,11 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class InputSanitizer {
-
-  private static final String BLANK_SPACE = " ";
 
   private static final Pattern PATTERN_NOT_A_WORD =
       Pattern.compile("\\P{IsWord}", Pattern.UNICODE_CHARACTER_CLASS);

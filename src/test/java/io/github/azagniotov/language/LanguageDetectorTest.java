@@ -272,4 +272,19 @@ public class LanguageDetectorTest {
     assertEquals("und", detector.detectAll("1234567").get(0).getIsoCode639_1());
     assertEquals("und", detector.detectAll("한국어").get(0).getIsoCode639_1());
   }
+
+  @Test
+  public final void singleWords() throws Exception {
+    final LanguageDetectionSettings supportedLanguages =
+        LanguageDetectionSettings.fromIsoCodes639_1("en,de,fr,es,it").build();
+    final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
+    final LanguageDetector detector =
+        new LanguageDetector(
+            factory.getSupportedIsoCodes639_1(),
+            factory.getLanguageCorporaProbabilities(),
+            MAX_NGRAM_LENGTH);
+
+    assertEquals("fr", detector.detectAll("apple").get(0).getIsoCode639_1());
+    assertEquals("es", detector.detectAll("report").get(0).getIsoCode639_1());
+  }
 }

@@ -1,5 +1,8 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.BLANK_CHAR;
+import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
+import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static java.lang.Character.UnicodeBlock.ARABIC;
 import static java.lang.Character.UnicodeBlock.BASIC_LATIN;
 import static java.lang.Character.UnicodeBlock.BOPOMOFO;
@@ -26,8 +29,6 @@ class NGram {
   private static final Map<Character, Character> CJK_CHAR_TO_CHAR_MAP = new HashMap<>();
 
   static final int UNI_GRAM_LENGTH = 1;
-  private static final char BLANK_CHAR = ' ';
-  private static final String BLANK_SPACE = " ";
 
   private static final String[] CJK_CLASS = {
     "\u4F7C\u6934",
@@ -254,16 +255,16 @@ class NGram {
 
   String get(final int n) {
     if (capitalWord) {
-      return null;
+      return EMPTY_STRING;
     }
     int len = grams.length();
     if (n < UNI_GRAM_LENGTH || n > this.maxNGramLength || len < n) {
-      return null;
+      return EMPTY_STRING;
     }
     if (n == UNI_GRAM_LENGTH) {
       char ch = grams.charAt(len - 1);
       if (ch == BLANK_CHAR) {
-        return null;
+        return EMPTY_STRING;
       }
       return Character.toString(ch);
     } else {

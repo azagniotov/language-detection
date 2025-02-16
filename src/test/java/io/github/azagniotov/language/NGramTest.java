@@ -1,15 +1,14 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.BLANK_CHAR;
+import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 /** */
 public class NGramTest {
-
-  private static final char BLANK_CHAR = ' ';
 
   @Test
   public final void testConstants() {
@@ -136,21 +135,21 @@ public class NGramTest {
   @Test
   public final void testNGram() {
     final NGram ngram = new NGram(MAX_NGRAM_LENGTH);
-    assertNull(ngram.get(0));
-    assertNull(ngram.get(1));
-    assertNull(ngram.get(2));
-    assertNull(ngram.get(3));
-    assertNull(ngram.get(4));
+    assertEquals(ngram.get(0), EMPTY_STRING);
+    assertEquals(ngram.get(1), EMPTY_STRING);
+    assertEquals(ngram.get(2), EMPTY_STRING);
+    assertEquals(ngram.get(3), EMPTY_STRING);
+    assertEquals(ngram.get(4), EMPTY_STRING);
 
     ngram.addChar(BLANK_CHAR);
-    assertNull(ngram.get(1));
-    assertNull(ngram.get(2));
-    assertNull(ngram.get(3));
+    assertEquals(ngram.get(1), EMPTY_STRING);
+    assertEquals(ngram.get(2), EMPTY_STRING);
+    assertEquals(ngram.get(3), EMPTY_STRING);
 
     ngram.addChar('A');
     assertEquals(ngram.get(1), "A");
     assertEquals(ngram.get(2), " A");
-    assertNull(ngram.get(3));
+    assertEquals(ngram.get(3), EMPTY_STRING);
 
     ngram.addChar('\u06cc');
     assertEquals(ngram.get(1), "\u064a");
@@ -183,14 +182,14 @@ public class NGramTest {
     assertEquals(ngram.get(3), "\u30a2\u3105\uac00");
 
     ngram.addChar('\u2010');
-    assertNull(ngram.get(1));
+    assertEquals(ngram.get(1), EMPTY_STRING);
     assertEquals(ngram.get(2), "\uac00 ");
     assertEquals(ngram.get(3), "\u3105\uac00 ");
 
     ngram.addChar('a');
     assertEquals(ngram.get(1), "a");
     assertEquals(ngram.get(2), " a");
-    assertNull(ngram.get(3));
+    assertEquals(ngram.get(3), EMPTY_STRING);
   }
 
   /** Test method for {@link NGram#normalize(char)} with Romanian characters. */
@@ -204,7 +203,7 @@ public class NGramTest {
 
   @Test
   public final void testNormalizeVietnamese() {
-    assertEquals(NGram.normalizeVietnamese(""), "");
+    assertEquals(NGram.normalizeVietnamese(EMPTY_STRING), EMPTY_STRING);
     assertEquals(NGram.normalizeVietnamese("ABC"), "ABC");
     assertEquals(NGram.normalizeVietnamese("012"), "012");
     assertEquals(NGram.normalizeVietnamese("\u00c0"), "\u00c0");
