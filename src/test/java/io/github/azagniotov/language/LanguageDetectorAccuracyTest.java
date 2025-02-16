@@ -1,15 +1,16 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
+import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +33,9 @@ import org.junit.runners.Parameterized;
 /**
  * This class tests classification accuracy on various datasets and parameters, as specified in the
  * accuracies.csv resource file.
+ *
+ * <p>Original author and ideas: By @yanirs, <a
+ * href="https://github.com/jprante/elasticsearch-langdetect/pull/69">https://github.com/jprante/elasticsearch-langdetect/pull/69</a>
  */
 @RunWith(Parameterized.class)
 public class LanguageDetectorAccuracyTest {
@@ -49,13 +54,19 @@ public class LanguageDetectorAccuracyTest {
       "ar,bg,bn,ca,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,ko,lt,lv,mk,ml,nl,no,pa,pl,pt,ro,ru,si,sq,"
           + "sv,ta,te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
 
-  private static Map<String, Map<String, List<String>>> multiLanguageDatasets;
-  private static Path outputPath;
+  private static final String TAB_CHARACTER = "\t";
+  private static final String COMMA_CHARACTER = ",";
+  private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
+  private static final String ACCURACY_REPORT_PATH_TEMPLATE =
+      ACCURACY_REPORT_HOME + "/accuracy-report-%s.csv";
+  private static String ACCURACY_REPORT_NAME;
 
-  private final String datasetName;
+  private static Map<String, Map<String, List<String>>> allDatasets;
+
+  private final String dataset;
   private final int substringLength;
   private final int sampleSize;
-  private final String profileParam;
+  private final String profile;
   private final boolean useAllLanguages;
   private final Map<String, Double> languageToExpectedAccuracy;
 
@@ -68,30 +79,29 @@ public class LanguageDetectorAccuracyTest {
    * classified correctly), and fails if the accuracy varies by more than {@link #ACCURACY_DELTA}
    * from the expected accuracy for the language.
    *
-   * @param datasetName multi-language dataset name, as read in the setup step (see {@link
-   *     #setUp()})
-   * @param substringLength substring length to test (see {@link #generateSubstringSample(String,
-   *     int, int)})
-   * @param sampleSize number of substrings to test (see {@link #generateSubstringSample(String,
-   *     int, int)})
-   * @param profileParam profile name parameter to pass to the detection service
+   * @param dataset multi-language dataset name, as read in the setup step (see {@link #setUp()})
+   * @param profile profile name parameter to pass to the detection service
+   * @param substringLength substring length to test (see {@link #sampleText(String, String, int,
+   *     int)})
+   * @param sampleSize number of substrings to test (see {@link #sampleText(String, String, int,
+   *     int)})
    * @param useAllLanguages if true, all supported languages will be used instead of just the old
    *     default ones
    * @param languageToExpectedAccuracy mapping from language code to expected accuracy
    */
   public LanguageDetectorAccuracyTest(
-      String datasetName,
-      int substringLength,
-      int sampleSize,
-      String profileParam,
-      boolean useAllLanguages,
-      Map<String, Double> languageToExpectedAccuracy) {
-    this.datasetName = datasetName;
+      final String dataset,
+      final String profile,
+      final int substringLength,
+      final int sampleSize,
+      final boolean useAllLanguages,
+      final Map<String, Double> languageToExpectedAccuracy) {
+    this.dataset = dataset;
+    this.profile = profile;
     this.substringLength = substringLength;
     this.sampleSize = sampleSize;
-    this.profileParam = profileParam;
     this.useAllLanguages = useAllLanguages;
-    this.languageToExpectedAccuracy = languageToExpectedAccuracy;
+    this.languageToExpectedAccuracy = Map.copyOf(languageToExpectedAccuracy);
   }
 
   /**
@@ -100,52 +110,46 @@ public class LanguageDetectorAccuracyTest {
    */
   @BeforeClass
   public static void setUp() throws IOException {
-    multiLanguageDatasets = new HashMap<>();
-    multiLanguageDatasets.put("udhr", readMultiLanguageDataset("/udhr.tsv"));
-    multiLanguageDatasets.put(
-        "wordpress-translations", readMultiLanguageDataset("/wordpress-translations.tsv"));
+    allDatasets = new HashMap<>();
+    allDatasets.put("udhr", readDataset("/udhr.tsv"));
+    allDatasets.put("wordpress-translations", readDataset("/wordpress-translations.tsv"));
 
-    String outputPathStr = System.getProperty("path.accuracies.out");
-    if (outputPathStr != null && !outputPathStr.isEmpty()) {
-      System.out.println(
-          "File argument given ("
-              + outputPathStr
-              + ") -- running in output mode without assertions");
-      outputPath = Paths.get(".");
-      // Write column headers
-      Files.write(
-          outputPath,
-          Collections.singletonList(
-              "datasetName,substringLength,sampleSize,profileParam,useAllLanguages,"
-                  + ALL_LANGUAGES),
-          StandardCharsets.UTF_8);
+    final File directory = new File(ACCURACY_REPORT_HOME);
+    if (!directory.exists()) {
+      boolean mkdirs = directory.mkdirs(); // Create the directory if it doesn't exist
+      if (mkdirs) {
+        System.out.println("Created " + ACCURACY_REPORT_HOME + " directory");
+      }
     }
+
+    final String header = "dataset,profile,substringLength,sampleSize,useAllLanguages,";
+    final long reportTimestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
+    ACCURACY_REPORT_NAME = String.format(ACCURACY_REPORT_PATH_TEMPLATE, reportTimestamp);
+    Files.write(
+        Path.of(ACCURACY_REPORT_NAME),
+        Collections.singletonList(header + ALL_LANGUAGES),
+        StandardCharsets.UTF_8);
   }
 
-  /**
-   * Run the test according to the parameters passed to the constructor.
-   *
-   * <p>If {@link #outputPath} is not null, the test always passes and the results are written to
-   * the output path.
-   */
+  /** Run the test according to the parameters passed to the constructor. */
   @Test
-  public void test() throws Exception {
+  public void simulation() throws Exception {
 
     String languageCodes = OLD_DEFAULT_LANGUAGES;
     if (useAllLanguages) {
-      if (profileParam.isEmpty()) {
+      if (profile.equals("default")) {
         languageCodes = ALL_DEFAULT_PROFILE_LANGUAGES;
-      } else if (profileParam.equals("short-text")) {
+      } else if (profile.equals("short-text")) {
         languageCodes = ALL_SHORT_PROFILE_LANGUAGES;
       } else {
-        assertEquals(profileParam, "merged-average");
+        assertEquals(profile, "merged-average");
         languageCodes = ALL_LANGUAGES;
       }
     }
 
     final LanguageDetectionSettings testSettings =
         LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
-            .withProfile(profileParam)
+            .withProfile(profile.equals("default") ? "" : profile)
             .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(testSettings);
     final LanguageDetector languageDetector =
@@ -154,55 +158,60 @@ public class LanguageDetectorAccuracyTest {
             factory.getLanguageCorporaProbabilities(),
             MAX_NGRAM_LENGTH);
 
-    final Map<String, List<String>> languageToFullTexts = multiLanguageDatasets.get(datasetName);
+    final Map<String, List<String>> languageToFullTexts = allDatasets.get(dataset);
     final Set<String> testedLanguages = new TreeSet<>(languageToFullTexts.keySet());
     testedLanguages.retainAll(testSettings.getIsoCodes639_1());
 
     // Classify the texts and calculate the accuracy for each language
-    final Map<String, Double> languageToAccuracy = new HashMap<>(testedLanguages.size());
-    for (String language : testedLanguages) {
-      double numCorrect = 0;
-      List<String> fullTexts = languageToFullTexts.get(language);
-      for (String text : fullTexts) {
-        for (String substring : generateSubstringSample(text, substringLength, sampleSize)) {
-          if (Objects.equals(
-              TestHelper.getTopLanguageCode(languageDetector, substring), language)) {
-            numCorrect++;
+    final Map<String, Double> languageToDetectedAccuracy = new HashMap<>(testedLanguages.size());
+    for (final String language : testedLanguages) {
+      double correctDetections = 0;
+      final List<String> languageFullTexts = languageToFullTexts.get(language);
+      for (final String text : languageFullTexts) {
+        for (String substring : sampleText(language, text, substringLength, sampleSize)) {
+          if (Objects.equals(getTopLanguageCode(languageDetector, substring), language)) {
+            correctDetections++;
           }
         }
       }
-      double accuracy = numCorrect / (fullTexts.size() * sampleSize);
-      languageToAccuracy.put(language, accuracy);
-      System.out.printf("Language: %s Accuracy: %s%n", language, accuracy);
+      final double accuracy = correctDetections / (languageFullTexts.size() * sampleSize);
+      languageToDetectedAccuracy.put(language, accuracy);
+      System.out.printf("Detected accuracy: %s = %s%n", language, accuracy);
     }
 
-    // If no output file is given, compare the obtained accuracies to the expected values.
-    // Otherwise, write the
-    // results to the output path without any assertions.
-    if (outputPath == null) {
-      assertEquals(languageToExpectedAccuracy.size(), languageToAccuracy.size());
-      for (Map.Entry<String, Double> entry : languageToAccuracy.entrySet()) {
-        assertEquals(
-            languageToExpectedAccuracy.get(entry.getKey()), entry.getValue(), ACCURACY_DELTA);
-      }
-    } else {
-      List<String> row = new ArrayList<>();
-      Collections.addAll(
-          row,
-          datasetName,
-          String.valueOf(substringLength),
-          String.valueOf(sampleSize),
-          profileParam,
-          String.valueOf(useAllLanguages));
-      for (String language : ALL_LANGUAGES.split(",")) {
-        row.add(languageToAccuracy.getOrDefault(language, Double.NaN).toString());
-      }
-      Files.write(
-          outputPath,
-          Collections.singletonList(String.join(",", row)),
-          StandardCharsets.UTF_8,
-          StandardOpenOption.APPEND);
+    assertEquals(languageToExpectedAccuracy.size(), languageToDetectedAccuracy.size());
+
+    // Generate accuracy report regardless of the upcoming assertions
+    writeAccuracyReport(languageToDetectedAccuracy);
+
+    for (Map.Entry<String, Double> detected : languageToDetectedAccuracy.entrySet()) {
+      final String targetLanguage = detected.getKey();
+      final double expectedAccuracy = languageToExpectedAccuracy.get(targetLanguage);
+      final String failureMessage = String.format("FAILED [%s]: ", targetLanguage);
+
+      assertEquals(failureMessage, expectedAccuracy, detected.getValue(), ACCURACY_DELTA);
     }
+  }
+
+  private void writeAccuracyReport(Map<String, Double> languageToDetectedAccuracy)
+      throws IOException {
+    final List<String> row = new ArrayList<>();
+    Collections.addAll(
+        row,
+        dataset,
+        profile,
+        String.valueOf(substringLength),
+        String.valueOf(sampleSize),
+        String.valueOf(useAllLanguages));
+
+    for (final String language : ALL_LANGUAGES.split(COMMA_CHARACTER)) {
+      row.add(languageToDetectedAccuracy.getOrDefault(language, Double.NaN).toString());
+    }
+    Files.write(
+        Path.of(ACCURACY_REPORT_NAME),
+        Collections.singletonList(String.join(COMMA_CHARACTER, row)),
+        StandardCharsets.UTF_8,
+        StandardOpenOption.APPEND);
   }
 
   /**
@@ -211,38 +220,41 @@ public class LanguageDetectorAccuracyTest {
    * @return the parsed parameters
    */
   @Parameterized.Parameters(
-      name = "{0}: substringLength={1} sampleSize={2} profileParam={3} useAllLanguages={4}")
+      name = "{0}: profile={1} substringLength={2} sampleSize={3} useAllLanguages={4}")
   public static Collection<Object[]> data() throws IOException {
-    List<Object[]> data = new ArrayList<>();
-    try (BufferedReader br = getResourceReader("/accuracies.csv")) {
+    final List<Object[]> data = new ArrayList<>();
+    try (final BufferedReader bufferedReader = getResourceReader("/accuracies.csv")) {
       // Skip header line
-      br.readLine();
-      String line;
-      while ((line = br.readLine()) != null) {
-        Scanner scanner = new Scanner(line).useLocale(Locale.US).useDelimiter(",");
+      bufferedReader.readLine();
+      while (bufferedReader.ready()) {
+        final String line = bufferedReader.readLine();
+        final Scanner scanner =
+            new Scanner(line).useLocale(Locale.US).useDelimiter(COMMA_CHARACTER);
         data.add(
             new Object[] {
-              // datasetName
+              // dataset
+              scanner.next(),
+              // profile
               scanner.next(),
               // substringLength
               scanner.nextInt(),
               // sampleSize
               scanner.nextInt(),
-              // profileParam
-              scanner.next(),
               // useAllLanguages
               scanner.nextBoolean(),
-              // languageToExpectedAccuracy
+              // expectedAccuraciesPerLanguage
               null
             });
-        Map<String, Double> languageToExpectedAccuracy = new HashMap<>();
-        for (String language : ALL_LANGUAGES.split(",")) {
+
+        final Map<String, Double> expectedAccuraciesPerLanguage = new HashMap<>();
+        for (String language : ALL_LANGUAGES.split(COMMA_CHARACTER)) {
           double expectedAccuracy = scanner.nextDouble();
           if (!Double.isNaN(expectedAccuracy)) {
-            languageToExpectedAccuracy.put(language, expectedAccuracy);
+            expectedAccuraciesPerLanguage.put(language, expectedAccuracy);
           }
         }
-        data.get(data.size() - 1)[5] = languageToExpectedAccuracy;
+        final Object[] parameters = data.get(data.size() - 1);
+        parameters[parameters.length - 1] = expectedAccuraciesPerLanguage;
       }
     }
     return data;
@@ -255,28 +267,27 @@ public class LanguageDetectorAccuracyTest {
    *     code and text
    * @return a mapping from each language code found in the file to the texts of this language
    */
-  private static Map<String, List<String>> readMultiLanguageDataset(String path)
-      throws IOException {
-    Map<String, List<String>> languageToFullTexts = new HashMap<>();
-    try (BufferedReader br = getResourceReader(path)) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        String[] splitLine = line.split("\t");
-        String language = splitLine[0];
-        if (!languageToFullTexts.containsKey(language)) {
-          languageToFullTexts.put(language, new ArrayList<String>());
-        }
-        languageToFullTexts.get(language).add(splitLine[1]);
+  private static Map<String, List<String>> readDataset(final String path) throws IOException {
+    final Map<String, List<String>> languageToFullTexts = new HashMap<>();
+
+    try (final BufferedReader bufferedReader = getResourceReader(path)) {
+      while (bufferedReader.ready()) {
+        final String[] csvLineChunks = bufferedReader.readLine().split(TAB_CHARACTER);
+        final String language = csvLineChunks[0];
+        final String textSubstring = csvLineChunks[1];
+
+        languageToFullTexts.computeIfAbsent(language, k -> new ArrayList<>()).add(textSubstring);
       }
     }
     return languageToFullTexts;
   }
 
   /** Helper method to open a resource path and return it as a BufferedReader instance. */
-  private static BufferedReader getResourceReader(String path) throws IOException {
+  private static BufferedReader getResourceReader(final String path) {
     return new BufferedReader(
         new InputStreamReader(
-            LanguageDetectorAccuracyTest.class.getResourceAsStream(path), StandardCharsets.UTF_8));
+            Objects.requireNonNull(LanguageDetectorAccuracyTest.class.getResourceAsStream(path)),
+            StandardCharsets.UTF_8));
   }
 
   /**
@@ -293,22 +304,31 @@ public class LanguageDetectorAccuracyTest {
    * @param sampleSize number of substrings to include in the sample
    * @return the sample (a list of strings)
    */
-  private List<String> generateSubstringSample(String text, int substringLength, int sampleSize) {
+  private List<String> sampleText(
+      final String language, final String text, final int substringLength, final int sampleSize) {
     if (substringLength == 0 && sampleSize == 1) {
       return Collections.singletonList(text);
     }
-    if (substringLength > text.trim().length()) {
-      throw new IllegalArgumentException("Provided text is too short.");
+
+    final int textLength = text.trim().length();
+    if (substringLength > textLength) {
+      final String template =
+          "Provided [%s] text [%s] length %s is too short for the requested substring length %s";
+      throw new IllegalArgumentException(
+          String.format(template, language, text, textLength, substringLength));
     }
-    Random rnd = new Random(Objects.hash(text, substringLength, sampleSize));
-    List<String> sample = new ArrayList<>(sampleSize);
-    while (sample.size() < sampleSize) {
-      int startIndex = rnd.nextInt(text.length() - substringLength + 1);
-      String substring = text.substring(startIndex, startIndex + substringLength);
+
+    final int seed = Objects.hash(text, substringLength, sampleSize);
+    final Random rnd = new Random(seed);
+    final List<String> sampledTexts = new ArrayList<>(sampleSize);
+
+    while (sampledTexts.size() < sampleSize) {
+      int startIndex = rnd.nextInt(textLength - substringLength + 1);
+      final String substring = text.substring(startIndex, startIndex + substringLength);
       if (!substring.trim().isEmpty()) {
-        sample.add(substring);
+        sampledTexts.add(substring);
       }
     }
-    return sample;
+    return sampledTexts;
   }
 }
