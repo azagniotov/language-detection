@@ -113,8 +113,9 @@ public class LanguageDetectorAccuracyTest {
   @BeforeClass
   public static void setUp() throws IOException {
     allDatasets = new HashMap<>();
-    allDatasets.put("udhr", readDataset("/udhr.tsv"));
-    allDatasets.put("wordpress-translations", readDataset("/wordpress-translations.tsv"));
+    allDatasets.put("udhr", readDataset("/datasets/udhr.tsv"));
+    allDatasets.put("tatoeba", readDataset("/datasets/tatoeba-mixed.tsv"));
+    allDatasets.put("wordpress-translations", readDataset("/datasets/wordpress-translations.tsv"));
 
     final File directory = new File(ACCURACY_REPORT_HOME);
     if (!directory.exists()) {
@@ -183,7 +184,7 @@ public class LanguageDetectorAccuracyTest {
       }
       final double accuracy = correctDetections / (allLanguageTexts.size() * sampleSize);
       languageToDetectedAccuracy.put(targetLanguage, accuracy);
-      System.out.printf("Detected accuracy: %s = %s%n", targetLanguage, accuracy);
+      // System.out.printf("Detected accuracy: %s = %s%n", targetLanguage, accuracy);
     }
 
     assertEquals(languageToExpectedAccuracy.size(), languageToDetectedAccuracy.size());
