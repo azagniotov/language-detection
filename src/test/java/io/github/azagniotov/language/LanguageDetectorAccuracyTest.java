@@ -149,11 +149,11 @@ public class LanguageDetectorAccuracyTest {
       }
     }
 
-    final LanguageDetectionSettings testSettings =
+    final LanguageDetectionSettings configuredSettings =
         LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
             .withProfile(profile.equals("default") ? "" : profile)
             .build();
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(testSettings);
+    final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
     final LanguageDetector languageDetector =
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
@@ -161,25 +161,29 @@ public class LanguageDetectorAccuracyTest {
             MAX_NGRAM_LENGTH);
 
     final Map<String, List<String>> languageToFullTexts = allDatasets.get(dataset);
-    final Set<String> targetDatasetLanguage = new TreeSet<>(languageToFullTexts.keySet());
-    targetDatasetLanguage.retainAll(factory.getSupportedIsoCodes639_1());
+    final Set<String> datasetTargetLanguages = new TreeSet<>(languageToFullTexts.keySet());
+
+    // Based on what language codes we passed in the setting,
+    // we want to make sure that our target dataset has the same languages
+    datasetTargetLanguages.retainAll(configuredSettings.getIsoCodes639_1());
 
     // Classify the texts and calculate the accuracy for each language
     final Map<String, Double> languageToDetectedAccuracy =
-        new HashMap<>(targetDatasetLanguage.size());
-    for (final String language : targetDatasetLanguage) {
+        new HashMap<>(datasetTargetLanguages.size());
+
+    for (final String targetLanguage : datasetTargetLanguages) {
       double correctDetections = 0;
-      final List<String> languageFullTexts = languageToFullTexts.get(language);
-      for (final String text : languageFullTexts) {
-        for (String substring : sampleText(language, text, substringLength, sampleSize)) {
-          if (Objects.equals(getTopLanguageCode(languageDetector, substring), language)) {
+      final List<String> allLanguageTexts = languageToFullTexts.get(targetLanguage);
+      for (final String fullText : allLanguageTexts) {
+        for (String substring : sampleText(targetLanguage, fullText, substringLength, sampleSize)) {
+          if (Objects.equals(getTopLanguageCode(languageDetector, substring), targetLanguage)) {
             correctDetections++;
           }
         }
       }
-      final double accuracy = correctDetections / (languageFullTexts.size() * sampleSize);
-      languageToDetectedAccuracy.put(language, accuracy);
-      System.out.printf("Detected accuracy: %s = %s%n", language, accuracy);
+      final double accuracy = correctDetections / (allLanguageTexts.size() * sampleSize);
+      languageToDetectedAccuracy.put(targetLanguage, accuracy);
+      System.out.printf("Detected accuracy: %s = %s%n", targetLanguage, accuracy);
     }
 
     assertEquals(languageToExpectedAccuracy.size(), languageToDetectedAccuracy.size());
