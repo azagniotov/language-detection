@@ -41,9 +41,11 @@ import org.junit.runners.Parameterized;
 public class LanguageDetectorAccuracyTest {
 
   private static final double ACCURACY_DELTA = 1e-6;
+
   private static final String ALL_LANGUAGES =
       "af,ar,bg,bn,ca,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,kn,ko,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
-          + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
+          + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,yi,zh-cn,zh-tw";
+
   private static final String OLD_DEFAULT_LANGUAGES =
       "ar,bg,bn,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,ko,lt,lv,mk,ml,nl,no,pa,pl,pt,ro,ru,sq,sv,ta,"
           + "te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
@@ -159,12 +161,13 @@ public class LanguageDetectorAccuracyTest {
             MAX_NGRAM_LENGTH);
 
     final Map<String, List<String>> languageToFullTexts = allDatasets.get(dataset);
-    final Set<String> testedLanguages = new TreeSet<>(languageToFullTexts.keySet());
-    testedLanguages.retainAll(testSettings.getIsoCodes639_1());
+    final Set<String> targetDatasetLanguage = new TreeSet<>(languageToFullTexts.keySet());
+    targetDatasetLanguage.retainAll(factory.getSupportedIsoCodes639_1());
 
     // Classify the texts and calculate the accuracy for each language
-    final Map<String, Double> languageToDetectedAccuracy = new HashMap<>(testedLanguages.size());
-    for (final String language : testedLanguages) {
+    final Map<String, Double> languageToDetectedAccuracy =
+        new HashMap<>(targetDatasetLanguage.size());
+    for (final String language : targetDatasetLanguage) {
       double correctDetections = 0;
       final List<String> languageFullTexts = languageToFullTexts.get(language);
       for (final String text : languageFullTexts) {
