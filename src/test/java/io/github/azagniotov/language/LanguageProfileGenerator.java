@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static java.util.Collections.nCopies;
 import static org.junit.Assert.assertEquals;
 
@@ -17,6 +18,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,12 +31,21 @@ public class LanguageProfileGenerator {
   // ~12–16 bytes for the array object overhead
   // Memory usage for each chunk is: ~ 32 KB + 20–24 bytes
   private static final int CHUNK_SIZE = 16384;
-  private static final int MAX_GRAM_SIZE = 5;
+  private static final int MAX_GRAM_SIZE = 3;
+
+  // Matches anything that is NOT Hiragana, Katakana, Kanji, Full-width characters or numbers
+  // \\x{FF10}-\\x{FF19}: Matches full-width Arabic digits (０１２３４５６７８９).
+  // \\x{FF21}-\\x{FF3A}: Matches full-width Latin uppercase letters (ＡＢＣＤＥ...).
+  // \\x{FF41}-\\x{FF5A}: Matches full-width Latin lowercase letters (ａｂｃｄｅ...).
+  // Cleans-up this "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ ä, ö, ü, and ß á, à, è, é, û, ù,"
+  private static final String regex =
+      "[^\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}\\d\\x{FF10}-\\x{FF19}\\x{FF21}-\\x{FF3A}\\x{FF41}-\\x{FF5A}]";
+  private static final Pattern PATTERN_ANYTHING_NON_JAPANESE = Pattern.compile(regex);
 
   @Test
   @Ignore
   public void generateProfile() throws Exception {
-    final String targetCode = "en";
+    final String targetCode = "ja";
     final String sourcePath =
         String.format("/Users/azagniotov/Documents/data/%swiki/extracted/AA", targetCode);
 
@@ -98,7 +110,12 @@ public class LanguageProfileGenerator {
         if (bytesRead == -1) {
           break;
         }
-        languageProfile.update(new String(buffer, 0, bytesRead), MAX_GRAM_SIZE);
+        final String input = new String(buffer, 0, bytesRead);
+        if (languageProfile.getIsoCode639_1().equals("ja")) {
+          languageProfile.update(sanitizeForJapanese(input), MAX_GRAM_SIZE);
+        } else {
+          languageProfile.update(input, MAX_GRAM_SIZE);
+        }
       }
     }
   }
@@ -112,5 +129,24 @@ public class LanguageProfileGenerator {
     try (final FileWriter writer = new FileWriter(childResourcesDirFile)) {
       writer.write(json);
     }
+  }
+
+  private String sanitizeForJapanese(final String input) {
+    final Matcher matcher = PATTERN_ANYTHING_NON_JAPANESE.matcher(input);
+    final StringBuilder result = new StringBuilder();
+    while (matcher.find()) {
+      // It is recommended to avoid using .replaceAll when replacing
+      // matches with a blank space, as this method generates a new
+      // intermediate string for each replacement, which can be costly
+      // in terms of both time and memory. In contrast, for scenarios
+      // involving frequent replacements or processing large strings,
+      // the Matcher approach used here is typically far more efficient
+      // as it minimizes the overhead associated with string creation
+      // and reduces memory consumption.
+      matcher.appendReplacement(result, EMPTY_STRING);
+    }
+    matcher.appendTail(result);
+
+    return result.toString().trim();
   }
 }

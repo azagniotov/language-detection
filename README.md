@@ -41,74 +41,74 @@ The precision is over **99%** for **64** languages. See the following PR descrip
 
 ### Supported ISO 639-1 codes
 
-The following is a list of ISO 639-1 languages code recognized:
+The following is a list of ISO 639-1 languages code supported by the library:
 
-| ISO 639-1 | Description           |
-|-----------|-----------------------|
-| af        | Afrikaans             |
-| sq        | Albanian              |
-| ar        | Arabic                |
-| hy        | Armenian              |
-| az        | Azerbaijani           |
-| eu        | Basque                |
-| bn        | Bengali               |
-| br        | Breton                |
-| bg        | Bulgarian             |
-| ca        | Catalan               |
-| zh-cn     | Chinese (Simplified)  |
-| zh-tw     | Chinese (Traditional) |
-| hr        | Croatian              |
-| cs        | Czech                 |
-| da        | Danish                |
-| nl        | Dutch                 |
-| en        | English               |
-| et        | Estonian              |
-| fa        | Farsi                 |
-| fi        | Finnish               |
-| fr        | French                |
-| ka        | Georgian              |
-| de        | German                |
-| el        | Greek                 |
-| gu        | Gujarati              |
-| he        | Hebrew                |
-| hi        | Hindi                 |
-| hu        | Hungarian             |
-| id        | Indonesian            |
-| ga        | Irish                 |
-| it        | Italian               |
-| ja        | Japanese              |
-| kn        | Kannada               |
-| ko        | Korean                |
-| lv        | Latvian               |
-| lt        | Lithuanian            |
-| lb        | Luxembourgish         |
-| mk        | Macedonian            |
-| ml        | Malayalam             |
-| mr        | Marathi               |
-| ne        | Nepali                |
-| no        | Norwegian             |
-| pl        | Polish                |
-| pt        | Portuguese            |
-| pa        | Punjabi (Eastern)     |
-| ro        | Romanian              |
-| ru        | Russian               |
-| si        | Sinhalese             |
-| sk        | Slovak                |
-| sl        | Slovene               |
-| so        | Somali                |
-| es        | Spanish               |
-| sw        | Swahili               |
-| sv        | Swedish               |
-| tl        | Tagalog               |
-| ta        | Tamil                 |
-| te        | Telugu                |
-| th        | Thai                  |
-| tr        | Turkish               |
-| uk        | Ukrainian             |
-| ur        | Urdu                  |
-| vi        | Vietnamese            |
-| yi        | Yiddish               |
-| cy        | Welsh                 |
+| Language name    | ISO 639-1 |
+|------------------|-----------|
+| Afrikaans        | af        |
+| Albanian         | sq        |
+| Arabic           | ar        |
+| Armenian         | hy        |
+| Azerbaijani      | az        |
+| Bangla           | bn        |
+| Basque           | eu        |
+| Breton           | br        |
+| Bulgarian        | bg        |
+| Catalan          | ca        |
+| Chinese (China)  | zh-cn     |
+| Chinese (Taiwan) | zh-tw     |
+| Croatian         | hr        |
+| Czech            | cs        |
+| Danish           | da        |
+| Dutch            | nl        |
+| English          | en        |
+| Estonian         | et        |
+| Filipino         | tl        |
+| Finnish          | fi        |
+| French           | fr        |
+| Georgian         | ka        |
+| German           | de        |
+| Greek            | el        |
+| Gujarati         | gu        |
+| Hebrew           | he        |
+| Hindi            | hi        |
+| Hungarian        | hu        |
+| Indonesian       | id        |
+| Irish            | ga        |
+| Italian          | it        |
+| Japanese         | ja        |
+| Kannada          | kn        |
+| Korean           | ko        |
+| Latvian          | lv        |
+| Lithuanian       | lt        |
+| Luxembourgish    | lb        |
+| Macedonian       | mk        |
+| Malayalam        | ml        |
+| Marathi          | mr        |
+| Nepali           | ne        |
+| Norwegian        | no        |
+| Persian          | fa        |
+| Polish           | pl        |
+| Portuguese       | pt        |
+| Punjabi          | pa        |
+| Romanian         | ro        |
+| Russian          | ru        |
+| Sinhala          | si        |
+| Slovak           | sk        |
+| Slovenian        | sl        |
+| Somali           | so        |
+| Spanish          | es        |
+| Swahili          | sw        |
+| Swedish          | sv        |
+| Tamil            | ta        |
+| Telugu           | te        |
+| Thai             | th        |
+| Turkish          | tr        |
+| Ukrainian        | uk        |
+| Urdu             | ur        |
+| Vietnamese       | vi        |
+| Welsh            | cy        |
+| Yiddish          | yi        |
 
 ### Model parameters
 
