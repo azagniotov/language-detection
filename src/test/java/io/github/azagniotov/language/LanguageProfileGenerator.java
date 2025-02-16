@@ -42,6 +42,14 @@ public class LanguageProfileGenerator {
       return;
     }
 
+    final File directory = new File("src/main/resources/langdetect/high-accuracy");
+    if (!directory.exists()) {
+      boolean mkdirs = directory.mkdirs(); // Create the directory if it doesn't exist
+      if (mkdirs) {
+        System.out.println("Created high-accuracy directory");
+      }
+    }
+
     final List<Double> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0).toArray(new Double[0]));
     final LanguageProfile languageProfile =
         new LanguageProfile(targetCode, new HashMap<>(), nWords);
@@ -53,10 +61,7 @@ public class LanguageProfileGenerator {
     System.out.println(".getNGramCounts(): " + languageProfile.getNGramCounts() + "\n");
 
     final String languageProfileJson = languageProfile.toJson();
-
-    writeProfile("langdetect", targetCode, languageProfileJson);
-    writeProfile("langdetect/short-text", targetCode, languageProfileJson);
-    writeProfile("langdetect/merged-average", targetCode, languageProfileJson);
+    writeProfile("high-accuracy", targetCode, languageProfileJson);
 
     assertEquals("apples", "apples");
   }
@@ -88,8 +93,11 @@ public class LanguageProfileGenerator {
         final BufferedReader reader = new BufferedReader(inputStreamReader)) {
 
       final char[] buffer = new char[CHUNK_SIZE];
-      int bytesRead;
-      while ((bytesRead = reader.read(buffer)) != -1) {
+      while (true) {
+        final int bytesRead = reader.read(buffer);
+        if (bytesRead == -1) {
+          break;
+        }
         languageProfile.update(new String(buffer, 0, bytesRead), MAX_GRAM_SIZE);
       }
     }
@@ -97,7 +105,7 @@ public class LanguageProfileGenerator {
 
   private void writeProfile(final String path, final String targetCode, final String json)
       throws IOException {
-    final String resourcesRoot = "src/main/resources";
+    final String resourcesRoot = "src/main/resources/langdetect";
     final File childResourcesDir = new File(resourcesRoot + "/" + path);
     final File childResourcesDirFile = new File(childResourcesDir, targetCode);
 
