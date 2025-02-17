@@ -1,5 +1,7 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.COMMA_CHAR;
+import static io.github.azagniotov.language.StringConstants.TAB_CHAR;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static org.junit.Assert.assertEquals;
@@ -34,6 +36,8 @@ import org.junit.runners.Parameterized;
  * This class tests classification accuracy on various datasets and parameters, as specified in the
  * accuracies.csv resource file.
  *
+ * <p>
+ *
  * <p>Original author and ideas: By @yanirs, <a
  * href="https://github.com/jprante/elasticsearch-langdetect/pull/69">https://github.com/jprante/elasticsearch-langdetect/pull/69</a>
  */
@@ -42,6 +46,10 @@ public class LanguageDetectorAccuracyTest {
 
   private static final double ACCURACY_DELTA = 1e-6;
 
+  private static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it";
+
+  // To disable a language from being evaluated, we need to set its
+  // probability in the CSV as NaN. Then, it will be filtered out.
   private static final String ALL_LANGUAGES =
       "af,ar,bg,bn,ca,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,kn,ko,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
           + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,yi,zh-cn,zh-tw";
@@ -56,8 +64,6 @@ public class LanguageDetectorAccuracyTest {
       "ar,bg,bn,ca,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,ko,lt,lv,mk,ml,nl,no,pa,pl,pt,ro,ru,si,sq,"
           + "sv,ta,te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
 
-  private static final String TAB_CHARACTER = "\t";
-  private static final String COMMA_CHARACTER = ",";
   private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
   private static final String ACCURACY_REPORT_PATH_TEMPLATE =
       ACCURACY_REPORT_HOME + "/accuracy-report-%s.csv";
@@ -114,7 +120,8 @@ public class LanguageDetectorAccuracyTest {
   public static void setUp() throws IOException {
     allDatasets = new HashMap<>();
     allDatasets.put("udhr", readDataset("/datasets/udhr.tsv"));
-    allDatasets.put("tatoeba", readDataset("/datasets/tatoeba-mixed.tsv"));
+    allDatasets.put("tatoeba", readDataset("/datasets/tatoeba-short-sentences.tsv"));
+    allDatasets.put("tatoeba-mixed", readDataset("/datasets/tatoeba-mixed-sentences.tsv"));
     allDatasets.put("wordpress-translations", readDataset("/datasets/wordpress-translations.tsv"));
 
     final File directory = new File(ACCURACY_REPORT_HOME);
@@ -137,23 +144,17 @@ public class LanguageDetectorAccuracyTest {
   /** Run the test according to the parameters passed to the constructor. */
   @Test
   public void simulation() throws Exception {
-
-    String languageCodes = OLD_DEFAULT_LANGUAGES;
-    if (useAllLanguages) {
-      if (profile.equals("default")) {
-        languageCodes = ALL_DEFAULT_PROFILE_LANGUAGES;
-      } else if (profile.equals("short-text")) {
-        languageCodes = ALL_SHORT_PROFILE_LANGUAGES;
-      } else {
-        assertEquals(profile, "merged-average");
-        languageCodes = ALL_LANGUAGES;
-      }
-    }
+    final String languageCodes = configureProfileDependentLanguageCodes();
+    final String canonicalProfile =
+        profile.equals("default")
+            ? ""
+            : profile.equals("small-lang-subset") ? "merged-average" : profile;
 
     final LanguageDetectionSettings configuredSettings =
         LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
-            .withProfile(profile.equals("default") ? "" : profile)
+            .withProfile(canonicalProfile)
             .build();
+
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
     final LanguageDetector languageDetector =
         new LanguageDetector(
@@ -187,6 +188,8 @@ public class LanguageDetectorAccuracyTest {
       // System.out.printf("Detected accuracy: %s = %s%n", targetLanguage, accuracy);
     }
 
+    // To disable a language from being evaluated, we need to set its
+    // probability in the CSV as NaN. Then, it will be filtered out.
     assertEquals(languageToExpectedAccuracy.size(), languageToDetectedAccuracy.size());
 
     // Generate accuracy report regardless of the upcoming assertions
@@ -201,6 +204,31 @@ public class LanguageDetectorAccuracyTest {
     }
   }
 
+  private String configureProfileDependentLanguageCodes() {
+    String languageCodes = OLD_DEFAULT_LANGUAGES;
+    // This decision tree has been created by the original author,
+    // @yanirs, who wanted to distinguish which set of languages to use.
+    // This can be splified, but I am keeping this for posterity.
+    //
+    // Any new language configuration that will be added to the
+    // accuracies.csv will not be a part of the following decision tree.
+    if (useAllLanguages) {
+      if (profile.equals("default")) {
+        languageCodes = ALL_DEFAULT_PROFILE_LANGUAGES;
+      } else if (profile.equals("short-text")) {
+        languageCodes = ALL_SHORT_PROFILE_LANGUAGES;
+      } else {
+        languageCodes = ALL_LANGUAGES;
+      }
+    }
+
+    // The following profiles were not a part of @yanirs's work.
+    if (profile.equals("small-lang-subset")) {
+      languageCodes = SMALL_LANG_SUBSET;
+    }
+    return languageCodes;
+  }
+
   private void writeAccuracyReport(Map<String, Double> languageToDetectedAccuracy)
       throws IOException {
     final List<String> row = new ArrayList<>();
@@ -212,12 +240,12 @@ public class LanguageDetectorAccuracyTest {
         String.valueOf(sampleSize),
         String.valueOf(useAllLanguages));
 
-    for (final String language : ALL_LANGUAGES.split(COMMA_CHARACTER)) {
+    for (final String language : ALL_LANGUAGES.split(COMMA_CHAR)) {
       row.add(languageToDetectedAccuracy.getOrDefault(language, Double.NaN).toString());
     }
     Files.write(
         Path.of(ACCURACY_REPORT_NAME),
-        Collections.singletonList(String.join(COMMA_CHARACTER, row)),
+        Collections.singletonList(String.join(COMMA_CHAR, row)),
         StandardCharsets.UTF_8,
         StandardOpenOption.APPEND);
   }
@@ -236,8 +264,7 @@ public class LanguageDetectorAccuracyTest {
       bufferedReader.readLine();
       while (bufferedReader.ready()) {
         final String line = bufferedReader.readLine();
-        final Scanner scanner =
-            new Scanner(line).useLocale(Locale.US).useDelimiter(COMMA_CHARACTER);
+        final Scanner scanner = new Scanner(line).useLocale(Locale.US).useDelimiter(COMMA_CHAR);
         data.add(
             new Object[] {
               // dataset
@@ -255,8 +282,11 @@ public class LanguageDetectorAccuracyTest {
             });
 
         final Map<String, Double> expectedAccuraciesPerLanguage = new HashMap<>();
-        for (String language : ALL_LANGUAGES.split(COMMA_CHARACTER)) {
+        for (String language : ALL_LANGUAGES.split(COMMA_CHAR)) {
           double expectedAccuracy = scanner.nextDouble();
+
+          // To disable a language from being evaluated, we need to set its
+          // probability in the CSV as NaN. Then, it will be filtered out.
           if (!Double.isNaN(expectedAccuracy)) {
             expectedAccuraciesPerLanguage.put(language, expectedAccuracy);
           }
@@ -280,7 +310,7 @@ public class LanguageDetectorAccuracyTest {
 
     try (final BufferedReader bufferedReader = getResourceReader(path)) {
       while (bufferedReader.ready()) {
-        final String[] csvLineChunks = bufferedReader.readLine().split(TAB_CHARACTER);
+        final String[] csvLineChunks = bufferedReader.readLine().split(TAB_CHAR);
         final String language = csvLineChunks[0];
         final String textSubstring = csvLineChunks[1];
 
@@ -307,32 +337,37 @@ public class LanguageDetectorAccuracyTest {
    * return the same sample.
    *
    * @param text the text from which the substring sample is drawn
-   * @param substringLength length of each generated substring (set to zero to return a singleton
-   *     list with the text -- sampleSize must be 1 in this case)
+   * @param configuredSubstringLength length of each generated substring (set to zero to return a
+   *     singleton list with the text -- sampleSize must be 1 in this case)
    * @param sampleSize number of substrings to include in the sample
    * @return the sample (a list of strings)
    */
   private List<String> sampleText(
-      final String language, final String text, final int substringLength, final int sampleSize) {
-    if (substringLength == 0 && sampleSize == 1) {
+      final String language,
+      final String text,
+      final int configuredSubstringLength,
+      final int sampleSize) {
+    if (configuredSubstringLength == 0 && sampleSize == 1) {
       return Collections.singletonList(text);
     }
 
     final int textLength = text.trim().length();
-    if (substringLength > textLength) {
-      final String template =
-          "Provided [%s] text [%s] length %s is too short for the requested substring length %s";
-      throw new IllegalArgumentException(
-          String.format(template, language, text, textLength, substringLength));
-    }
+    final int minSubstringLength = Math.min(textLength, configuredSubstringLength);
+    //    if (configuredSubstringLength > textLength) {
+    //      final String template =
+    //          "Provided [%s] text [%s] length %s is too short for the requested substring length
+    // %s";
+    //      throw new IllegalArgumentException(
+    //          String.format(template, language, text, textLength, configuredSubstringLength));
+    //    }
 
-    final int seed = Objects.hash(text, substringLength, sampleSize);
+    final int seed = Objects.hash(text, minSubstringLength, sampleSize);
     final Random rnd = new Random(seed);
     final List<String> sampledTexts = new ArrayList<>(sampleSize);
 
     while (sampledTexts.size() < sampleSize) {
-      int startIndex = rnd.nextInt(textLength - substringLength + 1);
-      final String substring = text.substring(startIndex, startIndex + substringLength);
+      int startIndex = rnd.nextInt(textLength - minSubstringLength + 1);
+      final String substring = text.substring(startIndex, startIndex + minSubstringLength);
       if (!substring.trim().isEmpty()) {
         sampledTexts.add(substring);
       }
