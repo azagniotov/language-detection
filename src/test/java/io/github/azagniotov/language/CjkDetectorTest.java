@@ -2,6 +2,8 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.CjkDecision.DECISION_CHINESE;
 import static io.github.azagniotov.language.CjkDecision.DECISION_JAPANESE;
+import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
+import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -40,8 +42,8 @@ public class CjkDetectorTest {
   @Test
   public void shouldNotDetectInputAsJapanese() throws Exception {
     assertNotEquals(CjkDetector.decide(s(null), DEFAULT_THRESHOLD), DECISION_JAPANESE);
-    assertNotEquals(CjkDetector.decide(s(""), DEFAULT_THRESHOLD), DECISION_JAPANESE);
-    assertNotEquals(CjkDetector.decide(s(" "), DEFAULT_THRESHOLD), DECISION_JAPANESE);
+    assertNotEquals(CjkDetector.decide(s(EMPTY_STRING), DEFAULT_THRESHOLD), DECISION_JAPANESE);
+    assertNotEquals(CjkDetector.decide(s(BLANK_SPACE), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(s("               "), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(s("     7         "), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(s("東京に行き"), 0), DECISION_JAPANESE);
@@ -109,8 +111,8 @@ public class CjkDetectorTest {
   @Test
   public void shouldNotDetectInputAsChinese() throws Exception {
     assertNotEquals(CjkDetector.decide(s(null), DEFAULT_THRESHOLD), DECISION_CHINESE);
-    assertNotEquals(CjkDetector.decide(s(""), DEFAULT_THRESHOLD), DECISION_CHINESE);
-    assertNotEquals(CjkDetector.decide(s(" "), DEFAULT_THRESHOLD), DECISION_CHINESE);
+    assertNotEquals(CjkDetector.decide(s(EMPTY_STRING), DEFAULT_THRESHOLD), DECISION_CHINESE);
+    assertNotEquals(CjkDetector.decide(s(BLANK_SPACE), DEFAULT_THRESHOLD), DECISION_CHINESE);
     assertNotEquals(CjkDetector.decide(s("爱云发见"), 0), DECISION_CHINESE);
     assertNotEquals(CjkDetector.decide(s("爱云发见"), -0.1), DECISION_CHINESE);
 
