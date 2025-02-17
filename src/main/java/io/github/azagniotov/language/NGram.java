@@ -27,6 +27,10 @@ import java.util.regex.Pattern;
 class NGram {
 
   private static final Map<Character, Character> CJK_CHAR_TO_CHAR_MAP = new HashMap<>();
+  // Unicode BMP (Basic Multilingual Plane) lookup.
+  // Character.MAX_VALUE has the Unicode code point U+FFFF, which is
+  // the largest value of type char in Java (which uses UTF-16 encoding).
+  private static final char[] NORMALIZED_BMP_CHARS = new char[Character.MAX_VALUE + 1];
 
   static final int UNI_GRAM_LENGTH = 1;
 
@@ -175,6 +179,14 @@ class NGram {
         CJK_CHAR_TO_CHAR_MAP.put(cjk_list.charAt(i), representative);
       }
     }
+
+    //  Character.MAX_VALUE has the Unicode code point U+FFFF, which is the highest
+    //  valid character code point for a char in Java (which uses UTF-16 encoding).
+    for (int codePoint = 0; codePoint <= Character.MAX_VALUE; codePoint++) {
+      final char originalChar = (char) codePoint;
+      final char normalizedChar = normalizeOriginal(originalChar);
+      NORMALIZED_BMP_CHARS[originalChar] = normalizedChar;
+    }
   }
 
   private final int maxNGramLength;
@@ -188,7 +200,11 @@ class NGram {
     capitalWord = false;
   }
 
-  static char normalize(char ch) {
+  static char normalize(char c) {
+    return NORMALIZED_BMP_CHARS[c];
+  }
+
+  private static char normalizeOriginal(char ch) {
     UnicodeBlock block = UnicodeBlock.of(ch);
     if (block == BASIC_LATIN) {
       if (ch < 'A' || (ch < 'a' && ch > 'Z') || ch > 'z') {

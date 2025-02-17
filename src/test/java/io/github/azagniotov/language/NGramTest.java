@@ -5,10 +5,18 @@ import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /** */
 public class NGramTest {
+
+  @BeforeClass
+  public static void setUp() throws IOException {
+    // Warm-up for the static initializers
+    NGram.normalize('\u0000');
+  }
 
   @Test
   public final void testConstants() {
