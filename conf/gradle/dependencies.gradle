@@ -15,6 +15,6 @@
  */
 
 dependencies {
-    api "com.google.code.gson:gson:${gsonVersion}"
+    implementation "com.google.code.gson:gson:${gsonVersion}"
     testImplementation "junit:junit:${junitVersion}"
 }
