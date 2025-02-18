@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
-import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,44 +141,10 @@ class LanguageDetector {
    *
    * @return n-grams list
    */
-  private List<String> extractNGrams(final String input) {
-    final NGram ngram = new NGram(this.maxNGramLength);
+  List<String> extractNGrams(final String input) {
+    final NGram ngram = new NGram(input, this.maxNGramLength);
 
-    // Unneccessary resizing of the ArrayList when adding many n-grams.
-    //
-    // To avoid unneccessary resizing of the ArrayList we can pre-allocated it, since
-    // we can estimate of the number of n-grams based on the given input length. To get
-    // the number of n-grams, we sum the possibilities for each value of N:
-    //
-    // For N = 1: we can create 1-gram by picking any single character from the string.
-    // For N = 2: we can create 2-gram by picking any consecutive pair of
-    //            characters. For a string of length N, the number of possible 2-gram
-    //            is N - 1 because the last position can't start a 2-gram.
-    // For N = 3: we can create 3-gram by picking any consecutive triplet of
-    //            characters. For a string of length N, the number of possible 3-gram
-    //            is N - 2 because the last two positions can't start a 3-gram.
-    //
-    // The formula:
-    // Total n-grams = N + (N − 1) + (N − 2) => Total n-grams = 3N - 3
-    final int projectedTotalNGrams = this.maxNGramLength * input.length() - this.maxNGramLength;
-    final List<String> extractedNWords = new ArrayList<>(projectedTotalNGrams);
-
-    for (int idx = 0; idx < input.length(); ++idx) {
-      ngram.addChar(input.charAt(idx));
-
-      for (int n = UNI_GRAM_LENGTH; n <= ngram.getMaxNGramLength(); ++n) {
-        final String word = ngram.get(n);
-        if (word.isEmpty()) {
-          continue;
-        }
-
-        if (languageCorporaProbabilities.containsKey(word)) {
-          extractedNWords.add(word);
-        }
-      }
-    }
-
-    return extractedNWords;
+    return ngram.extractNGrams(languageCorporaProbabilities.keySet());
   }
 
   /**

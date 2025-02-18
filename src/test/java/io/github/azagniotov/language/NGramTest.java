@@ -6,6 +6,9 @@ import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGT
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -25,7 +28,7 @@ public class NGramTest {
 
   @Test
   public final void testDefaultValue() {
-    final NGram ngram = new NGram(7);
+    final NGram ngram = new NGram("input", 7);
     assertEquals(ngram.getMaxNGramLength(), 7);
   }
 
@@ -142,7 +145,7 @@ public class NGramTest {
   /** Test method for {@link NGram#get(int)} and {@link NGram#addChar(char)}. */
   @Test
   public final void testNGram() {
-    final NGram ngram = new NGram(MAX_NGRAM_LENGTH);
+    final NGram ngram = new NGram("input", MAX_NGRAM_LENGTH);
     assertEquals(ngram.get(0), EMPTY_STRING);
     assertEquals(ngram.get(1), EMPTY_STRING);
     assertEquals(ngram.get(2), EMPTY_STRING);
@@ -198,6 +201,18 @@ public class NGramTest {
     assertEquals(ngram.get(1), "a");
     assertEquals(ngram.get(2), " a");
     assertEquals(ngram.get(3), EMPTY_STRING);
+  }
+
+  @Test
+  public final void testExtractNGrams() {
+    final NGram ngram = new NGram("A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a", MAX_NGRAM_LENGTH);
+    final Set<String> allowlist =
+        Set.of("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a");
+    final List<String> extractedNGrams = ngram.extractNGrams(allowlist);
+
+    assertEquals(
+        extractedNGrams,
+        Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
   }
 
   /** Test method for {@link NGram#normalize(char)} with Romanian characters. */

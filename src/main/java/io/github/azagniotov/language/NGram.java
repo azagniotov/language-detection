@@ -19,8 +19,11 @@ import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_ADDITIONAL;
 import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_B;
 
 import java.lang.Character.UnicodeBlock;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -189,6 +192,7 @@ class NGram {
     }
   }
 
+  private final String input;
   private final int maxNGramLength;
   private final char[] circularBuffer;
   private int nextCircularBufferIdx;
@@ -198,7 +202,8 @@ class NGram {
 
   private boolean capitalWord;
 
-  NGram(final int maxNGramLength) {
+  NGram(String input, final int maxNGramLength) {
+    this.input = input;
     this.maxNGramLength = maxNGramLength;
     this.grams = new StringBuilder(BLANK_SPACE);
     this.capitalWord = false;
@@ -209,6 +214,49 @@ class NGram {
 
   static char normalize(char c) {
     return NORMALIZED_BMP_CHARS[c];
+  }
+
+  /**
+   * Extract n-grams from input text, while fitering the extracted ngrams based on the allow list.
+   *
+   * @return n-grams list
+   */
+  List<String> extractNGrams(final Set<String> allowlist) {
+    // Unneccessary resizing of the ArrayList when adding many n-grams.
+    //
+    // To avoid unneccessary resizing of the ArrayList we can pre-allocated it, since
+    // we can estimate of the number of n-grams based on the given input length. To get
+    // the number of n-grams, we sum the possibilities for each value of N:
+    //
+    // For N = 1: we can create 1-gram by picking any single character from the string.
+    // For N = 2: we can create 2-gram by picking any consecutive pair of
+    //            characters. For a string of length N, the number of possible 2-gram
+    //            is N - 1 because the last position can't start a 2-gram.
+    // For N = 3: we can create 3-gram by picking any consecutive triplet of
+    //            characters. For a string of length N, the number of possible 3-gram
+    //            is N - 2 because the last two positions can't start a 3-gram.
+    //
+    // The formula:
+    // Total n-grams = N + (N − 1) + (N − 2) => Total n-grams = 3N - 3
+    final int projectedTotalNGrams = this.maxNGramLength * input.length() - this.maxNGramLength;
+    final List<String> extractedNWords = new ArrayList<>(projectedTotalNGrams);
+
+    for (int idx = 0; idx < input.length(); ++idx) {
+      addChar(input.charAt(idx));
+
+      for (int n = UNI_GRAM_LENGTH; n <= this.maxNGramLength; ++n) {
+        final String word = get(n);
+        if (word.isEmpty()) {
+          continue;
+        }
+
+        if (allowlist.contains(word)) {
+          extractedNWords.add(word);
+        }
+      }
+    }
+
+    return extractedNWords;
   }
 
   private static char normalizeOriginal(char ch) {
@@ -264,9 +312,7 @@ class NGram {
 
   void addChar(char ch) {
     ch = normalize(ch);
-    int previousIndex =
-        (this.nextCircularBufferIdx + this.maxNGramLength - 1) % this.maxNGramLength;
-    char lastchar = this.circularBuffer[previousIndex];
+    char lastchar = this.circularBuffer[previousOffset(1)];
     if (lastchar == BLANK_CHAR) {
       resetBuffer();
       this.capitalWord = false;
@@ -300,7 +346,7 @@ class NGram {
       return EMPTY_STRING;
     }
 
-    final int offset = (this.nextCircularBufferIdx + this.maxNGramLength - n) % this.maxNGramLength;
+    final int offset = previousOffset(n);
     if (n == UNI_GRAM_LENGTH) {
       char ch = circularBuffer[offset];
       if (ch == BLANK_CHAR) {
@@ -309,25 +355,10 @@ class NGram {
       return Character.toString(ch);
     } else {
       final char[] nGram = new char[n];
-      for (int k = 0; k < n; k++) {
-
-        // We need another modulo operation here:
-        // We have wrapped around in the circular buffer when computing the offset earlier,
-        // but without the following modulo, we will access to the array as if it were a
-        // regular, linear array. The modulo operator is what makes the access circular.
-        //
-        // E.g.: want to extract a 2-gram 'CA' from ['A', 'B', 'C'], we have:
-        // n: 2
-        // maxNGramLength: 3
-        // circularBuffer: ['A', 'B', 'C']
-        // nextCircularBufferIdx: 1
-        // offset = (nextCircularBufferIdx + maxNGramLength - n) % maxNGramLength  = (1 + 3 - 2) % 3
-        // = 2
-        //
-        // Without the % 3, the (1 + 3 - 2) still gives index 2, which is OK, we got 'C'. But,
-        // the next iteration the (2 + 3 - 2) will produce index 3, which does not exist in the
-        // array.
-        nGram[k] = circularBuffer[(offset + k) % this.maxNGramLength];
+      for (int idx = 0; idx < n; idx++) {
+        // We need another modulo operation here because of temp char[] array index,
+        // as we want to avoid access to the buffer as if it were a regular, linear array.
+        nGram[idx] = circularBuffer[(offset + idx) % this.maxNGramLength];
       }
       return new String(nGram);
     }
@@ -338,6 +369,11 @@ class NGram {
     this.circularBuffer[this.nextCircularBufferIdx] = BLANK_CHAR;
     this.nextCircularBufferIdx = (this.nextCircularBufferIdx + 1) % this.maxNGramLength;
     this.circularBufferLength = 1;
+  }
+
+  private int previousOffset(final int relativePastPosition) {
+    return (this.nextCircularBufferIdx + this.maxNGramLength - relativePastPosition)
+        % this.maxNGramLength;
   }
 
   @Deprecated
