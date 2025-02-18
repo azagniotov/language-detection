@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,6 +73,17 @@ public class LanguageDetectorTest {
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MAX_NGRAM_LENGTH);
+  }
+
+  @Test
+  public void shouldExtractExpectedNGrams() throws Exception {
+    assertEquals(
+        DEFAULT_DETECTOR.extractNGrams("alex"),
+        Arrays.asList("a", " a", "l", "al", " al", "e", "le", "ale", "x", "ex", "lex"));
+
+    assertEquals(
+        DEFAULT_DETECTOR.extractNGrams("A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a"),
+        Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
   }
 
   @Test

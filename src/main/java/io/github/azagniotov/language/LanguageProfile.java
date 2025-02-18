@@ -38,6 +38,8 @@ class LanguageProfile {
   private final Map<String, Long> freq;
   private final List<Double> nWords;
 
+  private int maxNGramLength;
+
   /** Create a language profile from a JSON input stream. */
   LanguageProfile(
       final String isoCode639_1, final Map<String, Long> freq, final List<Double> nWords) {
@@ -96,10 +98,11 @@ class LanguageProfile {
     if (input == null) {
       return;
     }
+    this.maxNGramLength = maxNGramLength;
     final String sanitizedInput = filterOutNonWords(input);
     final String normalizedInput = NGram.normalizeVietnamese(sanitizedInput);
+    final NGram gram = new NGram(normalizedInput, maxNGramLength);
 
-    final NGram gram = new NGram(maxNGramLength);
     for (int i = 0; i < normalizedInput.length(); ++i) {
       gram.addChar(normalizedInput.charAt(i));
       for (int n = UNI_GRAM_LENGTH; n <= gram.getMaxNGramLength(); ++n) {
@@ -135,7 +138,7 @@ class LanguageProfile {
     }
 
     // roman check
-    if (roman < nWords.get(0) / 3) {
+    if (roman < nWords.get(0) / this.maxNGramLength) {
       Set<String> keys2 = freq.keySet();
       for (Iterator<String> iterator = keys2.iterator(); iterator.hasNext(); ) {
         String key = iterator.next();
