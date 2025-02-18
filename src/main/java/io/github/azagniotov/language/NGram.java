@@ -190,12 +190,15 @@ class NGram {
       final char normalizedChar = normalizeOriginal(originalChar);
       NORMALIZED_BMP_CHARS[originalChar] = normalizedChar;
     }
+
+    // We do not need this anymore
+    CJK_CHAR_TO_CHAR_MAP.clear();
   }
 
   private final String input;
   private final int maxNGramLength;
   private final char[] circularBuffer;
-  private int nextCircularBufferIdx;
+  private int circularBufferIdx;
   private int circularBufferLength;
 
   @Deprecated private StringBuilder grams;
@@ -323,9 +326,8 @@ class NGram {
       --this.circularBufferLength;
     }
 
-    this.circularBuffer[this.nextCircularBufferIdx] = ch;
-    this.nextCircularBufferIdx = (this.nextCircularBufferIdx + 1) % this.maxNGramLength;
-    ++this.circularBufferLength;
+    this.circularBuffer[this.circularBufferIdx] = ch;
+    incrementCircularBufferIdx();
 
     if (Character.isUpperCase(ch)) {
       if (Character.isUpperCase(lastchar)) {
@@ -365,15 +367,20 @@ class NGram {
   }
 
   private void resetBuffer() {
-    this.nextCircularBufferIdx = 0;
-    this.circularBuffer[this.nextCircularBufferIdx] = BLANK_CHAR;
-    this.nextCircularBufferIdx = (this.nextCircularBufferIdx + 1) % this.maxNGramLength;
+    this.circularBufferIdx = 0;
+    this.circularBuffer[this.circularBufferIdx] = BLANK_CHAR;
+    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.maxNGramLength;
     this.circularBufferLength = 1;
   }
 
   private int previousOffset(final int relativePastPosition) {
-    return (this.nextCircularBufferIdx + this.maxNGramLength - relativePastPosition)
+    return (this.circularBufferIdx + this.maxNGramLength - relativePastPosition)
         % this.maxNGramLength;
+  }
+
+  private void incrementCircularBufferIdx() {
+    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.maxNGramLength;
+    ++this.circularBufferLength;
   }
 
   @Deprecated
