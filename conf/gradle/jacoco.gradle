@@ -1,0 +1,59 @@
+def execData() {
+	return files(fileTree(layout.buildDirectory.get().asFile.absolutePath).include("jacoco/*.exec"))
+}
+
+def static analysisExcludes() {
+	return [
+			"src/generated/**"
+	]
+}
+
+ext {
+	analysisExcludes = this.&analysisExcludes
+}
+
+apply plugin: "jacoco"
+
+jacoco {
+	toolVersion = "${jacocoVersion}"
+}
+
+jacocoTestReport {
+	getExecutionData().setFrom(execData())
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: analysisExcludes())
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	getExecutionData().setFrom(execData())
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: analysisExcludes())
+		}))
+	}
+	violationRules {
+		rule {
+			limit {
+				minimum = new BigDecimal("${coverageMinimum}")
+			}
+		}
+	}
+}
+
+// Ignore IntelliJ warning about registering this task, because it breaks coverage reports:
+task codeCoverageReport(type: JacocoReport) {
+	executionData execData()
+	sourceSets sourceSets.main
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: analysisExcludes())
+		}))
+	}
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}

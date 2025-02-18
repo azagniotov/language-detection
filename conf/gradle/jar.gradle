@@ -15,30 +15,36 @@ def getVersion = { ->
 }
 
 
-project.ext.thirdPartyDependencies = configurations.runtimeClasspath.resolve().findAll { file ->
-	return file.name.contains("gson")
+ext {
+	thirdPartyDependencies = configurations.runtimeClasspath.resolve().findAll { file ->
+		return file.name.contains("gson")
+	}
 }
 
-project.ext.projectManifest = manifest {
-	def manifestClasspath = project.ext.thirdPartyDependencies.collect { it.getName() }.join(',')
-	attributes 'Package': 'io.github.azagniotov.language',
-			'Class-Path': manifestClasspath,
-			'Implementation-Title': "${projectName}",
-			'Implementation-Version': "${getVersion()}",
-			'Implementation-Vendor': 'Alexander Zagniotov',
-			'Built-By': 'Alexander Zagniotov',
-			'Built-Date': DATE_TIME_FORMATTER.format(Instant.now()),
-			'Built-With': "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}",
-			'Created-By': System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')'
+tasks.withType(Jar).configureEach {
+	manifest {
+		def manifestClasspath = thirdPartyDependencies.collect { it.name }.join(',')
+		attributes(
+				"Class-Path": manifestClasspath,
+				"Implementation-Title": project.findProperty("projectName").toString(),
+				"Implementation-Version": getVersion(),
+				"Implementation-Vendor": project.findProperty("projectDeveloperName").toString(),
+				"Built-By": project.findProperty("projectDeveloperName").toString(),
+				"Built-Date": DATE_TIME_FORMATTER.format(Instant.now()),
+				"Built-With": "gradle-${gradle.gradleVersion}, groovy-${GroovySystem.getVersion()}",
+				"Created-By": "${System.getProperty('java.version')} (${System.getProperty('java.vendor')})",
+				"X-Compile-Source-JDK": project.findProperty("libraryJavaVersion").toString(),
+				"X-Compile-Target-JDK": project.findProperty("libraryJavaVersion").toString()
+		)
+	}
 }
 
 jar {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	manifest = project.ext.projectManifest
 	version = getVersion()
 	from sourceSets.main.output
-	from(project.ext.thirdPartyDependencies.collect { zipTree(it) })
+	from(thirdPartyDependencies.collect { zipTree(it) })
 	doLast {
-		println ":" + name + " Packaged the following dependencies: " + project.ext.thirdPartyDependencies.collect { File file -> file.name }
+		println ":" + name + " Packaged the following dependencies: " + thirdPartyDependencies.collect { File file -> file.name }
 	}
 }

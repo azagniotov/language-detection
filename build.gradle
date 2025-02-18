@@ -64,6 +64,7 @@ apply from: "$rootDir/conf/gradle/dependencies.gradle"
 apply from: "$rootDir/conf/gradle/tests.gradle"
 apply from: "$rootDir/conf/gradle/jar.gradle"
 apply from: "$rootDir/conf/gradle/publish.gradle"
+apply from: "$rootDir/conf/gradle/jacoco.gradle"
 
 tasks.register('copyPreCommitHook', Copy) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
