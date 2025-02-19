@@ -13,6 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+testing {
+  suites {
+    test {
+      useJUnit()
+      dependencies {
+        implementation "junit:junit:${junitVersion}"
+      }
+    }
+
+    accuracyTest(JvmTestSuite) {
+      sources {
+        resources {
+          srcDirs += [
+                  "src/main/resources"
+          ]
+        }
+      }
+      useJUnit()
+      dependencies {
+        implementation project()
+        implementation "junit:junit:${junitVersion}"
+      }
+    }
+  }
+}
 
 tasks.withType(Test).configureEach {
   useJUnit()

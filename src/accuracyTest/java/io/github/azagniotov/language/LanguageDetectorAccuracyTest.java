@@ -2,8 +2,6 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.COMMA_CHAR;
 import static io.github.azagniotov.language.StringConstants.TAB_CHAR;
-import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
-import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -45,6 +43,7 @@ import org.junit.runners.Parameterized;
 public class LanguageDetectorAccuracyTest {
 
   private static final double ACCURACY_DELTA = 1e-6;
+  private static final int MAX_NGRAM_LENGTH = 3;
 
   private static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it";
 
@@ -373,5 +372,10 @@ public class LanguageDetectorAccuracyTest {
       }
     }
     return sampledTexts;
+  }
+
+  static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
+    final Language language = languageDetector.detectAll(text).get(0);
+    return language.getIsoCode639_1();
   }
 }
