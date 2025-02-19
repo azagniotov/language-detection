@@ -32,6 +32,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
       * [Formatting](#formatting)
     * [Testing](#testing)
       * [Unit tests](#unit-tests)
+    * [Classification accuracy analysis](#classification-accuracy-analysis)
 <!-- TOC -->
 
 ## About this library
@@ -177,6 +178,8 @@ final String languageCode = language.getIsoCode639_1();
 final double probability = language.getProbability();
 ```
 
+[`Back to top`](#table-of-contents)
+
 ### Methods to build the LanguageDetectionSettings
 
 #### Configuring ISO 639-1 codes
@@ -276,6 +279,8 @@ cp pre-commit .git/hooks
 
 If you forget to do this, there is a Gradle task defined in [build.gradle](./build.gradle) that installs the hook for you.
 
+[`Back to top`](#table-of-contents)
+
 ### Build system
 
 The plugin uses [Gradle](https://gradle.org/) for as a build system.
@@ -304,6 +309,8 @@ The sources will be auto-formatted using Google Java format upon each commit. Bu
 ./gradlew googleJavaFormat
 ```
 
+[`Back to top`](#table-of-contents)
+
 ### Testing
 
 #### Unit tests
@@ -313,6 +320,20 @@ To run unit tests, run the following command:
 ```bash
 ./gradlew test
 ```
+
+[`Back to top`](#table-of-contents)
+
+### Classification accuracy analysis
+
+The classification accuracy analysis help to improve our understanding of how the library performs on texts of various lengths and types, see [src/accuracyTest/java/io/github/azagniotov/language/LanguageDetectorAccuracyTest.java](src/accuracyTest/java/io/github/azagniotov/language/LanguageDetectorAccuracyTest.java)
+
+To run the classification accuracy tests and generate an accuracy report CSV, run the following command:
+
+```bash
+./gradlew clean accuracyTest
+```
+
+The generated report will be found under `build/reports/accuracy/accuracy-report-<UNIX_TIMESTAMP>.csv`
 
 [`Back to top`](#table-of-contents)
 

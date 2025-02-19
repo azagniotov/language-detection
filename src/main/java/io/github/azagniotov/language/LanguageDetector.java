@@ -109,14 +109,18 @@ class LanguageDetector {
 
     for (int t = 0; t < numberOfTrials; ++t) {
       final double[] probabilities = initProbabilies();
-      double a = this.alpha + random.nextGaussian() * alphaWidth;
-      for (int i = 0; ; ++i) {
+      double alphaSmoothing = this.alpha + random.nextGaussian() * alphaWidth;
+
+      for (int i = 0; i <= iterationLimit; ++i) {
         final int randomIdx = random.nextInt(extractedNGrams.size());
-        updateLangProb(probabilities, extractedNGrams.get(randomIdx), a);
-        if (i % 5 == 0 && normalizeProb(probabilities) > convThreshold || i >= iterationLimit) {
+        final String nGram = extractedNGrams.get(randomIdx);
+        updateLangProb(probabilities, nGram, alphaSmoothing);
+
+        if (i % 5 == 0 && normalizeProb(probabilities) > convThreshold) {
           break;
         }
       }
+
       for (int j = 0; j < languageProbabilities.length; ++j) {
         languageProbabilities[j] += probabilities[j] / numberOfTrials;
       }
@@ -208,7 +212,13 @@ class LanguageDetector {
       }
     }
 
-    if (probabilitiesSum[0] == 0) {
+    if (probabilitiesSum[0] == 0 || languages.isEmpty()) {
+      // In certain scenarios, the sum of probabilities could be so low
+      // that it fails to reach a defined threshold. In such cases, the
+      // probability sum might still be greater than zero, but remain
+      // below the threshold. To handle both situations effectively, it
+      // is essential to ensure that we return the ISO 639-3 code "und"
+      // to signify an unknown or undetermined language in these cases.
       languages.add(new Language(ISO_CODE_639_3_UND, ZERO_PROBABILITY));
     }
 
