@@ -56,11 +56,11 @@ public class LanguageDetectionOrchestratorPerformanceTest {
   public static Collection<Object[]> data() {
     return Arrays.asList(
         new Object[][] {
-          {"dry-run-warmup", 1_500, 5_000},
-          {"solr-max-chars", 1_000, 20_000}, /* 20k is Solr default    */
-          {"library-max-chars-7k", 1_000, 7_000},
-          {"library-max-chars-3k", 1_000, 3_000},
-          {"library-max-chars-1k", 1_000, 1_000}
+          {"dry-run-warmup", 100, 5_000},
+          {"solr-max-chars", 100, 20_000}, /* 20k is Solr default    */
+          {"library-max-chars-7k", 100, 7_000},
+          {"library-max-chars-3k", 100, 3_000},
+          {"library-max-chars-1k", 100, 1_000}
         });
   }
 

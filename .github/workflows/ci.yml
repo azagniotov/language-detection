@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [ "11", "21" ]
+        java-version: [ "11", "17", "21" ]
 
     steps:
       - name: Checkout project sources
@@ -38,8 +38,30 @@ jobs:
       - name: Run unit tests
         run: ./gradlew clean test
 
+  accuracy-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v4
+        with:
+          # https://github.com/diffplug/spotless/issues/1242
+          fetch-depth: 0
+
+      - name: Set up Azul Zulu OpenJDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "zulu"
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run accuracy tests
+        run: ./gradlew clean accuracyTest
+
   commit-next-version:
-    needs: build-and-test
+    needs: accuracy-test
     if: github.event_name == 'pull_request'
     permissions:
       contents: write
