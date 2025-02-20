@@ -43,6 +43,7 @@ import org.junit.runners.Parameterized;
 public class LanguageDetectorAccuracyTest {
 
   private static final double ACCURACY_DELTA = 1e-6;
+  private static final int MIN_NGRAM_LENGTH = 1;
   private static final int MAX_NGRAM_LENGTH = 3;
 
   private static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it";
@@ -159,6 +160,7 @@ public class LanguageDetectorAccuracyTest {
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
     final Map<String, List<String>> languageToFullTexts = allDatasets.get(dataset);

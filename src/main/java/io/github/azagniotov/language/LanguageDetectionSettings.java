@@ -20,6 +20,8 @@ public class LanguageDetectionSettings {
   private static final int MAX_TEXT_CHARS_UPPER_BOUND = 20000;
 
   private final String profile;
+  private final int minNGramLength;
+  private final int maxNGramLength;
   private final int maxTextChars;
   private final List<String> isoCodes639_1;
   private final int sanitizeForSearchThreshold;
@@ -31,6 +33,8 @@ public class LanguageDetectionSettings {
 
   private LanguageDetectionSettings(final Builder builder) {
     this.profile = builder.profile;
+    this.minNGramLength = builder.minNGramLength;
+    this.maxNGramLength = builder.maxNGramLength;
     this.maxTextChars = builder.maxTextChars;
     this.isoCodes639_1 = builder.isoCodes639_1;
     this.sanitizeForSearchThreshold = builder.sanitizeForSearchThreshold;
@@ -43,6 +47,14 @@ public class LanguageDetectionSettings {
 
   String getProfile() {
     return profile;
+  }
+
+  int getMinNGramLength() {
+    return minNGramLength;
+  }
+
+  int getMaxNGramLength() {
+    return maxNGramLength;
   }
 
   public int getMaxTextChars() {
@@ -95,6 +107,8 @@ public class LanguageDetectionSettings {
   public static class Builder {
 
     private String profile;
+    private int minNGramLength;
+    private int maxNGramLength;
     private int maxTextChars;
     private List<String> isoCodes639_1;
 
@@ -112,6 +126,8 @@ public class LanguageDetectionSettings {
     private Builder(final List<String> isoCodes639_1) {
       this.isoCodes639_1 = List.copyOf(isoCodes639_1);
       this.profile = "merged-average"; // A name of a subdirectory under the resources
+      this.minNGramLength = 1;
+      this.maxNGramLength = 3;
       this.maxTextChars = 3000;
       this.sanitizeForSearch = true;
       this.sanitizeForSearchThreshold = 128;
@@ -123,6 +139,8 @@ public class LanguageDetectionSettings {
 
     private Builder(final Builder that) {
       this.profile = that.profile;
+      this.minNGramLength = that.minNGramLength;
+      this.maxNGramLength = that.maxNGramLength;
       this.maxTextChars = that.maxTextChars;
       this.isoCodes639_1 = that.isoCodes639_1;
       this.sanitizeForSearch = that.sanitizeForSearch;

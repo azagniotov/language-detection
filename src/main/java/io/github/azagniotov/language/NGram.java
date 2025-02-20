@@ -35,8 +35,6 @@ class NGram {
   // the largest value of type char in Java (which uses UTF-16 encoding).
   private static final char[] NORMALIZED_BMP_CHARS = new char[Character.MAX_VALUE + 1];
 
-  static final int UNI_GRAM_LENGTH = 1;
-
   private static final String[] CJK_CLASS = {
     "\u4F7C\u6934",
     "\u88CF\u95B2",
@@ -196,7 +194,10 @@ class NGram {
   }
 
   private final String input;
+
+  private final int minNGramLength;
   private final int maxNGramLength;
+
   private final char[] circularBuffer;
   private int circularBufferIdx;
   private int circularBufferLength;
@@ -205,8 +206,9 @@ class NGram {
 
   private boolean capitalWord;
 
-  NGram(String input, final int maxNGramLength) {
+  NGram(final String input, final int minNGramLength, final int maxNGramLength) {
     this.input = input;
+    this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
     this.grams = new StringBuilder(BLANK_SPACE);
     this.capitalWord = false;
@@ -247,7 +249,7 @@ class NGram {
     for (int idx = 0; idx < input.length(); ++idx) {
       addChar(input.charAt(idx));
 
-      for (int n = UNI_GRAM_LENGTH; n <= this.maxNGramLength; ++n) {
+      for (int n = this.minNGramLength; n <= this.maxNGramLength; ++n) {
         final String word = get(n);
         if (word.isEmpty()) {
           continue;
@@ -344,12 +346,12 @@ class NGram {
     }
 
     final int len = this.circularBufferLength;
-    if (n < UNI_GRAM_LENGTH || n > this.maxNGramLength || len < n) {
+    if (n < this.minNGramLength || n > this.maxNGramLength || len < n) {
       return EMPTY_STRING;
     }
 
     final int offset = previousOffset(n);
-    if (n == UNI_GRAM_LENGTH) {
+    if (n == this.minNGramLength) {
       char ch = circularBuffer[offset];
       if (ch == BLANK_CHAR) {
         return EMPTY_STRING;
@@ -412,10 +414,10 @@ class NGram {
       return EMPTY_STRING;
     }
     int len = grams.length();
-    if (n < UNI_GRAM_LENGTH || n > this.maxNGramLength || len < n) {
+    if (n < this.minNGramLength || n > this.maxNGramLength || len < n) {
       return EMPTY_STRING;
     }
-    if (n == UNI_GRAM_LENGTH) {
+    if (n == this.minNGramLength) {
       char ch = grams.charAt(len - 1);
       if (ch == BLANK_CHAR) {
         return EMPTY_STRING;
@@ -424,6 +426,10 @@ class NGram {
     } else {
       return grams.substring(len - n, len);
     }
+  }
+
+  int getMinNGramLength() {
+    return minNGramLength;
   }
 
   int getMaxNGramLength() {

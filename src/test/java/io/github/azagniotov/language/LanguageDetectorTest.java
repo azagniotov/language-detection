@@ -2,6 +2,7 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.LanguageDetectionSettings.DEFAULT_SETTINGS_ALL_LANGUAGES;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
+import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
 import static org.junit.Assert.assertEquals;
 
@@ -29,6 +30,7 @@ public class LanguageDetectorTest {
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
   }
 
@@ -46,7 +48,7 @@ public class LanguageDetectorTest {
             String.format(profileTemplate, "en_test").getBytes(StandardCharsets.UTF_8));
     final LanguageProfile enProfile = LanguageProfile.fromJson(enTest);
     for (String w : TRAINING_EN.split(SINGLE_SPACE)) {
-      enProfile.add(w, MAX_NGRAM_LENGTH);
+      enProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(enProfile, 0, 3);
 
@@ -55,7 +57,7 @@ public class LanguageDetectorTest {
             String.format(profileTemplate, "fr_test").getBytes(StandardCharsets.UTF_8));
     final LanguageProfile frProfile = LanguageProfile.fromJson(frTest);
     for (String w : TRAINING_FR.split(SINGLE_SPACE)) {
-      frProfile.add(w, MAX_NGRAM_LENGTH);
+      frProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(frProfile, 1, 3);
 
@@ -64,7 +66,7 @@ public class LanguageDetectorTest {
             String.format(profileTemplate, "ja_test").getBytes(StandardCharsets.UTF_8));
     final LanguageProfile jaProfile = LanguageProfile.fromJson(jaTest);
     for (String w : TRAINING_JA.split(SINGLE_SPACE)) {
-      jaProfile.add(w, MAX_NGRAM_LENGTH);
+      jaProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(jaProfile, 2, 3);
 
@@ -72,6 +74,7 @@ public class LanguageDetectorTest {
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
   }
 
@@ -118,6 +121,7 @@ public class LanguageDetectorTest {
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
     // "I am learning <LANGUAGE_NAME>" in various languages
@@ -290,6 +294,7 @@ public class LanguageDetectorTest {
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
     assertEquals("und", detector.detectAll("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ").get(0).getIsoCode639_1());
@@ -309,6 +314,7 @@ public class LanguageDetectorTest {
         new LanguageDetector(
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
     assertEquals("fr", detector.detectAll("apple").get(0).getIsoCode639_1());

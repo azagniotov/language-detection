@@ -31,6 +31,7 @@ public class LanguageProfileGenerator {
   // ~12–16 bytes for the array object overhead
   // Memory usage for each chunk is: ~ 32 KB + 20–24 bytes
   private static final int CHUNK_SIZE = 16384;
+  private static final int MIN_GRAM_SIZE = 1;
   private static final int MAX_GRAM_SIZE = 3;
 
   // Matches anything that is NOT Hiragana, Katakana, Kanji, Full-width characters or numbers
@@ -112,9 +113,9 @@ public class LanguageProfileGenerator {
         }
         final String input = new String(buffer, 0, bytesRead);
         if (languageProfile.getIsoCode639_1().equals("ja")) {
-          languageProfile.update(sanitizeForJapanese(input), MAX_GRAM_SIZE);
+          languageProfile.update(sanitizeForJapanese(input), MIN_GRAM_SIZE, MAX_GRAM_SIZE);
         } else {
-          languageProfile.update(input, MAX_GRAM_SIZE);
+          languageProfile.update(input, MIN_GRAM_SIZE, MAX_GRAM_SIZE);
         }
       }
     }
