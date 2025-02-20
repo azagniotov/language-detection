@@ -36,7 +36,7 @@ jobs:
 
       - name: Bump the version and push a tag
         id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
+        uses: mathieudutour/github-tag-action@v6.2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ steps.semantic_version.outputs.version_tag }}
