@@ -106,8 +106,9 @@ class LanguageProfile {
 
     for (int i = 0; i < normalizedInput.length(); ++i) {
       gram.addChar(normalizedInput.charAt(i));
-      for (int n = this.minNGramLength; n <= gram.getMaxNGramLength(); ++n) {
-        add(gram.get(n), gram.getMinNGramLength(), gram.getMaxNGramLength());
+      for (int n = gram.getMinNGramLength(); n <= gram.getMaxNGramLength(); ++n) {
+        final String nGram = gram.get(n);
+        add(nGram, gram.getMinNGramLength(), gram.getMaxNGramLength());
       }
     }
   }
@@ -117,7 +118,7 @@ class LanguageProfile {
     if (this.isoCode639_1 == null || this.isoCode639_1.trim().isEmpty()) {
       return; // Illegal
     }
-    double threshold = nWords.get(0) / LESS_FREQ_RATIO;
+    double threshold = nWords.get(this.minNGramLength - 1) / LESS_FREQ_RATIO;
     if (threshold < MINIMUM_FREQ) {
       threshold = MINIMUM_FREQ;
     }
@@ -139,7 +140,7 @@ class LanguageProfile {
     }
 
     // roman check
-    if (roman < nWords.get(0) / this.maxNGramLength) {
+    if (roman < nWords.get(this.minNGramLength - 1) / this.maxNGramLength) {
       Set<String> keys2 = freq.keySet();
       for (Iterator<String> iterator = keys2.iterator(); iterator.hasNext(); ) {
         String key = iterator.next();
