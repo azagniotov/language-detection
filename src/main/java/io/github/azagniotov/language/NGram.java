@@ -199,8 +199,9 @@ class NGram {
   private final int maxNGramLength;
 
   private final char[] circularBuffer;
+  private final int circularBufferSize;
   private int circularBufferIdx;
-  private int circularBufferLength;
+  private int circularBufferTotalElements;
 
   @Deprecated private StringBuilder grams;
 
@@ -213,7 +214,8 @@ class NGram {
     this.grams = new StringBuilder(BLANK_SPACE);
     this.capitalWord = false;
 
-    this.circularBuffer = new char[this.maxNGramLength];
+    this.circularBufferSize = (this.maxNGramLength - this.minNGramLength) + 1;
+    this.circularBuffer = new char[this.circularBufferSize];
     resetBuffer();
   }
 
@@ -243,7 +245,8 @@ class NGram {
     //
     // The formula:
     // Total n-grams = N + (N − 1) + (N − 2) => Total n-grams = 3N - 3
-    final int projectedTotalNGrams = this.maxNGramLength * input.length() - this.maxNGramLength;
+    final int projectedTotalNGrams =
+        this.circularBufferSize * input.length() - this.circularBufferSize;
     final List<String> extractedNWords = new ArrayList<>(projectedTotalNGrams);
 
     for (int idx = 0; idx < input.length(); ++idx) {
@@ -324,8 +327,8 @@ class NGram {
       if (ch == BLANK_CHAR) {
         return;
       }
-    } else if (this.circularBufferLength >= this.maxNGramLength) {
-      --this.circularBufferLength;
+    } else if (this.circularBufferTotalElements >= this.circularBufferSize) {
+      --this.circularBufferTotalElements;
     }
 
     this.circularBuffer[this.circularBufferIdx] = ch;
@@ -345,7 +348,7 @@ class NGram {
       return EMPTY_STRING;
     }
 
-    final int len = this.circularBufferLength;
+    final int len = this.circularBufferTotalElements;
     if (n < this.minNGramLength || n > this.maxNGramLength || len < n) {
       return EMPTY_STRING;
     }
@@ -362,7 +365,7 @@ class NGram {
       for (int idx = 0; idx < n; idx++) {
         // We need another modulo operation here because of temp char[] array index,
         // as we want to avoid access to the buffer as if it were a regular, linear array.
-        nGram[idx] = circularBuffer[(offset + idx) % this.maxNGramLength];
+        nGram[idx] = circularBuffer[(offset + idx) % this.circularBufferSize];
       }
       return new String(nGram);
     }
@@ -371,18 +374,18 @@ class NGram {
   private void resetBuffer() {
     this.circularBufferIdx = 0;
     this.circularBuffer[this.circularBufferIdx] = BLANK_CHAR;
-    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.maxNGramLength;
-    this.circularBufferLength = 1;
+    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.circularBufferSize;
+    this.circularBufferTotalElements = 1;
   }
 
   private int previousOffset(final int relativePastPosition) {
-    return (this.circularBufferIdx + this.maxNGramLength - relativePastPosition)
-        % this.maxNGramLength;
+    return (this.circularBufferIdx + this.circularBufferSize - relativePastPosition)
+        % this.circularBufferSize;
   }
 
   private void incrementCircularBufferIdx() {
-    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.maxNGramLength;
-    ++this.circularBufferLength;
+    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.circularBufferSize;
+    ++this.circularBufferTotalElements;
   }
 
   @Deprecated
