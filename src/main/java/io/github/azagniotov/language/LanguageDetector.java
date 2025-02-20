@@ -49,6 +49,8 @@ class LanguageDetector {
   // their associated probabilities. These probabilities are calculated as the ratio
   // between the word's frequency and the frequency of its N-grams.
   private final Map<String, double[]> languageCorporaProbabilities;
+
+  private final int minNGramLength;
   private final int maxNGramLength;
 
   private final int baseFreq;
@@ -62,9 +64,11 @@ class LanguageDetector {
   LanguageDetector(
       final List<String> supportedIsoCodes639_1,
       final Map<String, double[]> languageCorporaProbabilities,
+      final int minNGramLength,
       final int maxNGramLength) {
     this.supportedIsoCodes639_1 = supportedIsoCodes639_1;
     this.languageCorporaProbabilities = languageCorporaProbabilities;
+    this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
 
     this.baseFreq = 10000;
@@ -146,7 +150,7 @@ class LanguageDetector {
    * @return n-grams list
    */
   List<String> extractNGrams(final String input) {
-    final NGram ngram = new NGram(input, this.maxNGramLength);
+    final NGram ngram = new NGram(input, this.minNGramLength, this.maxNGramLength);
 
     return ngram.extractNGrams(languageCorporaProbabilities.keySet());
   }

@@ -1,6 +1,5 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 
 import java.io.IOException;
@@ -56,15 +55,16 @@ class LanguageDetectorFactory {
   // their associated probabilities. These probabilities are calculated as the ratio
   // between the word's frequency and the frequency of its N-grams.
   private final Map<String, double[]> languageCorporaProbabilities;
+
+  private final int minNGramLength;
   private final int maxNGramLength;
 
   LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings) {
     this.languageDetectionSettings = languageDetectionSettings;
     this.supportedIsoCodes639_1 = new LinkedList<>();
     this.languageCorporaProbabilities = new HashMap<>();
-
-    // TODO: Will come from the settings
-    this.maxNGramLength = 3;
+    this.minNGramLength = this.languageDetectionSettings.getMinNGramLength();
+    this.maxNGramLength = this.languageDetectionSettings.getMaxNGramLength();
 
     addProfiles();
   }
@@ -77,7 +77,11 @@ class LanguageDetectorFactory {
     return languageCorporaProbabilities;
   }
 
-  public int getMaxNGramLength() {
+  int getMinNGramLength() {
+    return minNGramLength;
+  }
+
+  int getMaxNGramLength() {
     return maxNGramLength;
   }
 
@@ -93,6 +97,9 @@ class LanguageDetectorFactory {
    * performing language detection.
    */
   private void addProfiles() {
+    // Fake call to the class to cause it to be loaded and the static initializers executed
+    NGram.normalize('\u0000');
+
     final List<String> supportedIsoCodes = this.languageDetectionSettings.getIsoCodes639_1();
     final List<LanguageProfile> allLoadedProfiles = new ArrayList<>(supportedIsoCodes.size());
     for (final String isoCode639_1 : supportedIsoCodes) {
@@ -128,7 +135,7 @@ class LanguageDetectorFactory {
       }
 
       final int length = word.length();
-      if (length >= UNI_GRAM_LENGTH && length <= this.maxNGramLength) {
+      if (length >= this.minNGramLength && length <= this.maxNGramLength) {
         final long wordFrequency = profile.getWordFrequencies().get(word);
 
         // e.g.: "n_words":[260942223,308553243,224934017]
@@ -152,6 +159,7 @@ class LanguageDetectorFactory {
     return new LanguageDetector(
         instance.getSupportedIsoCodes639_1(),
         instance.getLanguageCorporaProbabilities(),
+        instance.getMinNGramLength(),
         instance.getMaxNGramLength());
   }
 }

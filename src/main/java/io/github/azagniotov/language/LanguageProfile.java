@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
-import static io.github.azagniotov.language.NGram.UNI_GRAM_LENGTH;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,6 +37,7 @@ class LanguageProfile {
   private final Map<String, Long> freq;
   private final List<Double> nWords;
 
+  private int minNGramLength;
   private int maxNGramLength;
 
   /** Create a language profile from a JSON input stream. */
@@ -57,12 +57,12 @@ class LanguageProfile {
     return GSON.toJson(this);
   }
 
-  void add(final String gram, final int maxNGramLength) {
+  void add(final String gram, final int minNGramLength, final int maxNGramLength) {
     if (isoCode639_1 == null || gram == null || gram.trim().isEmpty()) {
       return;
     }
     int len = gram.length();
-    if (len < UNI_GRAM_LENGTH || len > maxNGramLength) {
+    if (len < minNGramLength || len > maxNGramLength) {
       return;
     }
     int nGramTypeIndex = len - 1;
@@ -94,19 +94,20 @@ class LanguageProfile {
    *
    * @param input input text to extract n-grams
    */
-  public void update(final String input, final int maxNGramLength) {
+  public void update(final String input, final int minNGramLength, final int maxNGramLength) {
     if (input == null) {
       return;
     }
+    this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
     final String sanitizedInput = filterOutNonWords(input);
     final String normalizedInput = NGram.normalizeVietnamese(sanitizedInput);
-    final NGram gram = new NGram(normalizedInput, maxNGramLength);
+    final NGram gram = new NGram(normalizedInput, minNGramLength, maxNGramLength);
 
     for (int i = 0; i < normalizedInput.length(); ++i) {
       gram.addChar(normalizedInput.charAt(i));
-      for (int n = UNI_GRAM_LENGTH; n <= gram.getMaxNGramLength(); ++n) {
-        add(gram.get(n), gram.getMaxNGramLength());
+      for (int n = this.minNGramLength; n <= gram.getMaxNGramLength(); ++n) {
+        add(gram.get(n), gram.getMinNGramLength(), gram.getMaxNGramLength());
       }
     }
   }
