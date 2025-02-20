@@ -9,8 +9,8 @@ import java.util.Objects;
 public class LanguageDetectionSettings {
 
   private static final String ALL_SUPPORTED_ISO_CODES_639_1 =
-      "af,ar,az,bg,bn,br,ca,cs,cy,da,de,el,en,es,et,eu,fa,fi,fr,ga,gu,he,hi,hr,hu,hy,id,it,ja,ka,kn,ko,lb,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
-          + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,yi,zh-cn,zh-tw";
+      "af,am,ar,az,bg,bn,br,ca,cs,cy,da,de,el,en,es,et,eu,fa,fi,fr,ga,gu,he,hi,hr,hu,hy,id,it,ja,ka,kn,ko,lb,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
+          + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,ti,tl,tr,uk,ur,vi,yi,zh-cn,zh-tw";
 
   static final LanguageDetectionSettings DEFAULT_SETTINGS_ALL_LANGUAGES =
       LanguageDetectionSettings.fromAllIsoCodes639_1().build();
