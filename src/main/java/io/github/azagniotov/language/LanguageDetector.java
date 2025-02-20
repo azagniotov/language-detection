@@ -157,12 +157,10 @@ class LanguageDetector {
    * @param word N-gram string
    */
   private void updateLangProb(final double[] prob, final String word, final double alpha) {
-    if (languageCorporaProbabilities.containsKey(word)) {
-      double[] wordProbabilities = languageCorporaProbabilities.get(word);
-      double weight = alpha / baseFreq;
-      for (int i = 0; i < prob.length; ++i) {
-        prob[i] *= weight + wordProbabilities[i];
-      }
+    double[] wordProbabilities = languageCorporaProbabilities.get(word);
+    double weight = alpha / baseFreq;
+    for (int i = 0; i < prob.length; ++i) {
+      prob[i] *= weight + wordProbabilities[i];
     }
   }
 
