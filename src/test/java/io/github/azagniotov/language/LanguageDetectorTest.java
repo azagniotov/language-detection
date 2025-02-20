@@ -111,7 +111,8 @@ public class LanguageDetectorTest {
   @Test
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
-        LanguageDetectionSettings.fromIsoCodes639_1("az,br,cy,de,eu,ga,he,hy,ka,lb,yi").build();
+        LanguageDetectionSettings.fromIsoCodes639_1("az,am,br,cy,de,eu,ga,he,hy,ka,lb,ti,yi")
+            .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
@@ -123,6 +124,8 @@ public class LanguageDetectorTest {
 
     // Armenian
     assertEquals("hy", detector.detectAll("Սովորում եմ հայերեն").get(0).getIsoCode639_1());
+    // Amharic
+    assertEquals("am", detector.detectAll("አማርኛ እየተማርኩ ነው።").get(0).getIsoCode639_1());
     // Azerbaijani
     assertEquals("az", detector.detectAll("Azərbaycan dilini öyrənirəm").get(0).getIsoCode639_1());
     // Basque
@@ -139,10 +142,42 @@ public class LanguageDetectorTest {
     assertEquals("he", detector.detectAll("אני לומד עברית").get(0).getIsoCode639_1());
     // Luxembourgish
     assertEquals("lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
+    // Tigrinya
+    assertEquals("ti", detector.detectAll("ትግርኛ ይመሃር ኣለኹ").get(0).getIsoCode639_1());
     // Welsh
     assertEquals("cy", detector.detectAll("Dw i'n dysgu Cymraeg").get(0).getIsoCode639_1());
     // Yiddish
     assertEquals("yi", detector.detectAll("איך לערן זיך ייִדיש").get(0).getIsoCode639_1());
+  }
+
+  @Test
+  public void testAmharic() throws Exception {
+    testLanguage("amharic.txt", "am", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testArmenian() throws Exception {
+    testLanguage("armenian.txt", "hy", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testAzerbaijani() throws Exception {
+    testLanguage("azerbaijani.txt", "az", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testBasque() throws Exception {
+    testLanguage("basque.txt", "eu", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testBreton() throws Exception {
+    testLanguage("breton.txt", "br", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testChinese() throws Exception {
+    testLanguage("chinese.txt", "zh-cn", DEFAULT_DETECTOR);
   }
 
   @Test
@@ -151,8 +186,18 @@ public class LanguageDetectorTest {
   }
 
   @Test
-  public void testChinese() throws Exception {
-    testLanguage("chinese.txt", "zh-cn", DEFAULT_DETECTOR);
+  public void testGeorgian() throws Exception {
+    testLanguage("georgian.txt", "ka", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testGerman() throws Exception {
+    testLanguage("german.txt", "de", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testIrish() throws Exception {
+    testLanguage("irish.txt", "ga", DEFAULT_DETECTOR);
   }
 
   @Test
@@ -166,48 +211,18 @@ public class LanguageDetectorTest {
   }
 
   @Test
-  public void testGerman() throws Exception {
-    testLanguage("german.txt", "de", DEFAULT_DETECTOR);
-  }
-
-  @Test
   public void testLuxembourgish() throws Exception {
     testLanguage("luxembourgish.txt", "lb", DEFAULT_DETECTOR);
   }
 
   @Test
-  public void testBreton() throws Exception {
-    testLanguage("breton.txt", "br", DEFAULT_DETECTOR);
+  public void testTigrinya() throws Exception {
+    testLanguage("tigrinya.txt", "ti", DEFAULT_DETECTOR);
   }
 
   @Test
   public void testWelsh() throws Exception {
     testLanguage("welsh.txt", "cy", DEFAULT_DETECTOR);
-  }
-
-  @Test
-  public void testGeorgian() throws Exception {
-    testLanguage("georgian.txt", "ka", DEFAULT_DETECTOR);
-  }
-
-  @Test
-  public void testArmenian() throws Exception {
-    testLanguage("armenian.txt", "hy", DEFAULT_DETECTOR);
-  }
-
-  @Test
-  public void testBasque() throws Exception {
-    testLanguage("basque.txt", "eu", DEFAULT_DETECTOR);
-  }
-
-  @Test
-  public void testIrish() throws Exception {
-    testLanguage("irish.txt", "ga", DEFAULT_DETECTOR);
-  }
-
-  @Test
-  public void testAzerbaijani() throws Exception {
-    testLanguage("azerbaijani.txt", "az", DEFAULT_DETECTOR);
   }
 
   @Test
