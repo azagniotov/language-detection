@@ -214,6 +214,32 @@ public class NGramTest {
         Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
   }
 
+  @Test
+  public final void testExtractLongNGrams() {
+    final NGram ngram = new NGram("apples", 1, 5);
+    final Set<String> allowlist =
+        Set.of(
+            "a", " a", "p", "ap", " ap", "pp", "app", " app", "l", "pl", "ppl", "appl", " appl",
+            "e", "le", "ple", "pple", "apple", "s", "es", "les", "ples", "pples");
+    final List<String> extractedNGrams = ngram.extractNGrams(allowlist);
+
+    assertEquals(
+        extractedNGrams,
+        Arrays.asList(
+            "a", " a", "p", "ap", " ap", "p", "pp", "app", " app", "l", "pl", "ppl", "appl",
+            " appl", "e", "le", "ple", "pple", "apple", "s", "es", "les", "ples", "pples"));
+  }
+
+  @Test
+  public final void testExtractCustomSizeNGrams() {
+    final NGram ngram = new NGram("apples", 4, 5);
+    final Set<String> allowlist = Set.of(" app", "appl", " appl", "pple", "apple", "ples", "pples");
+    final List<String> extractedNGrams = ngram.extractNGrams(allowlist);
+
+    assertEquals(
+        extractedNGrams, Arrays.asList(" app", "appl", " appl", "pple", "apple", "ples", "pples"));
+  }
+
   /** Test method for {@link NGram#normalize(char)} with Romanian characters. */
   @Test
   public final void testNormalizeForRomanian() {
