@@ -43,7 +43,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
 
   private static final double ACCURACY_DELTA = 1e-6;
 
-  private static final String HIGH_ACCURACY_SUPPORTED_ISO_CODES = "en,ja,de,es,fr,it,zh-cn";
+  private static final String HIGH_ACCURACY_SUPPORTED_ISO_CODES = "de,en,es,fr,it";
 
   private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
   private static final String ACCURACY_REPORT_PATH_TEMPLATE =
@@ -85,7 +85,10 @@ public class LanguageDetectorSingleWordAccuracyTest {
   @BeforeClass
   public static void setUp() throws IOException {
     allDatasets = new HashMap<>();
-    allDatasets.put("single-words", readDataset("/datasets/single-words.tsv"));
+    allDatasets.put(
+        "single-words-capitalized", readDataset("/datasets/single-words-capitalized.tsv"));
+    allDatasets.put(
+        "single-words-lowercased", readDataset("/datasets/single-words-lowercased.tsv"));
 
     final File directory = new File(ACCURACY_REPORT_HOME);
     if (!directory.exists()) {

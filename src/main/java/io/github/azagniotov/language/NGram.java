@@ -35,6 +35,8 @@ class NGram {
   // the largest value of type char in Java (which uses UTF-16 encoding).
   private static final char[] NORMALIZED_BMP_CHARS = new char[Character.MAX_VALUE + 1];
 
+  private static final int UNIGRAM_SIZE = 1;
+
   private static final String[] CJK_CLASS = {
     "\u4F7C\u6934",
     "\u88CF\u95B2",
@@ -348,9 +350,15 @@ class NGram {
       if (ch == BLANK_CHAR) {
         return EMPTY_STRING;
       }
-    }
 
-    return grams.substring(len - n, len);
+      if (this.minNGramLength == UNIGRAM_SIZE) {
+        return Character.toString(ch);
+      } else {
+        return grams.substring(len - n, len);
+      }
+    } else {
+      return grams.substring(len - n, len);
+    }
   }
 
   @Deprecated

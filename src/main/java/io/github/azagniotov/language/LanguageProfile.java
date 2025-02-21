@@ -14,11 +14,13 @@ import com.google.gson.JsonSerializer;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 class LanguageProfile {
   private static final Gson GSON =
@@ -31,7 +33,8 @@ class LanguageProfile {
           .create();
 
   private static final double MINIMUM_FREQ = 2.0;
-  private static final double LESS_FREQ_RATIO = 100000.0;
+  private static final double LESS_FREQ_RATIO = 1_000_000.0;
+  private static final Pattern PATTERN_ONE_ALPHABETIC_CHAR_ONLY = Pattern.compile("^[A-Za-z]$");
 
   private final String isoCode639_1;
   private final Map<String, Long> freq;
@@ -105,10 +108,14 @@ class LanguageProfile {
     final NGram gram = new NGram(normalizedInput, minNGramLength, maxNGramLength);
 
     for (int i = 0; i < normalizedInput.length(); ++i) {
-      gram.addChar(normalizedInput.charAt(i));
+      final char currentChar = normalizedInput.charAt(i);
+      gram.addChar(currentChar);
       for (int n = gram.getMinNGramLength(); n <= gram.getMaxNGramLength(); ++n) {
         final String nGram = gram.get(n);
-        add(nGram, gram.getMinNGramLength(), gram.getMaxNGramLength());
+
+        if (nGram.length() >= this.minNGramLength) {
+          add(nGram, gram.getMinNGramLength(), gram.getMaxNGramLength());
+        }
       }
     }
   }
@@ -126,25 +133,26 @@ class LanguageProfile {
     final Set<String> keys = freq.keySet();
     double roman = 0;
     for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
-      String key = iterator.next();
-      double count = freq.get(key);
+      final String key = iterator.next();
+      final double count = freq.get(key);
       if (count <= threshold) {
         final double current = nWords.get(key.length() - 1);
         nWords.set(key.length() - 1, current - count);
         iterator.remove();
       } else {
-        if (key.matches("^[A-Za-z]$")) {
+        // Checks for presence single-character Latin keys
+        if (PATTERN_ONE_ALPHABETIC_CHAR_ONLY.matcher(key).matches()) {
           roman += count;
         }
       }
     }
 
-    // roman check
-    if (roman < nWords.get(this.minNGramLength - 1) / this.maxNGramLength) {
-      Set<String> keys2 = freq.keySet();
+    // Remove the noisy single-character Latin keys, only if we have found some earlier
+    if (roman > 0 && roman < nWords.get(this.minNGramLength - 1) / this.maxNGramLength) {
+      final Set<String> keys2 = freq.keySet();
       for (Iterator<String> iterator = keys2.iterator(); iterator.hasNext(); ) {
-        String key = iterator.next();
-        if (key.matches(".*[A-Za-z].*")) {
+        final String key = iterator.next();
+        if (PATTERN_ONE_ALPHABETIC_CHAR_ONLY.matcher(key).matches()) {
           final double current = nWords.get(key.length() - 1);
           nWords.set(key.length() - 1, current - freq.get(key));
 
@@ -161,7 +169,9 @@ class LanguageProfile {
         throws JsonParseException {
       final JsonObject jsonObject = json.getAsJsonObject();
       final String name = jsonObject.get("name").getAsString();
-      final List<Double> nWords = context.deserialize(jsonObject.get("n_words"), List.class);
+
+      // final Type listOfDouble = new TypeToken<ArrayList<Double>>(){}.getType();
+      final Double[] nWords = context.deserialize(jsonObject.get("n_words"), Double[].class);
 
       // Manually handle duplicate keys in the "freq" map
       final Map<String, Long> freq = new HashMap<>();
@@ -172,7 +182,7 @@ class LanguageProfile {
             entry.getKey(), entry.getValue().getAsLong()); // Keeps only the last value for each key
       }
 
-      return new LanguageProfile(name, freq, nWords);
+      return new LanguageProfile(name, freq, Arrays.asList(nWords));
     }
   }
 
