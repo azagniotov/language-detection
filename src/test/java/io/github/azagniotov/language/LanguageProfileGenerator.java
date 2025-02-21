@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -26,27 +27,35 @@ import org.junit.Test;
 
 public class LanguageProfileGenerator {
 
-  // 32 KB for the char[] elements
+  // 64 KB for the char[] elements
   // 8 bytes for the reference
   // ~12–16 bytes for the array object overhead
-  // Memory usage for each chunk is: ~ 32 KB + 20–24 bytes
-  private static final int CHUNK_SIZE = 16384;
+  // Memory usage for each chunk is: ~ 64 KB + 20–24 bytes
+  private static final int CHUNK_SIZE = 32768;
   private static final int MIN_GRAM_SIZE = 1;
   private static final int MAX_GRAM_SIZE = 3;
 
+  private static final Set<String> SPECIFIC_EAST_ASIAN_ISO_CODES = Set.of("ja", "zh", "ko");
   // Matches anything that is NOT Hiragana, Katakana, Kanji, Full-width characters or numbers
   // \\x{FF10}-\\x{FF19}: Matches full-width Arabic digits (０１２３４５６７８９).
   // \\x{FF21}-\\x{FF3A}: Matches full-width Latin uppercase letters (ＡＢＣＤＥ...).
   // \\x{FF41}-\\x{FF5A}: Matches full-width Latin lowercase letters (ａｂｃｄｅ...).
   // Cleans-up this "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ ä, ö, ü, and ß á, à, è, é, û, ù,"
-  private static final String regex =
-      "[^\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}\\d\\x{FF10}-\\x{FF19}\\x{FF21}-\\x{FF3A}\\x{FF41}-\\x{FF5A}]";
-  private static final Pattern PATTERN_ANYTHING_NON_JAPANESE = Pattern.compile(regex);
+  private static final Pattern PATTERN_MATCH_ANYTHING_NON_EAST_ASIAN =
+      Pattern.compile(
+          "[^\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}\\d\\x{FF10}-\\x{FF19}\\x{FF21}-\\x{FF3A}\\x{FF41}-\\x{FF5A}]");
+  private static final Pattern PATTERN_MATCH_SPECIFIC_EAST_ASIAN =
+      Pattern.compile(
+          "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}\\p{IsHangul}\\d\\x{FF10}-\\x{FF19}\\x{FF21}-\\x{FF3A}\\x{FF41}-\\x{FF5A}]");
+
+  // Regex to match both opening and closing WikiExtractor <doc> tags, including attributes
+  private static final Pattern PATTERN_MATCH_WIKI_EXTRACTOR_TAGS =
+      Pattern.compile("<doc[^>]*>|</doc>");
 
   @Test
   @Ignore
   public void generateProfile() throws Exception {
-    final String targetCode = "ja";
+    final String targetCode = "cy";
     final String sourcePath =
         String.format("/Users/azagniotov/Documents/data/%swiki/extracted/AA", targetCode);
 
@@ -55,13 +64,13 @@ public class LanguageProfileGenerator {
       return;
     }
 
-    final File directory = new File("src/main/resources/langdetect/high-accuracy");
-    if (!directory.exists()) {
-      boolean mkdirs = directory.mkdirs(); // Create the directory if it doesn't exist
-      if (mkdirs) {
-        System.out.println("Created high-accuracy directory");
-      }
-    }
+    //    final File directory = new File("src/main/resources/langdetect/high-accuracy");
+    //    if (!directory.exists()) {
+    //      boolean mkdirs = directory.mkdirs(); // Create the directory if it doesn't exist
+    //      if (mkdirs) {
+    //        System.out.println("Created high-accuracy directory");
+    //      }
+    //    }
 
     final List<Double> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0).toArray(new Double[0]));
     final LanguageProfile languageProfile =
@@ -74,7 +83,7 @@ public class LanguageProfileGenerator {
     System.out.println(".getNGramCounts(): " + languageProfile.getNGramCounts() + "\n");
 
     final String languageProfileJson = languageProfile.toJson();
-    writeProfile("high-accuracy", targetCode, languageProfileJson);
+    writeProfile("merged-average", targetCode, languageProfileJson);
 
     assertEquals("apples", "apples");
   }
@@ -112,11 +121,15 @@ public class LanguageProfileGenerator {
           break;
         }
         final String input = new String(buffer, 0, bytesRead);
-        if (languageProfile.getIsoCode639_1().equals("ja")) {
-          languageProfile.update(sanitizeForJapanese(input), MIN_GRAM_SIZE, MAX_GRAM_SIZE);
+        final String noWikiTags = sanitize(PATTERN_MATCH_WIKI_EXTRACTOR_TAGS, input);
+
+        final String sanitized;
+        if (SPECIFIC_EAST_ASIAN_ISO_CODES.contains(languageProfile.getIsoCode639_1())) {
+          sanitized = sanitize(PATTERN_MATCH_ANYTHING_NON_EAST_ASIAN, noWikiTags);
         } else {
-          languageProfile.update(input, MIN_GRAM_SIZE, MAX_GRAM_SIZE);
+          sanitized = sanitize(PATTERN_MATCH_SPECIFIC_EAST_ASIAN, noWikiTags);
         }
+        languageProfile.update(sanitized, MIN_GRAM_SIZE, MAX_GRAM_SIZE);
       }
     }
   }
@@ -132,8 +145,8 @@ public class LanguageProfileGenerator {
     }
   }
 
-  private String sanitizeForJapanese(final String input) {
-    final Matcher matcher = PATTERN_ANYTHING_NON_JAPANESE.matcher(input);
+  private String sanitize(final Pattern pattern, final String input) {
+    final Matcher matcher = pattern.matcher(input);
     final StringBuilder result = new StringBuilder();
     while (matcher.find()) {
       // It is recommended to avoid using .replaceAll when replacing

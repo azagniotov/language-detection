@@ -53,7 +53,7 @@ final class TestHelper {
   }
 
   static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
-    final Language language = languageDetector.detectAll(text).get(0);
-    return language.getIsoCode639_1();
+    final List<Language> languages = languageDetector.detectAll(text);
+    return languages.get(0).getIsoCode639_1();
   }
 }
