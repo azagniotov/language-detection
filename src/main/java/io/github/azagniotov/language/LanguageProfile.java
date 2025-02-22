@@ -33,7 +33,7 @@ class LanguageProfile {
           .create();
 
   private static final double MINIMUM_FREQ = 2.0;
-  private static final double LESS_FREQ_RATIO = 1_000_000.0;
+  private static final double LESS_FREQ_RATIO = 100_000.0;
   private static final Pattern PATTERN_ONE_ALPHABETIC_CHAR_ONLY = Pattern.compile("^[A-Za-z]$");
 
   private final String isoCode639_1;
