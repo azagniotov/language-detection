@@ -114,7 +114,7 @@ public class LanguageDetectorTest {
   @Test
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
-        LanguageDetectionSettings.fromIsoCodes639_1("az,am,br,cy,de,eu,ga,he,hy,ka,lb,ti,yi")
+        LanguageDetectionSettings.fromIsoCodes639_1("az,am,br,cy,de,eu,ga,he,hy,ka,kk,lb,ti,yi")
             .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
@@ -144,6 +144,9 @@ public class LanguageDetectorTest {
     assertEquals("ga", detector.detectAll("Tá mé ag foghlaim Gaeilge").get(0).getIsoCode639_1());
     // Hebrew
     assertEquals("he", detector.detectAll("אני לומד עברית").get(0).getIsoCode639_1());
+    // Kazakh
+    assertEquals(
+        "kk", detector.detectAll("Мен қазақ тілін үйреніп жатырмын").get(0).getIsoCode639_1());
     // Luxembourgish
     assertEquals("lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
     // Tigrinya
@@ -207,6 +210,11 @@ public class LanguageDetectorTest {
   @Test
   public void testJapanese() throws Exception {
     testLanguage("japanese.txt", "ja", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testKazakh() throws Exception {
+    testLanguage("kazakh.txt", "kk", DEFAULT_DETECTOR);
   }
 
   @Test

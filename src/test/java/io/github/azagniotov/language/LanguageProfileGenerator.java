@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -54,8 +55,21 @@ public class LanguageProfileGenerator {
 
   @Test
   @Ignore
-  public void generateProfile() throws Exception {
-    final String targetCode = "cy";
+  public void generateProfiles() throws Exception {
+    TreeSet<String> targetCodes =
+        new TreeSet<>(Set.of("am,az,br,cy,eu,ga,hy,ka,kk,ti,yi".split(",")));
+    System.out.println(
+        "\nWill generate: ["
+            + targetCodes.size()
+            + "] profiles for ISO 639-1 codes: "
+            + targetCodes);
+    for (final String targetCode : targetCodes) {
+      generate(targetCode, "merged-average");
+    }
+  }
+
+  private void generate(final String targetCode, final String profilesHome) throws Exception {
+    System.out.println("Starting processing for: [" + targetCode + "] => " + profilesHome);
     final String sourcePath =
         String.format("/Users/azagniotov/Documents/data/%swiki/extracted/AA", targetCode);
 
@@ -83,7 +97,7 @@ public class LanguageProfileGenerator {
     System.out.println(".getNGramCounts(): " + languageProfile.getNGramCounts() + "\n");
 
     final String languageProfileJson = languageProfile.toJson();
-    writeProfile("merged-average", targetCode, languageProfileJson);
+    writeProfile(profilesHome, targetCode, languageProfileJson);
 
     assertEquals("apples", "apples");
   }
