@@ -50,6 +50,7 @@ public class LanguageProfileGenerator {
           "[\\p{IsHiragana}\\p{IsKatakana}\\p{IsHan}\\p{IsHangul}\\d\\x{FF10}-\\x{FF19}\\x{FF21}-\\x{FF3A}\\x{FF41}-\\x{FF5A}]");
 
   private static final Pattern PATTERN_MATCH_NUMERICS = Pattern.compile("[\\p{IsDigit}]");
+  private static final Pattern PATTERN_MULTIPLE_SPACES = Pattern.compile("\\s+");
 
   // Regex to match both opening and closing WikiExtractor <doc> tags, including attributes
   private static final Pattern PATTERN_MATCH_WIKI_EXTRACTOR_TAGS =
@@ -59,7 +60,7 @@ public class LanguageProfileGenerator {
   @Ignore
   public void generateProfiles() throws Exception {
     TreeSet<String> targetCodes =
-        new TreeSet<>(Set.of("am,az,br,cy,eu,ga,hy,ka,kk,ky,mn,ti,yi".split(",")));
+        new TreeSet<>(Set.of("am,az,bo,br,cy,eu,ga,hy,ka,kk,ky,mn,ti,yi".split(",")));
     System.out.println(
         "\nWill generate: ["
             + targetCodes.size()
@@ -147,7 +148,8 @@ public class LanguageProfileGenerator {
         }
 
         final String sanitizedWithoutDigits = sanitize(PATTERN_MATCH_NUMERICS, sanitized);
-        languageProfile.update(sanitizedWithoutDigits, MIN_GRAM_SIZE, MAX_GRAM_SIZE);
+        final Matcher matcher = PATTERN_MULTIPLE_SPACES.matcher(sanitizedWithoutDigits);
+        languageProfile.update(matcher.replaceAll(" "), MIN_GRAM_SIZE, MAX_GRAM_SIZE);
       }
     }
   }
@@ -186,11 +188,14 @@ public class LanguageProfileGenerator {
   public final void sanityCheckFilteringRegex() {
     final String input =
         "<doc id=\"599\" url=\"https://mn.wikipedia.org/wiki?curid=599\" title=\"Монгол Улс\">"
-            + "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ ä, ö, ü, and ß á, à, è, é, û, ù"
+            + "      "
+            + ""
+            + "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ         ä, ö, ü,  and ß á, à, è, é, û, ù"
             + "</doc>";
 
     final String noWikiTags = sanitize(PATTERN_MATCH_WIKI_EXTRACTOR_TAGS, input);
-    assertEquals(noWikiTags, "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ ä, ö, ü, and ß á, à, è, é, û, ù");
+    assertEquals(
+        noWikiTags, "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ         ä, ö, ü,  and ß á, à, è, é, û, ù");
 
     final String onlyEastAsian = sanitize(PATTERN_MATCH_ANYTHING_NON_EAST_ASIAN, noWikiTags);
     assertEquals(onlyEastAsian, "これはテスト123アイウエオこんにちは１２３ＡＢＣＤＥ");
@@ -199,9 +204,12 @@ public class LanguageProfileGenerator {
     assertEquals(onlyEastAsianWithoutDigits, "これはテストアイウエオこんにちはＡＢＣＤＥ");
 
     final String withoutEastAsian = sanitize(PATTERN_MATCH_SPECIFIC_EAST_ASIAN, noWikiTags);
-    assertEquals(withoutEastAsian, "abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
+    assertEquals(withoutEastAsian, "abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
 
     final String withoutEastAsianAndDigits = sanitize(PATTERN_MATCH_NUMERICS, withoutEastAsian);
-    assertEquals(withoutEastAsianAndDigits, "abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
+    assertEquals(withoutEastAsianAndDigits, "abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
+
+    final Matcher matcher = PATTERN_MULTIPLE_SPACES.matcher(withoutEastAsianAndDigits);
+    assertEquals(matcher.replaceAll(" "), "abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
   }
 }

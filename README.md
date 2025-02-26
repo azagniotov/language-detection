@@ -39,7 +39,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from 1 to 3, alongside a Bayesian filter that incorporates various normalization techniques and feature sampling methods.
 
-The precision is over **99%** for **69** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
+The precision is over **99%** for **70** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
 ### Enhancements over past implementations
 
@@ -121,6 +121,7 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Tamil            | ta        |
 | Telugu           | te        |
 | Thai             | th        |
+| Tibetan          | bo        |
 | Tigrinya         | ti        |
 | Turkish          | tr        |
 | Ukrainian        | uk        |
