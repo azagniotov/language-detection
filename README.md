@@ -57,78 +57,78 @@ For clarity, I'm linking these enhancements to the original implementation with 
 
 The following is a list of ISO 639-1 languages code supported by the library:
 
-| Language name    | ISO 639-1 |
-|------------------|-----------|
-| Afrikaans        | af        |
-| Albanian         | sq        |
-| Amharic          | am        |
-| Arabic           | ar        |
-| Armenian         | hy        |
-| Azerbaijani      | az        |
-| Bangla           | bn        |
-| Basque           | eu        |
-| Breton           | br        |
-| Bulgarian        | bg        |
-| Catalan          | ca        |
-| Chinese (China)  | zh-cn     |
-| Chinese (Taiwan) | zh-tw     |
-| Croatian         | hr        |
-| Czech            | cs        |
-| Danish           | da        |
-| Dutch            | nl        |
-| English          | en        |
-| Estonian         | et        |
-| Filipino         | tl        |
-| Finnish          | fi        |
-| French           | fr        |
-| Georgian         | ka        |
-| German           | de        |
-| Greek            | el        |
-| Gujarati         | gu        |
-| Hebrew           | he        |
-| Hindi            | hi        |
-| Hungarian        | hu        |
-| Indonesian       | id        |
-| Irish            | ga        |
-| Italian          | it        |
-| Japanese         | ja        |
-| Kannada          | kn        |
-| Kazakh           | kk        |
-| Korean           | ko        |
-| Kyrgyz           | ky        |
-| Latvian          | lv        |
-| Lithuanian       | lt        |
-| Luxembourgish    | lb        |
-| Macedonian       | mk        |
-| Malayalam        | ml        |
-| Marathi          | mr        |
-| Mongolian        | mn        |
-| Nepali           | ne        |
-| Norwegian        | no        |
-| Persian          | fa        |
-| Polish           | pl        |
-| Portuguese       | pt        |
-| Punjabi          | pa        |
-| Romanian         | ro        |
-| Russian          | ru        |
-| Sinhala          | si        |
-| Slovak           | sk        |
-| Slovenian        | sl        |
-| Somali           | so        |
-| Spanish          | es        |
-| Swahili          | sw        |
-| Swedish          | sv        |
-| Tamil            | ta        |
-| Telugu           | te        |
-| Thai             | th        |
-| Tibetan          | bo        |
-| Tigrinya         | ti        |
-| Turkish          | tr        |
-| Ukrainian        | uk        |
-| Urdu             | ur        |
-| Vietnamese       | vi        |
-| Welsh            | cy        |
-| Yiddish          | yi        |
+| Language name    | Country                         | ISO 639-1 |
+|------------------|---------------------------------|-----------|
+| Afrikaans        | 🇿🇦&nbsp;&nbsp;South Africa    | af        |
+| Albanian         | 🇦🇱&nbsp;&nbsp;Albania         | sq        |
+| Amharic          | 🇪🇹&nbsp;&nbsp;Ethiopia        | am        |
+| Arabic           | 🇦🇪&nbsp;&nbsp;UAE             | ar        |
+| Armenian         | 🇦🇲&nbsp;&nbsp;Armenia         | hy        |
+| Azerbaijani      | 🇦🇿&nbsp;&nbsp;Azerbaijan      | az        |
+| Bangla           | 🇧🇩&nbsp;&nbsp;Bangladesh      | bn        |
+| Basque           | 🇪🇸&nbsp;&nbsp;Spain           | eu        |
+| Breton           | 🇫🇷&nbsp;&nbsp;France          | br        |
+| Bulgarian        | 🇧🇬&nbsp;&nbsp;Bulgaria        | bg        |
+| Catalan          | 🇪🇸&nbsp;&nbsp;Spain           | ca        |
+| Chinese (China)  | 🇨🇳&nbsp;&nbsp;China           | zh-cn     |
+| Chinese (Taiwan) | 🇹🇼&nbsp;&nbsp;Taiwan          | zh-tw     |
+| Croatian         | 🇭🇷&nbsp;&nbsp;Croatia         | hr        |
+| Czech            | 🇨🇿&nbsp;&nbsp;Czech Republic  | cs        |
+| Danish           | 🇩🇰&nbsp;&nbsp;Denmark         | da        |
+| Dutch            | 🇳🇱&nbsp;&nbsp;Netherlands     | nl        |
+| English          | 🇺🇸&nbsp;&nbsp;United States   | en        |
+| Estonian         | 🇪🇪&nbsp;&nbsp;Estonia         | et        |
+| Filipino         | 🇵🇭&nbsp;&nbsp;Philippines     | tl        |
+| Finnish          | 🇫🇮&nbsp;&nbsp;Finland         | fi        |
+| French           | 🇫🇷&nbsp;&nbsp;France          | fr        |
+| Georgian         | 🇬🇪&nbsp;&nbsp;Georgia         | ka        |
+| German           | 🇩🇪&nbsp;&nbsp;Germany         | de        |
+| Greek            | 🇬🇷&nbsp;&nbsp;Greece          | el        |
+| Gujarati         | 🇮🇳&nbsp;&nbsp;India           | gu        |
+| Hebrew           | 🇮🇱&nbsp;&nbsp;Israel          | he        |
+| Hindi            | 🇮🇳&nbsp;&nbsp;India           | hi        |
+| Hungarian        | 🇭🇺&nbsp;&nbsp;Hungary         | hu        |
+| Indonesian       | 🇮🇩&nbsp;&nbsp;Indonesia       | id        |
+| Irish            | 🇮🇪&nbsp;&nbsp;Ireland         | ga        |
+| Italian          | 🇮🇹&nbsp;&nbsp;Italy           | it        |
+| Japanese         | 🇯🇵&nbsp;&nbsp;Japan           | ja        |
+| Kannada          | 🇮🇳&nbsp;&nbsp;India           | kn        |
+| Kazakh           | 🇰🇿&nbsp;&nbsp;Kazakhstan      | kk        |
+| Korean           | 🇰🇷&nbsp;&nbsp;South Korea     | ko        |
+| Kyrgyz           | 🇰🇬&nbsp;&nbsp;Kyrgyzstan      | ky        |
+| Latvian          | 🇱🇻&nbsp;&nbsp;Latvia          | lv        |
+| Lithuanian       | 🇱🇹&nbsp;&nbsp;Lithuania       | lt        |
+| Luxembourgish    | 🇱🇺&nbsp;&nbsp;Luxembourg      | lb        |
+| Macedonian       | 🇲🇰&nbsp;&nbsp;North Macedonia | mk        |
+| Malayalam        | 🇮🇳&nbsp;&nbsp;India           | ml        |
+| Marathi          | 🇮🇳&nbsp;&nbsp;India           | mr        |
+| Mongolian        | 🇲🇳&nbsp;&nbsp;Mongolia        | mn        |
+| Nepali           | 🇳🇵&nbsp;&nbsp;Nepal           | ne        |
+| Norwegian        | 🇳🇴&nbsp;&nbsp;Norway          | no        |
+| Persian          | 🇮🇷&nbsp;&nbsp;Iran            | fa        |
+| Polish           | 🇵🇱&nbsp;&nbsp;Poland          | pl        |
+| Portuguese       | 🇵🇹&nbsp;&nbsp;Portugal        | pt        |
+| Punjabi          | 🇮🇳&nbsp;&nbsp;India           | pa        |
+| Romanian         | 🇷🇴&nbsp;&nbsp;Romania         | ro        |
+| Russian          | 🇷🇺&nbsp;&nbsp;Russia          | ru        |
+| Sinhala          | 🇱🇰&nbsp;&nbsp;Sri Lanka       | si        |
+| Slovak           | 🇸🇰&nbsp;&nbsp;Slovakia        | sk        |
+| Slovenian        | 🇸🇮&nbsp;&nbsp;Slovenia        | sl        |
+| Somali           | 🇸🇴&nbsp;&nbsp;Somalia         | so        |
+| Spanish          | 🇪🇸&nbsp;&nbsp;Spain           | es        |
+| Swahili          | 🇹🇿&nbsp;&nbsp;Tanzania        | sw        |
+| Swedish          | 🇸🇪&nbsp;&nbsp;Sweden          | sv        |
+| Tamil            | 🇮🇳&nbsp;&nbsp;India           | ta        |
+| Telugu           | 🇮🇳&nbsp;&nbsp;India           | te        |
+| Thai             | 🇹🇭&nbsp;&nbsp;Thailand        | th        |
+| Tibetan          | 🇨🇳&nbsp;&nbsp;China           | bo        |
+| Tigrinya         | 🇪🇷&nbsp;&nbsp;Eritrea         | ti        |
+| Turkish          | 🇹🇷&nbsp;&nbsp;Turkey          | tr        |
+| Ukrainian        | 🇺🇦&nbsp;&nbsp;Ukraine         | uk        |
+| Urdu             | 🇵🇰&nbsp;&nbsp;Pakistan        | ur        |
+| Vietnamese       | 🇻🇳&nbsp;&nbsp;Vietnam         | vi        |
+| Welsh            | 🇬🇧&nbsp;&nbsp;United Kingdom  | cy        |
+| Yiddish          | 🇮🇱&nbsp;&nbsp;Israel          | yi        |
 
 ### Model parameters
 
