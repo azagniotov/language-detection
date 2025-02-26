@@ -1,7 +1,5 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -107,8 +105,7 @@ class LanguageDetectorFactory {
         continue;
       }
       final String profile = this.languageDetectionSettings.getProfile();
-      final String languageResourcePath =
-          "/langdetect/" + (profile == null ? EMPTY_STRING : profile + "/") + isoCode639_1;
+      final String languageResourcePath = "/profiles/" + profile + "/" + isoCode639_1;
       final InputStream in = getClass().getResourceAsStream(languageResourcePath);
       if (in == null) {
         throw new UncheckedIOException(
