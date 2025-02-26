@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -14,7 +15,7 @@ public class LanguageTest {
     assertEquals(lang.getProbability(), 0.0, 0.0001);
     assertNull(lang.getIsoCode639_1());
 
-    final Language lang2 = new Language("en", 1.0);
+    final Language lang2 = new Language("en", PERFECT_PROBABILITY);
     assertEquals(lang2.getIsoCode639_1(), "en");
     assertEquals(lang2.getProbability(), 1.0, 0.0001);
   }

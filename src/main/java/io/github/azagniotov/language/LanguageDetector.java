@@ -25,18 +25,19 @@ import java.util.Random;
 class LanguageDetector {
 
   private static final String ISO_CODE_639_3_UND = "und";
-  private static final double ZERO_PROBABILITY = 0d;
+  private static final float ZERO_PROBABILITY = 0f;
+  static final float PERFECT_PROBABILITY = 1.0f;
 
   static final Language UNDETERMINED_LANGUAGE_RESPONSE =
       new Language(ISO_CODE_639_3_UND, ZERO_PROBABILITY);
-  static final Language JAPANESE_LANGUAGE_RESPONSE = new Language("ja", 1.0);
+  static final Language JAPANESE_LANGUAGE_RESPONSE = new Language("ja", PERFECT_PROBABILITY);
 
   // return top 5 detected language when calling detectAll(String)
   private static final int MAX_DETECTED_CLASSES = 5;
 
   // All the loaded ISO 639-1 codes that have been configured by the user,
   // e.g.: en, ja, es. The codes are in exactly the same order as the data
-  // is in the double[] in languageCorporaProbabilities.
+  // is in the float[] in languageCorporaProbabilities.
   //
   // Example:
   // If languageCorporaProbabilities has an entry for the n-gram "foo", then for
@@ -48,7 +49,7 @@ class LanguageDetector {
   // which correspond to the configured ISO 639-1 code for detection), along with
   // their associated probabilities. These probabilities are calculated as the ratio
   // between the word's frequency and the frequency of its N-grams.
-  private final Map<String, double[]> languageCorporaProbabilities;
+  private final Map<String, float[]> languageCorporaProbabilities;
 
   private final int minNGramLength;
   private final int maxNGramLength;
@@ -56,14 +57,14 @@ class LanguageDetector {
   private final int baseFreq;
   private final int numberOfTrials;
   private final int iterationLimit;
-  private final double alpha;
-  private final double alphaWidth;
-  private final double probabilityThreshold;
-  private final double convThreshold;
+  private final float alpha;
+  private final float alphaWidth;
+  private final float probabilityThreshold;
+  private final float convThreshold;
 
   LanguageDetector(
       final List<String> supportedIsoCodes639_1,
-      final Map<String, double[]> languageCorporaProbabilities,
+      final Map<String, float[]> languageCorporaProbabilities,
       final int minNGramLength,
       final int maxNGramLength) {
     this.supportedIsoCodes639_1 = supportedIsoCodes639_1;
@@ -74,10 +75,10 @@ class LanguageDetector {
     this.baseFreq = 10000;
     this.iterationLimit = 10000;
     this.numberOfTrials = 7;
-    this.alpha = 0.5;
-    this.alphaWidth = 0.05;
-    this.probabilityThreshold = 0.1;
-    this.convThreshold = 0.99999;
+    this.alpha = 0.5f;
+    this.alphaWidth = 0.05f;
+    this.probabilityThreshold = 0.1f;
+    this.convThreshold = 0.99999f;
   }
 
   /**
@@ -94,16 +95,16 @@ class LanguageDetector {
     // Do not .trim() the input nor the result, otherwise accuracy unit tests will fail
     final String normalizedText = NGram.normalizeVietnamese(sanitizedInput);
 
-    final double[] probabilities = detectBlock(normalizedText);
+    final float[] probabilities = detectBlock(normalizedText);
     final List<Language> languages = sortProbability(probabilities);
 
     return languages.subList(0, Math.min(languages.size(), MAX_DETECTED_CLASSES));
   }
 
-  private double[] detectBlock(final String input) {
+  private float[] detectBlock(final String input) {
     final List<String> extractedNGrams = extractNGrams(input);
 
-    final double[] languageProbabilities = new double[supportedIsoCodes639_1.size()];
+    final float[] languageProbabilities = new float[supportedIsoCodes639_1.size()];
     if (extractedNGrams.isEmpty()) {
       return languageProbabilities;
     }
@@ -112,8 +113,8 @@ class LanguageDetector {
     random.setSeed(0L);
 
     for (int t = 0; t < numberOfTrials; ++t) {
-      final double[] probabilities = initProbabilies();
-      double alphaSmoothing = this.alpha + random.nextGaussian() * alphaWidth;
+      final float[] probabilities = initProbabilies();
+      float alphaSmoothing = (float) (this.alpha + random.nextGaussian() * alphaWidth);
 
       for (int i = 0; i <= iterationLimit; ++i) {
         final int randomIdx = random.nextInt(extractedNGrams.size());
@@ -137,9 +138,9 @@ class LanguageDetector {
    *
    * @return initialized array of language probabilities
    */
-  private double[] initProbabilies() {
-    final double[] probabilities = new double[supportedIsoCodes639_1.size()];
-    Arrays.fill(probabilities, 1.0 / supportedIsoCodes639_1.size());
+  private float[] initProbabilies() {
+    final float[] probabilities = new float[supportedIsoCodes639_1.size()];
+    Arrays.fill(probabilities, PERFECT_PROBABILITY / supportedIsoCodes639_1.size());
 
     return probabilities;
   }
@@ -160,9 +161,9 @@ class LanguageDetector {
    *
    * @param word N-gram string
    */
-  private void updateLangProb(final double[] prob, final String word, final double alpha) {
-    double[] wordProbabilities = languageCorporaProbabilities.get(word);
-    double weight = alpha / baseFreq;
+  private void updateLangProb(final float[] prob, final String word, final float alpha) {
+    float[] wordProbabilities = languageCorporaProbabilities.get(word);
+    float weight = alpha / baseFreq;
     for (int i = 0; i < prob.length; ++i) {
       prob[i] *= weight + wordProbabilities[i];
     }
@@ -173,17 +174,17 @@ class LanguageDetector {
    *
    * @return maximum of probabilities
    */
-  private double normalizeProb(final double[] prob) {
+  private float normalizeProb(final float[] prob) {
     if (prob.length == 0) {
       return ZERO_PROBABILITY;
     }
-    double sump = prob[0];
+    float sump = prob[0];
     for (int i = 1; i < prob.length; i++) {
       sump += prob[i];
     }
-    double maxp = ZERO_PROBABILITY;
+    float maxp = ZERO_PROBABILITY;
     for (int i = 0; i < prob.length; i++) {
-      double p = prob[i] / sump;
+      float p = prob[i] / sump;
       if (maxp < p) {
         maxp = p;
       }
@@ -192,14 +193,14 @@ class LanguageDetector {
     return maxp;
   }
 
-  private List<Language> sortProbability(final double[] probabilities) {
+  private List<Language> sortProbability(final float[] probabilities) {
 
     final List<Language> languages = new ArrayList<>();
     // Using final array as a holder of a counter
-    final double[] probabilitiesSum = new double[1];
+    final float[] probabilitiesSum = new float[1];
 
     for (int probIdx = 0; probIdx < probabilities.length; ++probIdx) {
-      final double currentProbability = probabilities[probIdx];
+      final float currentProbability = probabilities[probIdx];
       probabilitiesSum[0] += currentProbability;
 
       if (currentProbability > probabilityThreshold) {

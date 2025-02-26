@@ -16,6 +16,8 @@ final class TestHelper {
 
   private TestHelper() {}
 
+  static final float ACCURACY_DELTA = 1e-6f;
+
   // To disable a language from being evaluated, we need to set its
   // probability in the CSV as NaN. Then, it will be filtered out.
   static final String ALL_LANGUAGES =

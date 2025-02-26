@@ -1,6 +1,7 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.COMMA_CHAR;
+import static io.github.azagniotov.language.TestHelper.ACCURACY_DELTA;
 import static io.github.azagniotov.language.TestHelper.ALL_LANGUAGES;
 import static io.github.azagniotov.language.TestHelper.getResourceReader;
 import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
@@ -41,8 +42,6 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class LanguageDetectorSingleWordAccuracyTest {
 
-  private static final double ACCURACY_DELTA = 1e-6;
-
   private static final String HIGH_ACCURACY_SUPPORTED_ISO_CODES = "de,en,es,fr,it";
 
   private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
@@ -54,7 +53,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
 
   private final String dataset;
   private final String profile;
-  private final Map<String, Double> languageToExpectedAccuracy;
+  private final Map<String, Float> languageToExpectedAccuracy;
 
   /**
    * Construct a test for classification accuracies on substrings of texts from a single dataset.
@@ -62,8 +61,8 @@ public class LanguageDetectorSingleWordAccuracyTest {
    * <p>For each text and substring length, this test generates a sample of substrings (drawn
    * uniformly with replacement from the set of possible substrings of the given length), runs the
    * language identification code, measures the per-language accuracy (percentage of substrings
-   * classified correctly), and fails if the accuracy varies by more than {@link #ACCURACY_DELTA}
-   * from the expected accuracy for the language.
+   * classified correctly), and fails if the accuracy varies by more than {@link
+   * TestHelper#ACCURACY_DELTA} from the expected accuracy for the language.
    *
    * @param dataset multi-language dataset name, as read in the setup step (see {@link #setUp()})
    * @param profile profile name parameter to pass to the detection service
@@ -72,7 +71,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
   public LanguageDetectorSingleWordAccuracyTest(
       final String dataset,
       final String profile,
-      final Map<String, Double> languageToExpectedAccuracy) {
+      final Map<String, Float> languageToExpectedAccuracy) {
     this.dataset = dataset;
     this.profile = profile;
     this.languageToExpectedAccuracy = Map.copyOf(languageToExpectedAccuracy);
@@ -132,18 +131,18 @@ public class LanguageDetectorSingleWordAccuracyTest {
     datasetTargetLanguages.retainAll(configuredSettings.getIsoCodes639_1());
 
     // Classify the texts and calculate the accuracy for each language
-    final Map<String, Double> languageToDetectedAccuracy =
+    final Map<String, Float> languageToDetectedAccuracy =
         new HashMap<>(datasetTargetLanguages.size());
 
     for (final String targetLanguage : datasetTargetLanguages) {
-      double correctDetections = 0;
+      float correctDetections = 0;
       final List<String> languageAllWords = languageToWords.get(targetLanguage);
       for (final String word : languageAllWords) {
         if (Objects.equals(getTopLanguageCode(languageDetector, word), targetLanguage)) {
           correctDetections++;
         }
       }
-      final double accuracy = correctDetections / languageAllWords.size();
+      final float accuracy = correctDetections / languageAllWords.size();
       languageToDetectedAccuracy.put(targetLanguage, accuracy);
       // System.out.printf("Detected accuracy: %s = %s%n", targetLanguage, accuracy);
     }
@@ -155,9 +154,9 @@ public class LanguageDetectorSingleWordAccuracyTest {
     // Generate accuracy report regardless of the upcoming assertions
     writeAccuracyReport(languageToDetectedAccuracy);
 
-    for (Map.Entry<String, Double> detected : languageToDetectedAccuracy.entrySet()) {
+    for (Map.Entry<String, Float> detected : languageToDetectedAccuracy.entrySet()) {
       final String targetLanguage = detected.getKey();
-      final double expectedAccuracy = languageToExpectedAccuracy.get(targetLanguage);
+      final float expectedAccuracy = languageToExpectedAccuracy.get(targetLanguage);
       final String failureMessage = String.format("FAILED [%s]: ", targetLanguage);
 
       assertEquals(failureMessage, expectedAccuracy, detected.getValue(), ACCURACY_DELTA);
@@ -174,13 +173,13 @@ public class LanguageDetectorSingleWordAccuracyTest {
     }
   }
 
-  private void writeAccuracyReport(final Map<String, Double> languageToDetectedAccuracy)
+  private void writeAccuracyReport(final Map<String, Float> languageToDetectedAccuracy)
       throws IOException {
     final List<String> row = new ArrayList<>();
     Collections.addAll(row, dataset, profile);
 
     for (final String language : ALL_LANGUAGES.split(COMMA_CHAR)) {
-      row.add(languageToDetectedAccuracy.getOrDefault(language, Double.NaN).toString());
+      row.add(languageToDetectedAccuracy.getOrDefault(language, Float.NaN).toString());
     }
     Files.write(
         Path.of(ACCURACY_REPORT_NAME),
@@ -213,13 +212,13 @@ public class LanguageDetectorSingleWordAccuracyTest {
               null
             });
 
-        final Map<String, Double> expectedAccuraciesPerLanguage = new HashMap<>();
+        final Map<String, Float> expectedAccuraciesPerLanguage = new HashMap<>();
         for (String language : ALL_LANGUAGES.split(COMMA_CHAR)) {
-          double expectedAccuracy = scanner.nextDouble();
+          float expectedAccuracy = scanner.nextFloat();
 
           // To disable a language from being evaluated, we need to set its
           // probability in the CSV as NaN. Then, it will be filtered out.
-          if (!Double.isNaN(expectedAccuracy)) {
+          if (!Float.isNaN(expectedAccuracy)) {
             expectedAccuraciesPerLanguage.put(language, expectedAccuracy);
           }
         }

@@ -89,7 +89,7 @@ public class LanguageProfileGenerator {
     //      }
     //    }
 
-    final List<Double> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0).toArray(new Double[0]));
+    final List<Float> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0).toArray(new Float[0]));
     final LanguageProfile languageProfile =
         new LanguageProfile(targetCode, new HashMap<>(), nWords);
 
