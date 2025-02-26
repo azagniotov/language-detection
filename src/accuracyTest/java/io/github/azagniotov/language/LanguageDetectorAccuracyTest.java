@@ -138,9 +138,7 @@ public class LanguageDetectorAccuracyTest {
   public void simulation() throws Exception {
     final String languageCodes = configureProfileDependentLanguageCodes();
     final String canonicalProfile =
-        profile.equals("default")
-            ? ""
-            : profile.equals("small-lang-subset") ? "merged-average" : profile;
+        profile.equals("small-lang-subset") ? "merged-average" : profile;
 
     final LanguageDetectionSettings configuredSettings =
         LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
@@ -206,7 +204,7 @@ public class LanguageDetectorAccuracyTest {
     // Any new language configuration that will be added to the
     // accuracies.csv will not be a part of the following decision tree.
     if (useAllLanguages) {
-      if (profile.equals("default")) {
+      if (profile.equals("original")) {
         languageCodes = ALL_DEFAULT_PROFILE_LANGUAGES;
       } else if (profile.equals("short-text")) {
         languageCodes = ALL_SHORT_PROFILE_LANGUAGES;
