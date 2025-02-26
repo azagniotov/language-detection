@@ -1,6 +1,7 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
+import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,20 +33,20 @@ class LanguageProfile {
           .registerTypeAdapter(LanguageProfile.class, new LanguageProfileSerializer())
           .create();
 
-  private static final double MINIMUM_FREQ = 2.0;
-  private static final double LESS_FREQ_RATIO = 100_000.0;
+  private static final float MINIMUM_FREQ = 2.0f;
+  private static final float LESS_FREQ_RATIO = 100_000.0f;
   private static final Pattern PATTERN_ONE_ALPHABETIC_CHAR_ONLY = Pattern.compile("^[A-Za-z]$");
 
   private final String isoCode639_1;
   private final Map<String, Long> freq;
-  private final List<Double> nWords;
+  private final List<Float> nWords;
 
   private int minNGramLength;
   private int maxNGramLength;
 
   /** Create a language profile from a JSON input stream. */
   LanguageProfile(
-      final String isoCode639_1, final Map<String, Long> freq, final List<Double> nWords) {
+      final String isoCode639_1, final Map<String, Long> freq, final List<Float> nWords) {
     this.isoCode639_1 = isoCode639_1;
     this.freq = freq;
     this.nWords = nWords;
@@ -69,7 +70,7 @@ class LanguageProfile {
       return;
     }
     int nGramTypeIndex = len - 1;
-    nWords.set(nGramTypeIndex, nWords.get(nGramTypeIndex) + 1.0);
+    nWords.set(nGramTypeIndex, nWords.get(nGramTypeIndex) + PERFECT_PROBABILITY);
 
     if (freq.containsKey(gram)) {
       freq.put(gram, freq.get(gram) + 1);
@@ -82,7 +83,7 @@ class LanguageProfile {
     return isoCode639_1;
   }
 
-  List<Double> getNGramCounts() {
+  List<Float> getNGramCounts() {
     return nWords;
   }
 
@@ -125,18 +126,18 @@ class LanguageProfile {
     if (this.isoCode639_1 == null || this.isoCode639_1.trim().isEmpty()) {
       return; // Illegal
     }
-    double threshold = nWords.get(this.minNGramLength - 1) / LESS_FREQ_RATIO;
+    float threshold = nWords.get(this.minNGramLength - 1) / LESS_FREQ_RATIO;
     if (threshold < MINIMUM_FREQ) {
       threshold = MINIMUM_FREQ;
     }
 
     final Set<String> keys = freq.keySet();
-    double roman = 0;
+    float roman = 0;
     for (Iterator<String> iterator = keys.iterator(); iterator.hasNext(); ) {
       final String key = iterator.next();
-      final double count = freq.get(key);
+      final float count = freq.get(key);
       if (count <= threshold) {
-        final double current = nWords.get(key.length() - 1);
+        final float current = nWords.get(key.length() - 1);
         nWords.set(key.length() - 1, current - count);
         iterator.remove();
       } else {
@@ -153,7 +154,7 @@ class LanguageProfile {
       for (Iterator<String> iterator = keys2.iterator(); iterator.hasNext(); ) {
         final String key = iterator.next();
         if (PATTERN_ONE_ALPHABETIC_CHAR_ONLY.matcher(key).matches()) {
-          final double current = nWords.get(key.length() - 1);
+          final float current = nWords.get(key.length() - 1);
           nWords.set(key.length() - 1, current - freq.get(key));
 
           iterator.remove();
@@ -170,8 +171,10 @@ class LanguageProfile {
       final JsonObject jsonObject = json.getAsJsonObject();
       final String name = jsonObject.get("name").getAsString();
 
-      // final Type listOfDouble = new TypeToken<ArrayList<Double>>(){}.getType();
-      final Double[] nWords = context.deserialize(jsonObject.get("n_words"), Double[].class);
+      // Another approach:
+      // final Type listOfFloat = new TypeToken<ArrayList<Float>>(){}.getType();
+      final Type arrayOfFloat = Float[].class;
+      final Float[] nWords = context.deserialize(jsonObject.get("n_words"), arrayOfFloat);
 
       // Manually handle duplicate keys in the "freq" map
       final Map<String, Long> freq = new HashMap<>();

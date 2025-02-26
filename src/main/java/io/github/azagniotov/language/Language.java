@@ -3,9 +3,9 @@ package io.github.azagniotov.language;
 public class Language {
 
   private final String isoCode639_1;
-  private final double probability;
+  private final float probability;
 
-  Language(final String isoCode639_1, final double probability) {
+  Language(final String isoCode639_1, final float probability) {
     this.isoCode639_1 = isoCode639_1;
     this.probability = probability;
   }
@@ -14,7 +14,7 @@ public class Language {
     return isoCode639_1;
   }
 
-  public double getProbability() {
+  public float getProbability() {
     return probability;
   }
 

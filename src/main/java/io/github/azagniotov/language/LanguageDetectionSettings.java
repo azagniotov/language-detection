@@ -27,8 +27,8 @@ public class LanguageDetectionSettings {
   private final int sanitizeForSearchThreshold;
   private final boolean sanitizeForSearch;
   private final boolean classifyChineseAsJapanese;
-  private final double classifyChineseAsJapaneseThreshold;
-  private final double certaintyThreshold;
+  private final float classifyChineseAsJapaneseThreshold;
+  private final float certaintyThreshold;
   private final String fallbackIsoCode639_1;
 
   private LanguageDetectionSettings(final Builder builder) {
@@ -77,11 +77,11 @@ public class LanguageDetectionSettings {
     return classifyChineseAsJapanese;
   }
 
-  double getClassifyChineseAsJapaneseThreshold() {
+  float getClassifyChineseAsJapaneseThreshold() {
     return classifyChineseAsJapaneseThreshold;
   }
 
-  double getCertaintyThreshold() {
+  float getCertaintyThreshold() {
     return certaintyThreshold;
   }
 
@@ -119,8 +119,8 @@ public class LanguageDetectionSettings {
 
     private boolean classifyChineseAsJapanese;
     // At this point this is not exposed to configure via a Buildr setter
-    private double classifyChineseAsJapaneseThreshold;
-    private double certaintyThreshold;
+    private float classifyChineseAsJapaneseThreshold;
+    private float certaintyThreshold;
     private String fallbackIsoCode639_1;
 
     private Builder(final List<String> isoCodes639_1) {
@@ -132,8 +132,8 @@ public class LanguageDetectionSettings {
       this.sanitizeForSearch = true;
       this.sanitizeForSearchThreshold = 128;
       this.classifyChineseAsJapanese = false;
-      this.classifyChineseAsJapaneseThreshold = 0.1;
-      this.certaintyThreshold = 0.65;
+      this.classifyChineseAsJapaneseThreshold = 0.1f;
+      this.certaintyThreshold = 0.65f;
       this.fallbackIsoCode639_1 = "en";
     }
 
@@ -172,7 +172,7 @@ public class LanguageDetectionSettings {
     }
 
     public Builder withMininumCertainty(
-        final double certaintyThreshold, final String fallbackIsoCode639_1) {
+        final float certaintyThreshold, final String fallbackIsoCode639_1) {
       this.certaintyThreshold = certaintyThreshold;
       this.fallbackIsoCode639_1 = fallbackIsoCode639_1;
       return new Builder(this);

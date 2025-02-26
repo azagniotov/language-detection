@@ -191,10 +191,10 @@ public class LanguageDetectionOrchestratorTest {
         orchestrator.detectAll(" deel te neem, om die kunste te geniet en in weten");
     assertEquals(2, languages.size());
     assertEquals("af", languages.get(0).getIsoCode639_1());
-    assertEquals("0.7142819474614053", String.valueOf(languages.get(0).getProbability()));
+    assertEquals("0.7142819", String.valueOf(languages.get(0).getProbability()));
 
     assertEquals("nl", languages.get(1).getIsoCode639_1());
-    assertEquals("0.2857180525385947", String.valueOf(languages.get(1).getProbability()));
+    assertEquals("0.28571808", String.valueOf(languages.get(1).getProbability()));
   }
 
   @Test
@@ -234,7 +234,7 @@ public class LanguageDetectionOrchestratorTest {
   public final void respondsWithFallbackLanguageForUndeterminedLanguage() throws Exception {
     final LanguageDetectionSettings settings =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES)
-            .withMininumCertainty(0.95, "ru")
+            .withMininumCertainty(0.95f, "ru")
             .build();
 
     final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);

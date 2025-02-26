@@ -1,6 +1,7 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.LanguageDetector.JAPANESE_LANGUAGE_RESPONSE;
+import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
 import static io.github.azagniotov.language.LanguageDetector.UNDETERMINED_LANGUAGE_RESPONSE;
 
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class LanguageDetectionOrchestrator {
         return languages;
       } else if (topLanguage.getProbability() < this.settings.getCertaintyThreshold()) {
         return Collections.singletonList(
-            new Language(this.settings.getFallbackIsoCode639_1(), 1.0));
+            new Language(this.settings.getFallbackIsoCode639_1(), PERFECT_PROBABILITY));
       } else {
         return languages;
       }

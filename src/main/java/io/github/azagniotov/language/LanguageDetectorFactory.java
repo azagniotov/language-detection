@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * <p>3. A mapping between N-Gram words and probabilities is getting computed.
  *
- * <p>4. The created language detector factory singleton instance is then cached (via double-checked
+ * <p>4. The created language detector factory singleton instance is then cached (via float-checked
  * locking pattern)
  *
  * <p>5. The {@link LanguageDetector} instance is created with the computed N-Gram words and
@@ -40,7 +40,7 @@ class LanguageDetectorFactory {
 
   // All the loaded ISO 639-1 codes that have been configured by the user,
   // e.g.: en, ja, es. The codes are in exactly the same order as the data
-  // is in the double[] in languageCorporaProbabilities.
+  // is in the float[] in languageCorporaProbabilities.
   //
   // Example:
   // If languageCorporaProbabilities has an entry for the n-gram "foo", then for
@@ -52,7 +52,7 @@ class LanguageDetectorFactory {
   // which correspond to the configured ISO 639-1 code for detection), along with
   // their associated probabilities. These probabilities are calculated as the ratio
   // between the word's frequency and the frequency of its N-grams.
-  private final Map<String, double[]> languageCorporaProbabilities;
+  private final Map<String, float[]> languageCorporaProbabilities;
 
   private final int minNGramLength;
   private final int maxNGramLength;
@@ -71,7 +71,7 @@ class LanguageDetectorFactory {
     return supportedIsoCodes639_1;
   }
 
-  Map<String, double[]> getLanguageCorporaProbabilities() {
+  Map<String, float[]> getLanguageCorporaProbabilities() {
     return languageCorporaProbabilities;
   }
 
@@ -128,7 +128,7 @@ class LanguageDetectorFactory {
     for (final String word : profile.getWordFrequencies().keySet()) {
 
       if (!this.languageCorporaProbabilities.containsKey(word)) {
-        this.languageCorporaProbabilities.put(word, new double[totalProfiles]);
+        this.languageCorporaProbabilities.put(word, new float[totalProfiles]);
       }
 
       final int length = word.length();
@@ -136,8 +136,8 @@ class LanguageDetectorFactory {
         final long wordFrequency = profile.getWordFrequencies().get(word);
 
         // e.g.: "n_words":[260942223,308553243,224934017]
-        final double nGramCount = profile.getNGramCounts().get(length - 1);
-        final double probability = ((double) wordFrequency / nGramCount);
+        final float nGramCount = profile.getNGramCounts().get(length - 1);
+        final float probability = ((float) wordFrequency / nGramCount);
 
         this.languageCorporaProbabilities.get(word)[index] = probability;
       }
