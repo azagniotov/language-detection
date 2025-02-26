@@ -115,7 +115,7 @@ public class LanguageDetectorTest {
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1(
-                "az,am,br,cy,de,eu,ga,he,hy,ka,kk,ky,lb,mn,ti,yi")
+                "az,am,bo,br,cy,de,eu,ga,he,hy,ka,kk,ky,lb,mn,ti,yi")
             .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
@@ -155,6 +155,8 @@ public class LanguageDetectorTest {
     assertEquals("lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
     // Mongolian
     assertEquals("mn", detector.detectAll("Би монгол хэл сурч байна").get(0).getIsoCode639_1());
+    // Tibetan
+    assertEquals("bo", detector.detectAll("ངས་བོད་ཡིག་སྦྱོང་གི་ཡོད།").get(0).getIsoCode639_1());
     // Tigrinya
     assertEquals("ti", detector.detectAll("ትግርኛ ይመሃር ኣለኹ").get(0).getIsoCode639_1());
     // Welsh
@@ -241,6 +243,11 @@ public class LanguageDetectorTest {
   @Test
   public void testMongolian() throws Exception {
     testLanguage("mongolian.txt", "mn", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testTibetan() throws Exception {
+    testLanguage("tibetan.txt", "bo", DEFAULT_DETECTOR);
   }
 
   @Test
