@@ -39,7 +39,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from 1 to 3, alongside a Bayesian filter that incorporates various normalization techniques and feature sampling methods.
 
-The precision is over **99%** for **67** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
+The precision is over **99%** for **69** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
 ### Enhancements over past implementations
 
@@ -50,10 +50,7 @@ For clarity, I'm linking these enhancements to the original implementation with 
 1. **Eliminating unnecessary ArrayList resizing** during n-gram extraction from the input string. In the current implementation, the ArrayList is pre-allocated based on the estimated number of n-grams, thereby reducing the overhead caused by element copying during resizing.
 [See the original code here](https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/Detector.java#L278).
 
-2. **Eliminating reliance on StringBuilder** during n-gram extraction. The current version uses a circular buffer array to minimize creating intermediate strings, improving memory efficiency.
-[See the original code here](https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/util/NGram.java#L25-L37).
-
-3. **Removing per-character normalization at runtime**. In the current implementation, instead of normalizing characters during execution, all `65,535` Unicode BMP characters are pre-normalized into a char[] array, making runtime normalization a simple array lookup.
+2. **Removing per-character normalization at runtime**. In the current implementation, instead of normalizing characters during execution, all `65,535` Unicode BMP characters are pre-normalized into a char[] array, making runtime normalization a simple array lookup.
 [See the original code here](https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/util/NGram.java#L75-L103).
 
 ### Supported ISO 639-1 codes
@@ -98,12 +95,14 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Kannada          | kn        |
 | Kazakh           | kk        |
 | Korean           | ko        |
+| Kyrgyz           | ky        |
 | Latvian          | lv        |
 | Lithuanian       | lt        |
 | Luxembourgish    | lb        |
 | Macedonian       | mk        |
 | Malayalam        | ml        |
 | Marathi          | mr        |
+| Mongolian        | mn        |
 | Nepali           | ne        |
 | Norwegian        | no        |
 | Persian          | fa        |

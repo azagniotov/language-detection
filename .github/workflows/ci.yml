@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '*.txt'
+      - '*.md'
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - '*.txt'
+      - '*.md'
 
 jobs:
   build-and-test:
@@ -105,12 +111,12 @@ jobs:
         if: ${{ env.CURRENT_VERSION != env.LATEST_VERSION }}
         run: |
           echo ${{ env.LATEST_VERSION }} > latest-version.txt
-          git config user.name "Alexander Zagniotov"
-          git config user.email "azagniotov@gmail.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add latest-version.txt
           git commit -m "Auto-update the latest version to ${{ env.LATEST_VERSION }}"
           git push
-  
+
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
