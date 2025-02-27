@@ -23,8 +23,8 @@ public class LanguageDetectionSettingsTest {
     assertEquals(settings.getTopLanguageFallbackIsoCode639_1(), "en");
     assertFalse(settings.isTopLanguageCertaintyThresholdSet());
 
-    assertEquals(settings.getMinimumCertaintyThreshold() + "", "0.65");
-    assertFalse(settings.isMinimumCertaintyThresholdSet());
+    assertEquals(settings.getMinimumCertaintyThreshold() + "", "0.1");
+    assertTrue(settings.isMinimumCertaintyThresholdSet());
 
     assertEquals(settings.getClassifyChineseAsJapaneseThreshold() + "", "0.1");
     assertEquals(settings.getIsoCodes639_1(), Arrays.asList("ja", "en"));

@@ -4,6 +4,7 @@ import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,8 +33,8 @@ class LanguageDetector {
       new Language(ISO_CODE_639_3_UND, ZERO_PROBABILITY);
   static final Language JAPANESE_LANGUAGE_RESPONSE = new Language("ja", PERFECT_PROBABILITY);
 
-  // return top 5 detected language when calling detectAll(String)
-  private static final int MAX_DETECTED_CLASSES = 5;
+  // return up to top 10 detected language when calling detectAll(String)
+  private static final int MAX_DETECTED_CLASSES = 10;
 
   // All the loaded ISO 639-1 codes that have been configured by the user,
   // e.g.: en, ja, es. The codes are in exactly the same order as the data
@@ -59,7 +60,6 @@ class LanguageDetector {
   private final int iterationLimit;
   private final float alpha;
   private final float alphaWidth;
-  private final float probabilityThreshold;
   private final float convThreshold;
 
   LanguageDetector(
@@ -77,7 +77,6 @@ class LanguageDetector {
     this.numberOfTrials = 7;
     this.alpha = 0.5f;
     this.alphaWidth = 0.05f;
-    this.probabilityThreshold = 0.1f;
     this.convThreshold = 0.99999f;
   }
 
@@ -200,20 +199,14 @@ class LanguageDetector {
     final float[] probabilitiesSum = new float[1];
 
     for (int probIdx = 0; probIdx < probabilities.length; ++probIdx) {
-      final float currentProbability = probabilities[probIdx];
-      probabilitiesSum[0] += currentProbability;
-
-      if (currentProbability > probabilityThreshold) {
-        for (int langIdx = 0; langIdx <= languages.size(); ++langIdx) {
-          if (langIdx == languages.size()
-              || languages.get(langIdx).getProbability() < currentProbability) {
-            final String code = supportedIsoCodes639_1.get(probIdx);
-            languages.add(langIdx, new Language(code, currentProbability));
-            break;
-          }
-        }
+      final float currentLanguageProbability = probabilities[probIdx];
+      probabilitiesSum[0] += currentLanguageProbability;
+      if (currentLanguageProbability > ZERO_PROBABILITY) {
+        final String code = supportedIsoCodes639_1.get(probIdx);
+        languages.add(new Language(code, currentLanguageProbability));
       }
     }
+    Collections.sort(languages);
 
     if (probabilitiesSum[0] == 0 || languages.isEmpty()) {
       // In certain scenarios, the sum of probabilities could be so low
