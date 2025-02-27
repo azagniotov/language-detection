@@ -18,6 +18,7 @@ import static java.lang.Character.UnicodeBlock.LATIN_1_SUPPLEMENT;
 import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_ADDITIONAL;
 import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_B;
 
+import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
 import java.lang.Character.UnicodeBlock;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -362,6 +363,7 @@ class NGram {
   }
 
   @Deprecated
+  @GeneratedCodeMethodCoverageExclusion
   private void addChar_original(char ch) {
     ch = normalize(ch);
     char lastchar = grams.charAt(grams.length() - 1);
@@ -385,6 +387,7 @@ class NGram {
   }
 
   @Deprecated
+  @GeneratedCodeMethodCoverageExclusion
   private String get_original(final int n) {
     if (capitalWord) {
       return EMPTY_STRING;

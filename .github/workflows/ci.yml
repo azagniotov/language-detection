@@ -44,6 +44,44 @@ jobs:
       - name: Run unit tests
         run: ./gradlew clean test
 
+  jacoco-coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v4
+        with:
+          # https://github.com/diffplug/spotless/issues/1242
+          fetch-depth: 0
+
+      - name: Set up Azul Zulu OpenJDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "zulu"
+          cache: gradle
+
+      - name: Run JaCoCo coverage
+        run: |
+          ./gradlew clean test jacocoTestReport
+
+      - name: Add JaCoCo coverage as a PR comment
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          paths: ${{ github.workspace }}/build/reports/jacoco/**/jacocoTestReport.xml
+          min-coverage-overall: 90
+          title: ' :robot: `Coverage Report`'
+          update-comment: true
+          min-coverage-changed-files: 60
+
+      - name: Get the JaCoCo coverage info
+        run: |
+          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+
   accuracy-test:
     runs-on: ubuntu-latest
     steps:

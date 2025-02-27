@@ -25,6 +25,10 @@ jacocoTestReport {
 			fileTree(dir: it, exclude: analysisExcludes())
 		}))
 	}
+	reports {
+		xml.required = true
+		html.required = true
+	}
 }
 
 jacocoTestCoverageVerification {
@@ -40,20 +44,5 @@ jacocoTestCoverageVerification {
 				minimum = new BigDecimal("${coverageMinimum}")
 			}
 		}
-	}
-}
-
-// Ignore IntelliJ warning about registering this task, because it breaks coverage reports:
-task codeCoverageReport(type: JacocoReport) {
-	executionData execData()
-	sourceSets sourceSets.main
-	afterEvaluate {
-		classDirectories.setFrom(files(classDirectories.files.collect {
-			fileTree(dir: it, exclude: analysisExcludes())
-		}))
-	}
-	reports {
-		xml.required = true
-		html.required = true
 	}
 }
