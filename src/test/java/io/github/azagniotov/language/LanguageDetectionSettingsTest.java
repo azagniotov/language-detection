@@ -41,6 +41,10 @@ public class LanguageDetectionSettingsTest {
     assertTrue(settingsWithMininumCertainty.isMinimumCertaintyThresholdSet());
     assertFalse(settingsWithMininumCertainty.isTopLanguageCertaintyThresholdSet());
 
+    // Unrelated, but sanity checking the defaults
+    assertFalse(settingsWithMininumCertainty.isClassifyChineseAsJapanese());
+    assertTrue(settingsWithMininumCertainty.isSanitizeForSearch());
+
     final LanguageDetectionSettings settingsWithTopMininumCertainty =
         LanguageDetectionSettings.fromIsoCodes639_1("ja,en")
             .withTopLanguageMininumCertainty(0.70f, "en")
@@ -48,6 +52,10 @@ public class LanguageDetectionSettingsTest {
 
     assertFalse(settingsWithTopMininumCertainty.isMinimumCertaintyThresholdSet());
     assertTrue(settingsWithTopMininumCertainty.isTopLanguageCertaintyThresholdSet());
+
+    // Unrelated, but sanity checking the defaults
+    assertFalse(settingsWithTopMininumCertainty.isClassifyChineseAsJapanese());
+    assertTrue(settingsWithTopMininumCertainty.isSanitizeForSearch());
 
     final LanguageDetectionSettings settingsWithBoth =
         LanguageDetectionSettings.fromIsoCodes639_1("ja,en")
@@ -57,5 +65,41 @@ public class LanguageDetectionSettingsTest {
 
     assertTrue(settingsWithBoth.isMinimumCertaintyThresholdSet());
     assertFalse(settingsWithBoth.isTopLanguageCertaintyThresholdSet());
+
+    // Unrelated, but sanity checking the defaults
+    assertFalse(settingsWithBoth.isClassifyChineseAsJapanese());
+    assertTrue(settingsWithBoth.isSanitizeForSearch());
+  }
+
+  @Test
+  public void testUnsetSanitizeForSearch() {
+    final LanguageDetectionSettings settings =
+        LanguageDetectionSettings.fromIsoCodes639_1("ja,en").build();
+    assertTrue(settings.isSanitizeForSearch());
+
+    final LanguageDetectionSettings settingsWithoutSanitize =
+        LanguageDetectionSettings.fromIsoCodes639_1("ja,en").withoutSanitizeForSearch().build();
+    assertFalse(settingsWithoutSanitize.isSanitizeForSearch());
+
+    // Unrelated, but sanity checking the defaults
+    assertFalse(settings.isClassifyChineseAsJapanese());
+    assertFalse(settingsWithoutSanitize.isClassifyChineseAsJapanese());
+  }
+
+  @Test
+  public void testSetClassifyChineseAsJapanese() {
+    final LanguageDetectionSettings settings =
+        LanguageDetectionSettings.fromIsoCodes639_1("ja,en").build();
+    assertFalse(settings.isClassifyChineseAsJapanese());
+
+    final LanguageDetectionSettings settingsWithClassify =
+        LanguageDetectionSettings.fromIsoCodes639_1("ja,en")
+            .withClassifyChineseAsJapanese()
+            .build();
+    assertTrue(settingsWithClassify.isClassifyChineseAsJapanese());
+
+    // Unrelated, but sanity checking the defaults
+    assertTrue(settings.isSanitizeForSearch());
+    assertTrue(settingsWithClassify.isSanitizeForSearch());
   }
 }

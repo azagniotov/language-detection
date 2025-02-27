@@ -1,6 +1,6 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.StringConstants.COMMA_CHAR;
+import static io.github.azagniotov.language.StringConstants.COMMA;
 import static io.github.azagniotov.language.TestHelper.ACCURACY_DELTA;
 import static io.github.azagniotov.language.TestHelper.ALL_LANGUAGES;
 import static io.github.azagniotov.language.TestHelper.getResourceReader;
@@ -185,12 +185,12 @@ public class LanguageDetectorSingleWordAccuracyTest {
     final List<String> row = new ArrayList<>();
     Collections.addAll(row, dataset, profile);
 
-    for (final String language : ALL_LANGUAGES.split(COMMA_CHAR)) {
+    for (final String language : ALL_LANGUAGES.split(COMMA)) {
       row.add(languageToDetectedAccuracy.getOrDefault(language, Float.NaN).toString());
     }
     Files.write(
         Path.of(ACCURACY_REPORT_NAME),
-        Collections.singletonList(String.join(COMMA_CHAR, row)),
+        Collections.singletonList(String.join(COMMA, row)),
         StandardCharsets.UTF_8,
         StandardOpenOption.APPEND);
   }
@@ -208,7 +208,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
       bufferedReader.readLine();
       while (bufferedReader.ready()) {
         final String line = bufferedReader.readLine();
-        final Scanner scanner = new Scanner(line).useLocale(Locale.US).useDelimiter(COMMA_CHAR);
+        final Scanner scanner = new Scanner(line).useLocale(Locale.US).useDelimiter(COMMA);
         data.add(
             new Object[] {
               // dataset
@@ -220,7 +220,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
             });
 
         final Map<String, Float> expectedAccuraciesPerLanguage = new HashMap<>();
-        for (String language : ALL_LANGUAGES.split(COMMA_CHAR)) {
+        for (String language : ALL_LANGUAGES.split(COMMA)) {
           float expectedAccuracy = scanner.nextFloat();
 
           // To disable a language from being evaluated, we need to set its
