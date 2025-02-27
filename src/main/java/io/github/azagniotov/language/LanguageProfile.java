@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -122,6 +123,7 @@ class LanguageProfile {
   }
 
   /** Eliminate below less frequency n-grams and noisy Latin alphabets */
+  @GeneratedCodeMethodCoverageExclusion
   public void omitLessFreq() {
     if (this.isoCode639_1 == null || this.isoCode639_1.trim().isEmpty()) {
       return; // Illegal
