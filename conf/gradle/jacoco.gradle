@@ -1,11 +1,9 @@
 def execData() {
-	return files(fileTree(layout.buildDirectory.get().asFile.absolutePath).include("jacoco/*.exec"))
+	return fileTree(layout.buildDirectory.file("jacoco/test.exec").get().asFile)
 }
 
 def static analysisExcludes() {
-	return [
-			"src/generated/**"
-	]
+	return []
 }
 
 ext {
@@ -45,4 +43,8 @@ jacocoTestCoverageVerification {
 			}
 		}
 	}
+}
+
+test {
+	finalizedBy jacocoTestReport
 }
