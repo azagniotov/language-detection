@@ -1,6 +1,6 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.StringConstants.TAB_CHAR;
+import static io.github.azagniotov.language.StringConstants.TAB;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +37,7 @@ final class TestHelper {
 
     try (final BufferedReader bufferedReader = getResourceReader(path)) {
       while (bufferedReader.ready()) {
-        final String[] csvLineChunks = bufferedReader.readLine().split(TAB_CHAR);
+        final String[] csvLineChunks = bufferedReader.readLine().split(TAB);
         final String language = csvLineChunks[0];
         final String textSubstring = csvLineChunks[1];
 

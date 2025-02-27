@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
@@ -70,7 +71,7 @@ public class LanguageDetectionOrchestratorTest {
   @Test
   public void detectsBlankInput() throws Exception {
     final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
-    final Language language = orchestrator.detect(" ");
+    final Language language = orchestrator.detect(BLANK_SPACE);
 
     assertEquals("und", language.getIsoCode639_1());
     assertEquals("0.0", String.valueOf(language.getProbability()));

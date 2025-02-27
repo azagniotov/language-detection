@@ -1,6 +1,8 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.LanguageDetectionSettings.DEFAULT_SETTINGS_ALL_LANGUAGES;
+import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
+import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
@@ -19,7 +21,6 @@ public class LanguageDetectorTest {
   private static final String TRAINING_EN = "a a a b b c c d e";
   private static final String TRAINING_FR = "a b b c c c d d d";
   private static final String TRAINING_JA = "\u3042 \u3042 \u3042 \u3044 \u3046 \u3048 \u3048";
-  private static final String SINGLE_SPACE = " ";
 
   private static final LanguageDetector DEFAULT_DETECTOR;
 
@@ -39,7 +40,7 @@ public class LanguageDetectorTest {
   @Before
   public void setUp() throws Exception {
     final LanguageDetectionSettings emptySettings =
-        LanguageDetectionSettings.fromIsoCodes639_1("").build();
+        LanguageDetectionSettings.fromIsoCodes639_1(EMPTY_STRING).build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(emptySettings);
 
     final String profileTemplate = "{\"freq\":{},\"n_words\":[0.0, 0.0, 0.0],\"name\":\"%s\"}";
@@ -47,7 +48,7 @@ public class LanguageDetectorTest {
         new ByteArrayInputStream(
             String.format(profileTemplate, "en_test").getBytes(StandardCharsets.UTF_8));
     final LanguageProfile enProfile = LanguageProfile.fromJson(enTest);
-    for (String w : TRAINING_EN.split(SINGLE_SPACE)) {
+    for (String w : TRAINING_EN.split(BLANK_SPACE)) {
       enProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(enProfile, 0, 3);
@@ -56,7 +57,7 @@ public class LanguageDetectorTest {
         new ByteArrayInputStream(
             String.format(profileTemplate, "fr_test").getBytes(StandardCharsets.UTF_8));
     final LanguageProfile frProfile = LanguageProfile.fromJson(frTest);
-    for (String w : TRAINING_FR.split(SINGLE_SPACE)) {
+    for (String w : TRAINING_FR.split(BLANK_SPACE)) {
       frProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(frProfile, 1, 3);
@@ -65,7 +66,7 @@ public class LanguageDetectorTest {
         new ByteArrayInputStream(
             String.format(profileTemplate, "ja_test").getBytes(StandardCharsets.UTF_8));
     final LanguageProfile jaProfile = LanguageProfile.fromJson(jaTest);
-    for (String w : TRAINING_JA.split(SINGLE_SPACE)) {
+    for (String w : TRAINING_JA.split(BLANK_SPACE)) {
       jaProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(jaProfile, 2, 3);

@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static java.util.Collections.nCopies;
 import static org.junit.Assert.assertEquals;
@@ -149,7 +150,7 @@ public class LanguageProfileGenerator {
 
         final String sanitizedWithoutDigits = sanitize(PATTERN_MATCH_NUMERICS, sanitized);
         final Matcher matcher = PATTERN_MULTIPLE_SPACES.matcher(sanitizedWithoutDigits);
-        languageProfile.update(matcher.replaceAll(" "), MIN_GRAM_SIZE, MAX_GRAM_SIZE);
+        languageProfile.update(matcher.replaceAll(BLANK_SPACE), MIN_GRAM_SIZE, MAX_GRAM_SIZE);
       }
     }
   }
@@ -210,6 +211,6 @@ public class LanguageProfileGenerator {
     assertEquals(withoutEastAsianAndDigits, "abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
 
     final Matcher matcher = PATTERN_MULTIPLE_SPACES.matcher(withoutEastAsianAndDigits);
-    assertEquals(matcher.replaceAll(" "), "abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
+    assertEquals(matcher.replaceAll(BLANK_SPACE), "abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
   }
 }

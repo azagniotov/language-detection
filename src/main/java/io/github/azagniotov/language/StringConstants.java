@@ -5,8 +5,8 @@ class StringConstants {
   static final char BLANK_CHAR = ' ';
   static final String EMPTY_STRING = "";
   static final String BLANK_SPACE = " ";
-  static final String COMMA_CHAR = ",";
-  static final String TAB_CHAR = "\t";
+  static final String COMMA = ",";
+  static final String TAB = "\t";
 
   private StringConstants() {}
 }
