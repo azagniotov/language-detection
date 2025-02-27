@@ -63,19 +63,23 @@ jobs:
           cache: gradle
 
       - name: Run JaCoCo coverage
+        # test is finalizedBy jacocoTestReport
         run: |
-          ./gradlew clean test jacocoTestReport
+          ./gradlew clean test
 
       - name: Add JaCoCo coverage as a PR comment
         id: jacoco
         uses: madrapps/jacoco-report@v1.7.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          paths: ${{ github.workspace }}/build/reports/jacoco/**/jacocoTestReport.xml
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
           min-coverage-overall: 90
-          title: ' :robot: `Coverage Report`'
+          title: ' :robot: `JaCoCo Coverage Report` :robot: '
+          pass-emoji: ':green_circle:'
+          fail-emoji: ':red_circle:'
           update-comment: true
           min-coverage-changed-files: 60
+          debug-mode: true
 
       - name: Get the JaCoCo coverage info
         run: |
