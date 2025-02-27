@@ -22,7 +22,8 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
       * [Maximum text chars](#maximum-text-chars)
       * [Skipping input sanitization for search](#skipping-input-sanitization-for-search)
       * [Classify any Chinese content as Japanese](#classify-any-chinese-content-as-japanese)
-      * [Minimum detection certainty](#minimum-detection-certainty)
+      * [Minimum detection certainty for top language with a fallback](#minimum-detection-certainty-for-top-language-with-a-fallback)
+      * [General minimum detection certainty](#general-minimum-detection-certainty)
   * [Local development](#local-development)
     * [System requirements](#system-requirements)
     * [Pre-commit Hook](#pre-commit-hook)
@@ -207,6 +208,8 @@ LanguageDetectionSettings
     .build();
 ```
 
+[`Back to top`](#table-of-contents)
+
 #### Maximum text chars
 
 `.withMaxTextChars(Integer)`
@@ -220,6 +223,8 @@ LanguageDetectionSettings
     .withMaxTextChars(3000)
     .build();
 ```
+
+[`Back to top`](#table-of-contents)
 
 #### Skipping input sanitization for search
 
@@ -235,6 +240,8 @@ LanguageDetectionSettings
     .build();
 ```
 
+[`Back to top`](#table-of-contents)
+
 #### Classify any Chinese content as Japanese
 
 `.withClassifyChineseAsJapanese()`
@@ -249,17 +256,37 @@ LanguageDetectionSettings
     .build();
 ```
 
-#### Minimum detection certainty
+[`Back to top`](#table-of-contents)
 
-`.withMininumCertainty(Double, String)`
-- **Default**: `0.65, "en"`. Specifies a certainty threshold value between `0...1` and a fallback language ISO 639-1 code. These are the same values that are currently used in Production in Solr.
-- **Description**: The language identification probability must reach the threshold value before the library accepts it. In case if the threshold has not been reached, the library falls back on the configured ISO 639-1 code as a detected language.
+#### Minimum detection certainty for top language with a fallback
 
+`.withTopLanguageMininumCertainty(Float, String)`
+- **Default**: Not set. Specifies a certainty threshold value between `0...1` and a fallback language ISO 639-1 code.
+- **Description**: The language identification probability must exceed the threshold value for the top detected language. If this threshold is not met, the library defaults to the configured ISO 639-1 fallback code, treating it as the top and sole detected language.
+
+Please be aware that the `.withTopLanguageMininumCertainty(Float, String)` method cannot be used in conjunction with the `.withMinimumCertainty(Float)` method (explained in the next section). The setting that is applied last during the configuration process will take priority.
 
 ```java
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
-    .withMininumCertainty(0.65, "en")
+    .withTopLanguageMininumCertainty(0.65f, "en")
+    .build();
+```
+
+[`Back to top`](#table-of-contents)
+
+#### General minimum detection certainty
+
+`.withMininumCertainty(Float)`
+- **Default**: Not set. Specifies a certainty threshold value between `0...1`.
+- **Description**: The library requires that the language identification probability surpass a predefined threshold for any detected language. If the probability falls short of this threshold, the library systematically filters out those languages, excluding them from the results.
+
+Please be aware that the `.withMininumCertainty(Float)` method cannot be used in conjunction with the `.withTopLanguageMininumCertainty(Float, String)` method (explained in the previous section). The setting that is applied last during the configuration process will take priority.
+
+```java
+LanguageDetectionSettings
+    .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
+    .withMininumCertainty(0.65f)
     .build();
 ```
 

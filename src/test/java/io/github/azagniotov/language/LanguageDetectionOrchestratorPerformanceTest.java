@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -21,9 +23,9 @@ import org.junit.runners.Parameterized;
  * which caches the singleton instance of the created {@link LanguageDetectorFactory} which caches
  * the loaded ISO codes and profiles.
  *
- * <p>With that in mind, please make sure that all tests make use of the same
- * LanguageDetectionSettings (which has the same configured ISO codes) to avoid flaky tests due to
- * the cached singleton instance of the {@link LanguageDetectorFactory}.
+ * <p>With that in mind, please make sure to invoke {@link
+ * TestHelper#resetLanguageDetectorFactoryInstance()} in setUp() to avoid flaky tests due to the
+ * cached singleton instance of the {@link LanguageDetectorFactory}.
  */
 @RunWith(Parameterized.class)
 public class LanguageDetectionOrchestratorPerformanceTest {
@@ -62,6 +64,11 @@ public class LanguageDetectionOrchestratorPerformanceTest {
           {"library-max-chars-3k", 100, 3_000},
           {"library-max-chars-1k", 100, 1_000}
         });
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    resetLanguageDetectorFactoryInstance();
   }
 
   @Test

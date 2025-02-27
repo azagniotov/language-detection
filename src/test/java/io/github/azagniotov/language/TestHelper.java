@@ -3,6 +3,7 @@ package io.github.azagniotov.language;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
 final class TestHelper {
@@ -31,5 +32,16 @@ final class TestHelper {
   static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
     final Language language = languageDetector.detectAll(text).get(0);
     return language.getIsoCode639_1();
+  }
+
+  static void resetLanguageDetectorFactoryInstance()
+      throws NoSuchFieldException, IllegalAccessException {
+    try {
+      final Field field = LanguageDetectorFactory.class.getDeclaredField("instance");
+      field.setAccessible(true);
+      field.set(null, null); // Set to null
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      throw e; // Re-throw the exceptions
+    }
   }
 }
