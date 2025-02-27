@@ -6,6 +6,7 @@ import static io.github.azagniotov.language.TestHelper.ALL_LANGUAGES;
 import static io.github.azagniotov.language.TestHelper.getResourceReader;
 import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static io.github.azagniotov.language.TestHelper.readDataset;
+import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -27,6 +28,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +84,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
    * header row of the output CSV.
    */
   @BeforeClass
-  public static void setUp() throws IOException {
+  public static void beforeClass() throws IOException {
     allDatasets = new HashMap<>();
     allDatasets.put(
         "single-words-capitalized", readDataset("/datasets/single-words-capitalized.tsv"));
@@ -104,6 +106,11 @@ public class LanguageDetectorSingleWordAccuracyTest {
         Path.of(ACCURACY_REPORT_NAME),
         Collections.singletonList(header + ALL_LANGUAGES),
         StandardCharsets.UTF_8);
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    resetLanguageDetectorFactoryInstance();
   }
 
   /** Run the test according to the parameters passed to the constructor. */

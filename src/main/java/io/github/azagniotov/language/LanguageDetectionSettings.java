@@ -19,6 +19,9 @@ public class LanguageDetectionSettings {
 
   private static final int MAX_TEXT_CHARS_UPPER_BOUND = 20000;
 
+  private static final int MINIMUM_CERTAINTY_THRESHOLD = 1; // 0001
+  private static final int TOP_LANGUAGE_CERTAINTY_THRESHOLD = 2; // 0010
+
   private final String profile;
   private final int minNGramLength;
   private final int maxNGramLength;
@@ -28,8 +31,12 @@ public class LanguageDetectionSettings {
   private final boolean sanitizeForSearch;
   private final boolean classifyChineseAsJapanese;
   private final float classifyChineseAsJapaneseThreshold;
-  private final float certaintyThreshold;
-  private final String fallbackIsoCode639_1;
+
+  private final float topLanguageCertaintyThreshold;
+  private final String topLanguageFallbackIsoCode639_1;
+  private final float minimumCertaintyThreshold;
+
+  private final int certaintyThresholdFlags;
 
   private LanguageDetectionSettings(final Builder builder) {
     this.profile = builder.profile;
@@ -41,8 +48,12 @@ public class LanguageDetectionSettings {
     this.sanitizeForSearch = builder.sanitizeForSearch;
     this.classifyChineseAsJapanese = builder.classifyChineseAsJapanese;
     this.classifyChineseAsJapaneseThreshold = builder.classifyChineseAsJapaneseThreshold;
-    this.certaintyThreshold = builder.certaintyThreshold;
-    this.fallbackIsoCode639_1 = builder.fallbackIsoCode639_1;
+
+    this.topLanguageCertaintyThreshold = builder.topLanguageCertaintyThreshold;
+    this.topLanguageFallbackIsoCode639_1 = builder.topLanguageFallbackIsoCode639_1;
+    this.minimumCertaintyThreshold = builder.minimumCertaintyThreshold;
+
+    this.certaintyThresholdFlags = builder.certaintyThresholdFlags;
   }
 
   String getProfile() {
@@ -81,12 +92,24 @@ public class LanguageDetectionSettings {
     return classifyChineseAsJapaneseThreshold;
   }
 
-  float getCertaintyThreshold() {
-    return certaintyThreshold;
+  float getTopLanguageCertaintyThreshold() {
+    return topLanguageCertaintyThreshold;
   }
 
-  String getFallbackIsoCode639_1() {
-    return fallbackIsoCode639_1;
+  String getTopLanguageFallbackIsoCode639_1() {
+    return topLanguageFallbackIsoCode639_1;
+  }
+
+  boolean isTopLanguageCertaintyThresholdSet() {
+    return (certaintyThresholdFlags & TOP_LANGUAGE_CERTAINTY_THRESHOLD) != 0;
+  }
+
+  float getMinimumCertaintyThreshold() {
+    return minimumCertaintyThreshold;
+  }
+
+  boolean isMinimumCertaintyThresholdSet() {
+    return (certaintyThresholdFlags & MINIMUM_CERTAINTY_THRESHOLD) != 0;
   }
 
   public static Builder fromAllIsoCodes639_1() {
@@ -120,8 +143,11 @@ public class LanguageDetectionSettings {
     private boolean classifyChineseAsJapanese;
     // At this point this is not exposed to configure via a Buildr setter
     private float classifyChineseAsJapaneseThreshold;
-    private float certaintyThreshold;
-    private String fallbackIsoCode639_1;
+    private float topLanguageCertaintyThreshold;
+    private String topLanguageFallbackIsoCode639_1;
+    private float minimumCertaintyThreshold;
+
+    private int certaintyThresholdFlags;
 
     private Builder(final List<String> isoCodes639_1) {
       this.isoCodes639_1 = List.copyOf(isoCodes639_1);
@@ -133,8 +159,10 @@ public class LanguageDetectionSettings {
       this.sanitizeForSearchThreshold = 128;
       this.classifyChineseAsJapanese = false;
       this.classifyChineseAsJapaneseThreshold = 0.1f;
-      this.certaintyThreshold = 0.65f;
-      this.fallbackIsoCode639_1 = "en";
+      this.topLanguageCertaintyThreshold = 0.65f;
+      this.topLanguageFallbackIsoCode639_1 = "en";
+      this.minimumCertaintyThreshold = 0.65f;
+      this.certaintyThresholdFlags = 0;
     }
 
     private Builder(final Builder that) {
@@ -147,8 +175,10 @@ public class LanguageDetectionSettings {
       this.sanitizeForSearchThreshold = that.sanitizeForSearchThreshold;
       this.classifyChineseAsJapanese = that.classifyChineseAsJapanese;
       this.classifyChineseAsJapaneseThreshold = that.classifyChineseAsJapaneseThreshold;
-      this.certaintyThreshold = that.certaintyThreshold;
-      this.fallbackIsoCode639_1 = that.fallbackIsoCode639_1;
+      this.topLanguageCertaintyThreshold = that.topLanguageCertaintyThreshold;
+      this.topLanguageFallbackIsoCode639_1 = that.topLanguageFallbackIsoCode639_1;
+      this.minimumCertaintyThreshold = that.minimumCertaintyThreshold;
+      this.certaintyThresholdFlags = that.certaintyThresholdFlags;
     }
 
     public Builder withProfile(final String profile) {
@@ -171,10 +201,23 @@ public class LanguageDetectionSettings {
       return new Builder(this);
     }
 
-    public Builder withMininumCertainty(
-        final float certaintyThreshold, final String fallbackIsoCode639_1) {
-      this.certaintyThreshold = certaintyThreshold;
-      this.fallbackIsoCode639_1 = fallbackIsoCode639_1;
+    public Builder withTopLanguageMininumCertainty(
+        final float topLanguageCertaintyThreshold, final String topLanguageFallbackIsoCode639_1) {
+      this.topLanguageCertaintyThreshold = topLanguageCertaintyThreshold;
+      this.topLanguageFallbackIsoCode639_1 = topLanguageFallbackIsoCode639_1;
+      // Unset MINIMUM_CERTAINTY_THRESHOLD, set TOP_LANGUAGE_CERTAINTY_THRESHOLD
+      this.certaintyThresholdFlags =
+          (this.certaintyThresholdFlags & ~MINIMUM_CERTAINTY_THRESHOLD)
+              | TOP_LANGUAGE_CERTAINTY_THRESHOLD;
+      return new Builder(this);
+    }
+
+    public Builder withMininumCertainty(final float minimumCertaintyThreshold) {
+      this.minimumCertaintyThreshold = minimumCertaintyThreshold;
+      // Unset TOP_LANGUAGE_CERTAINTY_THRESHOLD, set MINIMUM_CERTAINTY_THRESHOLD
+      this.certaintyThresholdFlags =
+          (this.certaintyThresholdFlags & ~TOP_LANGUAGE_CERTAINTY_THRESHOLD)
+              | MINIMUM_CERTAINTY_THRESHOLD;
       return new Builder(this);
     }
 

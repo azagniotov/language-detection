@@ -4,6 +4,7 @@ import static io.github.azagniotov.language.LanguageDetector.JAPANESE_LANGUAGE_R
 import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
 import static io.github.azagniotov.language.LanguageDetector.UNDETERMINED_LANGUAGE_RESPONSE;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,18 +49,43 @@ public class LanguageDetectionOrchestrator {
       final List<Language> languages =
           languageDetector.detectAll(sanitizedInput.substring(0, maxChars));
 
-      final Language topLanguage = languages.get(0);
-      if (topLanguage.getIsoCode639_1().equals(UNDETERMINED_LANGUAGE_RESPONSE.getIsoCode639_1())) {
+      if (languages
+          .get(0)
+          .getIsoCode639_1()
+          .equals(UNDETERMINED_LANGUAGE_RESPONSE.getIsoCode639_1())) {
         // Return undetermined ISO code to the client,
         // so that client can make a decision what to do,
         // e.g.: cross-index into all languages or search through all language fields
         return languages;
-      } else if (topLanguage.getProbability() < this.settings.getCertaintyThreshold()) {
-        return Collections.singletonList(
-            new Language(this.settings.getFallbackIsoCode639_1(), PERFECT_PROBABILITY));
-      } else {
-        return languages;
       }
+
+      if (this.settings.isMinimumCertaintyThresholdSet()) {
+        final List<Language> aboveThreshold = new ArrayList<>();
+        for (final Language language : languages) {
+          if (language.getProbability() >= this.settings.getMinimumCertaintyThreshold()) {
+            aboveThreshold.add(language);
+          }
+        }
+
+        if (aboveThreshold.isEmpty()) {
+          // Return undetermined ISO code to the client,
+          // so that client can make a decision what to do,
+          // e.g.: cross-index into all languages or search through all language fields
+          return Collections.singletonList(UNDETERMINED_LANGUAGE_RESPONSE);
+        } else {
+          return aboveThreshold;
+        }
+
+      } else if (this.settings.isTopLanguageCertaintyThresholdSet()) {
+        final Language topLanguage = languages.get(0);
+        if (topLanguage.getProbability() < this.settings.getTopLanguageCertaintyThreshold()) {
+          return Collections.singletonList(
+              new Language(
+                  this.settings.getTopLanguageFallbackIsoCode639_1(), PERFECT_PROBABILITY));
+        }
+      }
+
+      return languages;
     }
   }
 

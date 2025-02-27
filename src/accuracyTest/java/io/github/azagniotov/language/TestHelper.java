@@ -5,6 +5,7 @@ import static io.github.azagniotov.language.StringConstants.TAB_CHAR;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,5 +58,16 @@ final class TestHelper {
   static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
     final List<Language> languages = languageDetector.detectAll(text);
     return languages.get(0).getIsoCode639_1();
+  }
+
+  static void resetLanguageDetectorFactoryInstance()
+      throws NoSuchFieldException, IllegalAccessException {
+    try {
+      final Field field = LanguageDetectorFactory.class.getDeclaredField("instance");
+      field.setAccessible(true);
+      field.set(null, null); // Set to null
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      throw e; // Re-throw the exceptions
+    }
   }
 }
