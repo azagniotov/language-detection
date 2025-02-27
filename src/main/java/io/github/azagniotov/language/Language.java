@@ -1,6 +1,6 @@
 package io.github.azagniotov.language;
 
-public class Language {
+public class Language implements Comparable<Language> {
 
   private final String isoCode639_1;
   private final float probability;
@@ -21,5 +21,10 @@ public class Language {
   @Override
   public String toString() {
     return String.format("%s=%s", isoCode639_1.toUpperCase(), probability);
+  }
+
+  @Override
+  public int compareTo(final Language other) {
+    return Float.compare(other.probability, this.probability);
   }
 }

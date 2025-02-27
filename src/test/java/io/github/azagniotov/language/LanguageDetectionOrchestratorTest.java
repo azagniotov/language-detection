@@ -30,7 +30,7 @@ public class LanguageDetectionOrchestratorTest {
 
   private static final String ISO_CODES = "en, ja, es, fr, de, zh-cn, af, nl, ko";
   private static final LanguageDetectionSettings SETTINGS =
-      LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).build();
+      LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withMininumCertainty(0.1f).build();
 
   private static LanguageDetector DEFAULT_DETECTOR;
 

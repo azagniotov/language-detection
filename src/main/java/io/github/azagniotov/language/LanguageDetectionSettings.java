@@ -154,8 +154,8 @@ public class LanguageDetectionSettings {
       this.classifyChineseAsJapaneseThreshold = 0.1f;
       this.topLanguageCertaintyThreshold = 0.65f;
       this.topLanguageFallbackIsoCode639_1 = "en";
-      this.minimumCertaintyThreshold = 0.65f;
-      this.bitFlags = this.bitFlags | FLAG_SANITIZE_FOR_SEARCH;
+      this.minimumCertaintyThreshold = 0.1f;
+      this.bitFlags = FLAG_SANITIZE_FOR_SEARCH | FLAG_MINIMUM_CERTAINTY;
     }
 
     private Builder(final Builder that) {

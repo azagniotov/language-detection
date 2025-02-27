@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 final class TestHelper {
 
@@ -30,7 +31,8 @@ final class TestHelper {
    * are returned).
    */
   static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
-    final Language language = languageDetector.detectAll(text).get(0);
+    final List<Language> languages = languageDetector.detectAll(text);
+    final Language language = languages.get(0);
     return language.getIsoCode639_1();
   }
 
