@@ -40,7 +40,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from 1 to 3, alongside a Bayesian filter that incorporates various normalization techniques and feature sampling methods.
 
-The precision is over **99%** for **70** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
+The precision is over **99%** for **72** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
 ### Enhancements over past implementations
 
@@ -58,78 +58,81 @@ For clarity, I'm linking these enhancements to the original implementation with 
 
 The following is a list of ISO 639-1 languages code supported by the library:
 
-| Language name    | Country                         | ISO 639-1 |
-|------------------|---------------------------------|-----------|
-| Afrikaans        | 🇿🇦&nbsp;&nbsp;South Africa    | af        |
-| Albanian         | 🇦🇱&nbsp;&nbsp;Albania         | sq        |
-| Amharic          | 🇪🇹&nbsp;&nbsp;Ethiopia        | am        |
-| Arabic           | 🇦🇪&nbsp;&nbsp;UAE             | ar        |
-| Armenian         | 🇦🇲&nbsp;&nbsp;Armenia         | hy        |
-| Azerbaijani      | 🇦🇿&nbsp;&nbsp;Azerbaijan      | az        |
-| Bangla           | 🇧🇩&nbsp;&nbsp;Bangladesh      | bn        |
-| Basque           | 🇪🇸&nbsp;&nbsp;Spain           | eu        |
-| Breton           | 🇫🇷&nbsp;&nbsp;France          | br        |
-| Bulgarian        | 🇧🇬&nbsp;&nbsp;Bulgaria        | bg        |
-| Catalan          | 🇪🇸&nbsp;&nbsp;Spain           | ca        |
-| Chinese (China)  | 🇨🇳&nbsp;&nbsp;China           | zh-cn     |
-| Chinese (Taiwan) | 🇹🇼&nbsp;&nbsp;Taiwan          | zh-tw     |
-| Croatian         | 🇭🇷&nbsp;&nbsp;Croatia         | hr        |
-| Czech            | 🇨🇿&nbsp;&nbsp;Czech Republic  | cs        |
-| Danish           | 🇩🇰&nbsp;&nbsp;Denmark         | da        |
-| Dutch            | 🇳🇱&nbsp;&nbsp;Netherlands     | nl        |
-| English          | 🇺🇸&nbsp;&nbsp;United States   | en        |
-| Estonian         | 🇪🇪&nbsp;&nbsp;Estonia         | et        |
-| Filipino         | 🇵🇭&nbsp;&nbsp;Philippines     | tl        |
-| Finnish          | 🇫🇮&nbsp;&nbsp;Finland         | fi        |
-| French           | 🇫🇷&nbsp;&nbsp;France          | fr        |
-| Georgian         | 🇬🇪&nbsp;&nbsp;Georgia         | ka        |
-| German           | 🇩🇪&nbsp;&nbsp;Germany         | de        |
-| Greek            | 🇬🇷&nbsp;&nbsp;Greece          | el        |
-| Gujarati         | 🇮🇳&nbsp;&nbsp;India           | gu        |
-| Hebrew           | 🇮🇱&nbsp;&nbsp;Israel          | he        |
-| Hindi            | 🇮🇳&nbsp;&nbsp;India           | hi        |
-| Hungarian        | 🇭🇺&nbsp;&nbsp;Hungary         | hu        |
-| Indonesian       | 🇮🇩&nbsp;&nbsp;Indonesia       | id        |
-| Irish            | 🇮🇪&nbsp;&nbsp;Ireland         | ga        |
-| Italian          | 🇮🇹&nbsp;&nbsp;Italy           | it        |
-| Japanese         | 🇯🇵&nbsp;&nbsp;Japan           | ja        |
-| Kannada          | 🇮🇳&nbsp;&nbsp;India           | kn        |
-| Kazakh           | 🇰🇿&nbsp;&nbsp;Kazakhstan      | kk        |
-| Korean           | 🇰🇷&nbsp;&nbsp;South Korea     | ko        |
-| Kyrgyz           | 🇰🇬&nbsp;&nbsp;Kyrgyzstan      | ky        |
-| Latvian          | 🇱🇻&nbsp;&nbsp;Latvia          | lv        |
-| Lithuanian       | 🇱🇹&nbsp;&nbsp;Lithuania       | lt        |
-| Luxembourgish    | 🇱🇺&nbsp;&nbsp;Luxembourg      | lb        |
-| Macedonian       | 🇲🇰&nbsp;&nbsp;North Macedonia | mk        |
-| Malayalam        | 🇮🇳&nbsp;&nbsp;India           | ml        |
-| Marathi          | 🇮🇳&nbsp;&nbsp;India           | mr        |
-| Mongolian        | 🇲🇳&nbsp;&nbsp;Mongolia        | mn        |
-| Nepali           | 🇳🇵&nbsp;&nbsp;Nepal           | ne        |
-| Norwegian        | 🇳🇴&nbsp;&nbsp;Norway          | no        |
-| Persian          | 🇮🇷&nbsp;&nbsp;Iran            | fa        |
-| Polish           | 🇵🇱&nbsp;&nbsp;Poland          | pl        |
-| Portuguese       | 🇵🇹&nbsp;&nbsp;Portugal        | pt        |
-| Punjabi          | 🇮🇳&nbsp;&nbsp;India           | pa        |
-| Romanian         | 🇷🇴&nbsp;&nbsp;Romania         | ro        |
-| Russian          | 🇷🇺&nbsp;&nbsp;Russia          | ru        |
-| Sinhala          | 🇱🇰&nbsp;&nbsp;Sri Lanka       | si        |
-| Slovak           | 🇸🇰&nbsp;&nbsp;Slovakia        | sk        |
-| Slovenian        | 🇸🇮&nbsp;&nbsp;Slovenia        | sl        |
-| Somali           | 🇸🇴&nbsp;&nbsp;Somalia         | so        |
-| Spanish          | 🇪🇸&nbsp;&nbsp;Spain           | es        |
-| Swahili          | 🇹🇿&nbsp;&nbsp;Tanzania        | sw        |
-| Swedish          | 🇸🇪&nbsp;&nbsp;Sweden          | sv        |
-| Tamil            | 🇮🇳&nbsp;&nbsp;India           | ta        |
-| Telugu           | 🇮🇳&nbsp;&nbsp;India           | te        |
-| Thai             | 🇹🇭&nbsp;&nbsp;Thailand        | th        |
-| Tibetan          | 🇨🇳&nbsp;&nbsp;China           | bo        |
-| Tigrinya         | 🇪🇷&nbsp;&nbsp;Eritrea         | ti        |
-| Turkish          | 🇹🇷&nbsp;&nbsp;Turkey          | tr        |
-| Ukrainian        | 🇺🇦&nbsp;&nbsp;Ukraine         | uk        |
-| Urdu             | 🇵🇰&nbsp;&nbsp;Pakistan        | ur        |
-| Vietnamese       | 🇻🇳&nbsp;&nbsp;Vietnam         | vi        |
-| Welsh            | 🇬🇧&nbsp;&nbsp;United Kingdom  | cy        |
-| Yiddish          | 🇮🇱&nbsp;&nbsp;Israel          | yi        |
+
+| Language         | Flag                                                                             | Country                   | ISO 639-1 |
+|------------------|----------------------------------------------------------------------------------|---------------------------|-----------|
+| Afrikaans        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇿🇦</span> | South Africa              | af        |
+| Albanian         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇦🇱</span> | Albania                   | sq        |
+| Amharic          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇪🇹</span> | Ethiopia                  | am        |
+| Arabic           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇦🇪</span> | UAE                       | ar        |
+| Armenian         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇦🇲</span> | Armenia                   | hy        |
+| Azerbaijani      | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇦🇿</span> | Azerbaijan                | az        |
+| Bangla           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇧🇩</span> | Bangladesh                | bn        |
+| Basque           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇪🇸</span> | Spain                     | eu        |
+| Breton           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇫🇷</span> | France                    | br        |
+| Bulgarian        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇧🇬</span> | Bulgaria                  | bg        |
+| Catalan          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇪🇸</span> | Spain                     | ca        |
+| Chinese (China)  | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇨🇳</span> | China                     | zh-cn     |
+| Chinese (Taiwan) | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇹🇼</span> | Taiwan                    | zh-tw     |
+| Croatian         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇭🇷</span> | Croatia                   | hr        |
+| Czech            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇨🇿</span> | Czech Republic            | cs        |
+| Danish           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇩🇰</span> | Denmark                   | da        |
+| Dutch            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇳🇱</span> | Netherlands               | nl        |
+| English          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇺🇸</span> | United States             | en        |
+| Estonian         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇪🇪</span> | Estonia                   | et        |
+| Filipino         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇵🇭</span> | Philippines               | tl        |
+| Finnish          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇫🇮</span> | Finland                   | fi        |
+| French           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇫🇷</span> | France                    | fr        |
+| Georgian         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇬🇪</span> | Georgia                   | ka        |
+| German           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇩🇪</span> | Germany                   | de        |
+| Greek            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇬🇷</span> | Greece                    | el        |
+| Gujarati         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | gu        |
+| Hebrew           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇱</span> | Israel                    | he        |
+| Hindi            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | hi        |
+| Hungarian        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇭🇺</span> | Hungary                   | hu        |
+| Indonesian       | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇩</span> | Indonesia                 | id        |
+| Irish            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇪</span> | Ireland                   | ga        |
+| Italian          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇹</span> | Italy                     | it        |
+| Japanese         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇯🇵</span> | Japan                     | ja        |
+| Kannada          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | kn        |
+| Kazakh           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇰🇿</span> | Kazakhstan                | kk        |
+| Korean           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇰🇷</span> | South Korea               | ko        |
+| Kyrgyz           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇰🇬</span> | Kyrgyzstan                | ky        |
+| Latvian          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇱🇻</span> | Latvia                    | lv        |
+| Lithuanian       | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇱🇹</span> | Lithuania                 | lt        |
+| Luxembourgish    | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇱🇺</span> | Luxembourg                | lb        |
+| Macedonian       | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇲🇰</span> | North Macedonia           | mk        |
+| Malayalam        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | ml        |
+| Marathi          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | mr        |
+| Mongolian        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇲🇳</span> | Mongolia                  | mn        |
+| Nepali           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇳🇵</span> | Nepal                     | ne        |
+| Norwegian        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇳🇴</span> | Norway                    | no        |
+| Persian          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇷</span> | Iran                      | fa        |
+| Polish           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇵🇱</span> | Poland                    | pl        |
+| Portuguese       | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇵🇹</span> | Portugal                  | pt        |
+| Punjabi          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | pa        |
+| Romanian         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇷🇴</span> | Romania                   | ro        |
+| Russian          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇷🇺</span> | Russia                    | ru        |
+| Serbian          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇷🇸</span> | Serbia                    | sr        |
+| Sinhala          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇱🇰</span> | Sri Lanka                 | si        |
+| Slovak           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇸🇰</span> | Slovakia                  | sk        |
+| Slovenian        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇸🇮</span> | Slovenia                  | sl        |
+| Somali           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇸🇴</span> | Somalia                   | so        |
+| Spanish          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇪🇸</span> | Spain                     | es        |
+| Swahili          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇹🇿</span> | Tanzania                  | sw        |
+| Swedish          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇸🇪</span> | Sweden                    | sv        |
+| Tajik            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇹🇯</span> | Tajikistan                | tg        |
+| Tamil            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | ta        |
+| Telugu           | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇳</span> | India                     | te        |
+| Thai             | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇹🇭</span> | Thailand                  | th        |
+| Tibetan          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇨🇳</span> | China                     | bo        |
+| Tigrinya         | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇪🇷</span> | Eritrea                   | ti        |
+| Turkish          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇹🇷</span> | Turkey                    | tr        |
+| Ukrainian        | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇺🇦</span> | Ukraine                   | uk        |
+| Urdu             | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇵🇰</span> | Pakistan                  | ur        |
+| Vietnamese       | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇻🇳</span> | Vietnam                   | vi        |
+| Welsh            | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇬🇧</span> | United Kingdom            | cy        |
+| Yiddish          | <span style="font-size: 2em; display: inline-block; line-height: 1;">🇮🇱</span> | Israel                    | yi        |
 
 ### Model parameters
 

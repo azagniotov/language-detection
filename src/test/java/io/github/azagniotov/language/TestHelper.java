@@ -32,6 +32,7 @@ final class TestHelper {
    */
   static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
     final List<Language> languages = languageDetector.detectAll(text);
+    System.out.println("\n\t" + languages + "\n");
     final Language language = languages.get(0);
     return language.getIsoCode639_1();
   }

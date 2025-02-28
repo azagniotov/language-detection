@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -61,7 +62,7 @@ public class LanguageProfileGenerator {
   @Ignore
   public void generateProfiles() throws Exception {
     TreeSet<String> targetCodes =
-        new TreeSet<>(Set.of("am,az,bo,br,cy,eu,ga,hy,ka,kk,ky,mn,ti,yi".split(",")));
+        new TreeSet<>(Set.of("am,az,bo,br,cy,eu,ga,hy,ka,kk,ky,mn,sr,tg,ti,yi".split(",")));
     System.out.println(
         "\nWill generate: ["
             + targetCodes.size()
@@ -90,9 +91,9 @@ public class LanguageProfileGenerator {
     //      }
     //    }
 
-    final List<Float> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0).toArray(new Float[0]));
-    final LanguageProfile languageProfile =
-        new LanguageProfile(targetCode, new HashMap<>(), nWords);
+    final List<Float> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0f).toArray(new Float[0]));
+    final Map<String, Long> freq = new HashMap<>();
+    final LanguageProfile languageProfile = new LanguageProfile(targetCode, freq, nWords);
 
     processFilesInDirectory(sourcePath, languageProfile);
 
@@ -157,7 +158,7 @@ public class LanguageProfileGenerator {
 
   private void writeProfile(final String path, final String targetCode, final String json)
       throws IOException {
-    final String resourcesRoot = "src/main/resources/langdetect";
+    final String resourcesRoot = "src/main/resources/profiles";
     final File childResourcesDir = new File(resourcesRoot + "/" + path);
     final File childResourcesDirFile = new File(childResourcesDir, targetCode);
 
@@ -188,7 +189,7 @@ public class LanguageProfileGenerator {
   @Test
   public final void sanityCheckFilteringRegex() {
     final String input =
-        "<doc id=\"599\" url=\"https://mn.wikipedia.org/wiki?curid=599\" title=\"Монгол Улс\">"
+        "<doc id=\"599\" url=\"https://mn.wikipedia.org/wiki?curid=599\" title=\"Монгол Улс\">Some content"
             + "      "
             + ""
             + "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ         ä, ö, ü,  and ß á, à, è, é, û, ù"
@@ -196,7 +197,8 @@ public class LanguageProfileGenerator {
 
     final String noWikiTags = sanitize(PATTERN_MATCH_WIKI_EXTRACTOR_TAGS, input);
     assertEquals(
-        noWikiTags, "これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ         ä, ö, ü,  and ß á, à, è, é, û, ù");
+        noWikiTags,
+        "Some content      これはテスト123abcABCDEアイウエオこんにちは１２３ＡＢＣＤＥ         ä, ö, ü,  and ß á, à, è, é, û, ù");
 
     final String onlyEastAsian = sanitize(PATTERN_MATCH_ANYTHING_NON_EAST_ASIAN, noWikiTags);
     assertEquals(onlyEastAsian, "これはテスト123アイウエオこんにちは１２３ＡＢＣＤＥ");
@@ -205,12 +207,16 @@ public class LanguageProfileGenerator {
     assertEquals(onlyEastAsianWithoutDigits, "これはテストアイウエオこんにちはＡＢＣＤＥ");
 
     final String withoutEastAsian = sanitize(PATTERN_MATCH_SPECIFIC_EAST_ASIAN, noWikiTags);
-    assertEquals(withoutEastAsian, "abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
+    assertEquals(
+        withoutEastAsian, "Some content      abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
 
     final String withoutEastAsianAndDigits = sanitize(PATTERN_MATCH_NUMERICS, withoutEastAsian);
-    assertEquals(withoutEastAsianAndDigits, "abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
+    assertEquals(
+        withoutEastAsianAndDigits,
+        "Some content      abcABCDE         ä, ö, ü,  and ß á, à, è, é, û, ù");
 
     final Matcher matcher = PATTERN_MULTIPLE_SPACES.matcher(withoutEastAsianAndDigits);
-    assertEquals(matcher.replaceAll(BLANK_SPACE), "abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
+    assertEquals(
+        matcher.replaceAll(BLANK_SPACE), "Some content abcABCDE ä, ö, ü, and ß á, à, è, é, û, ù");
   }
 }
