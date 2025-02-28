@@ -2,6 +2,7 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
 import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
+import static util.ZstdUtils.decompressWithPrefix;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,6 +14,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -53,9 +55,14 @@ class LanguageProfile {
     this.nWords = nWords;
   }
 
-  /** Create a language profile from a JSON input stream. */
-  static LanguageProfile fromJson(final InputStream languageProfile) {
-    return GSON.fromJson(new InputStreamReader(languageProfile), LanguageProfile.class);
+  /** Create a language profile from a Zstd-compressed JSON input stream. */
+  static LanguageProfile fromZstdCompressedJson(final InputStream zstdCompressed)
+      throws IOException {
+    try (final InputStream inputStream = decompressWithPrefix(zstdCompressed);
+        final InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+
+      return GSON.fromJson(inputStreamReader, LanguageProfile.class);
+    }
   }
 
   String toJson() {

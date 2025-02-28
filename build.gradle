@@ -62,6 +62,7 @@ ext {
 
 dependencies {
     implementation "com.google.code.gson:gson:${gsonVersion}"
+    implementation "com.github.luben:zstd-jni:${zstdJniVersion}"
     testImplementation "junit:junit:${junitVersion}"
 }
 

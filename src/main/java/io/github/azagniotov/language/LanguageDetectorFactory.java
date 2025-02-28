@@ -1,5 +1,7 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.StringConstants.ZSTD_EXTENSION;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -57,7 +59,8 @@ class LanguageDetectorFactory {
   private final int minNGramLength;
   private final int maxNGramLength;
 
-  LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings) {
+  LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings)
+      throws IOException {
     this.languageDetectionSettings = languageDetectionSettings;
     this.supportedIsoCodes639_1 = new LinkedList<>();
     this.languageCorporaProbabilities = new HashMap<>();
@@ -94,7 +97,7 @@ class LanguageDetectorFactory {
    * <p>Since this operation is computationally intensive, it must be executed once prior to
    * performing language detection.
    */
-  private void addProfiles() {
+  private void addProfiles() throws IOException {
     // Fake call to the class to cause it to be loaded and the static initializers executed
     NGram.normalize('\u0000');
 
@@ -105,13 +108,15 @@ class LanguageDetectorFactory {
         continue;
       }
       final String profile = this.languageDetectionSettings.getProfile();
-      final String languageResourcePath = "/profiles/" + profile + "/" + isoCode639_1;
-      final InputStream in = getClass().getResourceAsStream(languageResourcePath);
+      final String languageZstdPath =
+          String.format("/profiles/%s/%s%s", profile, isoCode639_1, ZSTD_EXTENSION);
+      final InputStream in = getClass().getResourceAsStream(languageZstdPath);
       if (in == null) {
         throw new UncheckedIOException(
-            new IOException("Could not load language profile from: " + languageResourcePath));
+            new IOException(
+                "Could not load language profile Zstd-compressed from: " + languageZstdPath));
       }
-      allLoadedProfiles.add(LanguageProfile.fromJson(in));
+      allLoadedProfiles.add(LanguageProfile.fromZstdCompressedJson(in));
     }
     for (int idx = 0; idx < allLoadedProfiles.size(); idx++) {
       addProfile(allLoadedProfiles.get(idx), idx, allLoadedProfiles.size());
@@ -144,8 +149,8 @@ class LanguageDetectorFactory {
     }
   }
 
-  public static LanguageDetector detector(
-      final LanguageDetectionSettings languageDetectionSettings) {
+  public static LanguageDetector detector(final LanguageDetectionSettings languageDetectionSettings)
+      throws IOException {
     if (instance == null) {
       synchronized (LanguageDetectorFactory.class) {
         if (instance == null) {

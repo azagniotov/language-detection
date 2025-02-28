@@ -2,14 +2,19 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
+import static io.github.azagniotov.language.StringConstants.ZSTD_EXTENSION;
 import static java.util.Collections.nCopies;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +32,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.Test;
+import util.ZstdUtils;
 
 public class LanguageProfileGenerator {
 
@@ -78,18 +84,10 @@ public class LanguageProfileGenerator {
     final String sourcePath =
         String.format("/Users/azagniotov/Documents/data/%swiki/extracted/AA", targetCode);
 
-    if (sourcePath.equals("")) {
+    if (sourcePath.trim().isEmpty()) {
       System.out.println("\nSeed dataset is missing. Skipping generation.\n");
       return;
     }
-
-    //    final File directory = new File("src/main/resources/langdetect/high-accuracy");
-    //    if (!directory.exists()) {
-    //      boolean mkdirs = directory.mkdirs(); // Create the directory if it doesn't exist
-    //      if (mkdirs) {
-    //        System.out.println("Created high-accuracy directory");
-    //      }
-    //    }
 
     final List<Float> nWords = Arrays.asList(nCopies(MAX_GRAM_SIZE, 0.0f).toArray(new Float[0]));
     final Map<String, Long> freq = new HashMap<>();
@@ -102,9 +100,9 @@ public class LanguageProfileGenerator {
     System.out.println(".getNGramCounts(): " + languageProfile.getNGramCounts() + "\n");
 
     final String languageProfileJson = languageProfile.toJson();
-    writeProfile(profilesHome, targetCode, languageProfileJson);
+    writeProfileZstd(profilesHome, targetCode, languageProfileJson);
 
-    assertEquals("apples", "apples");
+    assertTrue(true);
   }
 
   public void processFilesInDirectory(
@@ -156,6 +154,7 @@ public class LanguageProfileGenerator {
     }
   }
 
+  @Deprecated
   private void writeProfile(final String path, final String targetCode, final String json)
       throws IOException {
     final String resourcesRoot = "src/main/resources/profiles";
@@ -164,6 +163,27 @@ public class LanguageProfileGenerator {
 
     try (final FileWriter writer = new FileWriter(childResourcesDirFile)) {
       writer.write(json);
+    }
+  }
+
+  private void writeProfileZstd(final String path, final String targetCode, final String json)
+      throws IOException {
+    final String resourcesRoot = "src/main/resources/profiles";
+    final File childResourcesDir = new File(resourcesRoot + "/" + path);
+    final File childResourcesDirFile = new File(childResourcesDir, targetCode + ZSTD_EXTENSION);
+
+    try (final InputStream zstdJsonStream = ZstdUtils.zstdString(json);
+        final FileOutputStream fileOutputStream = new FileOutputStream(childResourcesDirFile);
+        final BufferedOutputStream bufferedOutputStream =
+            new BufferedOutputStream(fileOutputStream)) {
+      final byte[] buffer = new byte[2048];
+      while (true) {
+        final int bytesRead = zstdJsonStream.read(buffer);
+        if (bytesRead == -1) {
+          break;
+        }
+        bufferedOutputStream.write(buffer, 0, bytesRead);
+      }
     }
   }
 
