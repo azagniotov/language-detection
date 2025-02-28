@@ -5,6 +5,7 @@ import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
+import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
 import static org.junit.Assert.assertEquals;
 
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /** Sanity checks for {@link LanguageDetector#detectAll(String)}. */
@@ -22,9 +24,10 @@ public class LanguageDetectorTest {
   private static final String TRAINING_FR = "a b b c c c d d d";
   private static final String TRAINING_JA = "\u3042 \u3042 \u3042 \u3044 \u3046 \u3048 \u3048";
 
-  private static final LanguageDetector DEFAULT_DETECTOR;
+  private static LanguageDetector DEFAULT_DETECTOR;
 
-  static {
+  @BeforeClass
+  public static void beforeClass() throws Exception {
     final LanguageDetectorFactory factory =
         new LanguageDetectorFactory(DEFAULT_SETTINGS_ALL_LANGUAGES);
     DEFAULT_DETECTOR =
@@ -39,6 +42,8 @@ public class LanguageDetectorTest {
 
   @Before
   public void setUp() throws Exception {
+    resetLanguageDetectorFactoryInstance();
+
     final LanguageDetectionSettings emptySettings =
         LanguageDetectionSettings.fromIsoCodes639_1(EMPTY_STRING).build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(emptySettings);
@@ -116,7 +121,7 @@ public class LanguageDetectorTest {
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1(
-                "az,am,bo,br,cy,de,eu,ga,he,hy,ka,kk,ky,lb,mn,ti,yi")
+                "az,am,bo,br,cy,de,eu,ga,he,hy,ka,kk,ky,lb,mn,ru,sr,tg,ti,yi")
             .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
@@ -156,6 +161,12 @@ public class LanguageDetectorTest {
     assertEquals("lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
     // Mongolian
     assertEquals("mn", detector.detectAll("Би монгол хэл сурч байна").get(0).getIsoCode639_1());
+    // Russian
+    assertEquals("ru", detector.detectAll("Я учу русский язык").get(0).getIsoCode639_1());
+    // Serbian
+    assertEquals("sr", detector.detectAll("Учим српски језик").get(0).getIsoCode639_1());
+    // Tajik
+    assertEquals("tg", detector.detectAll("Ман забони тоҷикиро меомӯзам").get(0).getIsoCode639_1());
     // Tibetan
     assertEquals("bo", detector.detectAll("ངས་བོད་ཡིག་སྦྱོང་གི་ཡོད།").get(0).getIsoCode639_1());
     // Tigrinya
@@ -244,6 +255,21 @@ public class LanguageDetectorTest {
   @Test
   public void testMongolian() throws Exception {
     testLanguage("mongolian.txt", "mn", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testRussian() throws Exception {
+    testLanguage("russian.txt", "ru", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testSerbian() throws Exception {
+    testLanguage("serbian.txt", "sr", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testTajik() throws Exception {
+    testLanguage("tajik.txt", "tg", DEFAULT_DETECTOR);
   }
 
   @Test
