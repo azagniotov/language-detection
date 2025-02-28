@@ -8,10 +8,9 @@ import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGT
 import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
 import static org.junit.Assert.assertEquals;
+import static util.ZstdUtils.zstdString;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,28 +48,22 @@ public class LanguageDetectorTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(emptySettings);
 
     final String profileTemplate = "{\"freq\":{},\"n_words\":[0.0, 0.0, 0.0],\"name\":\"%s\"}";
-    final InputStream enTest =
-        new ByteArrayInputStream(
-            String.format(profileTemplate, "en_test").getBytes(StandardCharsets.UTF_8));
-    final LanguageProfile enProfile = LanguageProfile.fromJson(enTest);
+    final InputStream enTest = zstdString(String.format(profileTemplate, "en_test"));
+    final LanguageProfile enProfile = LanguageProfile.fromZstdCompressedJson(enTest);
     for (String w : TRAINING_EN.split(BLANK_SPACE)) {
       enProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(enProfile, 0, 3);
 
-    final InputStream frTest =
-        new ByteArrayInputStream(
-            String.format(profileTemplate, "fr_test").getBytes(StandardCharsets.UTF_8));
-    final LanguageProfile frProfile = LanguageProfile.fromJson(frTest);
+    final InputStream frTest = zstdString(String.format(profileTemplate, "fr_test"));
+    final LanguageProfile frProfile = LanguageProfile.fromZstdCompressedJson(frTest);
     for (String w : TRAINING_FR.split(BLANK_SPACE)) {
       frProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(frProfile, 1, 3);
 
-    final InputStream jaTest =
-        new ByteArrayInputStream(
-            String.format(profileTemplate, "ja_test").getBytes(StandardCharsets.UTF_8));
-    final LanguageProfile jaProfile = LanguageProfile.fromJson(jaTest);
+    final InputStream jaTest = zstdString(String.format(profileTemplate, "ja_test"));
+    final LanguageProfile jaProfile = LanguageProfile.fromZstdCompressedJson(jaTest);
     for (String w : TRAINING_JA.split(BLANK_SPACE)) {
       jaProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }

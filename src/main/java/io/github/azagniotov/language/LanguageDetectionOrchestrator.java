@@ -4,6 +4,8 @@ import static io.github.azagniotov.language.LanguageDetector.JAPANESE_LANGUAGE_R
 import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
 import static io.github.azagniotov.language.LanguageDetector.UNDETERMINED_LANGUAGE_RESPONSE;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +45,12 @@ public class LanguageDetectionOrchestrator {
       }
 
       // Go through the original LangDetect flow otherwise
-      final LanguageDetector languageDetector = LanguageDetectorFactory.detector(this.settings);
+      final LanguageDetector languageDetector;
+      try {
+        languageDetector = LanguageDetectorFactory.detector(this.settings);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
 
       final int maxChars = Math.min(this.settings.getMaxTextChars(), sanitizedInput.length());
       final List<Language> languages =
