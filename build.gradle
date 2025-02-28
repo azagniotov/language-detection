@@ -60,7 +60,11 @@ ext {
     githubPackagesToken = project.findProperty("githubPackagesToken") ?: ""
 }
 
-apply from: "$rootDir/conf/gradle/dependencies.gradle"
+dependencies {
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+}
+
 apply from: "$rootDir/conf/gradle/jacoco.gradle"
 apply from: "$rootDir/conf/gradle/tests.gradle"
 apply from: "$rootDir/conf/gradle/jar.gradle"
