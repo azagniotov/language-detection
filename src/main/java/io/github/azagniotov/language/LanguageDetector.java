@@ -60,9 +60,10 @@ class LanguageDetector {
   private final int iterationLimit;
   private final float alpha;
   private final float alphaWidth;
-  private final float convThreshold;
+  private final float convergenceThreshold;
 
   LanguageDetector(
+      final Model model,
       final List<String> supportedIsoCodes639_1,
       final Map<String, float[]> languageCorporaProbabilities,
       final int minNGramLength,
@@ -72,12 +73,12 @@ class LanguageDetector {
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
 
-    this.baseFreq = 10000;
-    this.iterationLimit = 10000;
-    this.numberOfTrials = 7;
-    this.alpha = 0.5f;
-    this.alphaWidth = 0.05f;
-    this.convThreshold = 0.99999f;
+    this.baseFreq = model.getBaseFrequency();
+    this.iterationLimit = model.getIterationLimit();
+    this.numberOfTrials = model.getNumberOfTrials();
+    this.alpha = model.getAlpha();
+    this.alphaWidth = model.getAlphaWidth();
+    this.convergenceThreshold = model.getConvergenceThreshold();
   }
 
   /**
@@ -120,7 +121,7 @@ class LanguageDetector {
         final String nGram = extractedNGrams.get(randomIdx);
         updateLangProb(probabilities, nGram, alphaSmoothing);
 
-        if (i % 5 == 0 && normalizeProb(probabilities) > convThreshold) {
+        if (i % 5 == 0 && normalizeProb(probabilities) > convergenceThreshold) {
           break;
         }
       }
