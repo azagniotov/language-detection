@@ -3,7 +3,9 @@ def execData() {
 }
 
 def static analysisExcludes() {
-	return []
+	return [
+		"src/generated/**"
+	]
 }
 
 ext {
