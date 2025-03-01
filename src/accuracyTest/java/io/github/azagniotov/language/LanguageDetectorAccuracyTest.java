@@ -154,6 +154,7 @@ public class LanguageDetectorAccuracyTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
     final LanguageDetector languageDetector =
         new LanguageDetector(
+            factory.getModel(),
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             factory.getMinNGramLength(),

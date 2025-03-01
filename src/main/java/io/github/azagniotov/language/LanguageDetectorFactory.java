@@ -59,6 +59,8 @@ class LanguageDetectorFactory {
   private final int minNGramLength;
   private final int maxNGramLength;
 
+  private final Model model;
+
   LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings)
       throws IOException {
     this.languageDetectionSettings = languageDetectionSettings;
@@ -66,8 +68,12 @@ class LanguageDetectorFactory {
     this.languageCorporaProbabilities = new HashMap<>();
     this.minNGramLength = this.languageDetectionSettings.getMinNGramLength();
     this.maxNGramLength = this.languageDetectionSettings.getMaxNGramLength();
-
+    this.model = loadModelParameters();
     addProfiles();
+  }
+
+  Model getModel() {
+    return model;
   }
 
   List<String> getSupportedIsoCodes639_1() {
@@ -110,16 +116,29 @@ class LanguageDetectorFactory {
       final String profile = this.languageDetectionSettings.getProfile();
       final String languageZstdPath =
           String.format("/profiles/%s/%s%s", profile, isoCode639_1, ZSTD_EXTENSION);
-      final InputStream in = getClass().getResourceAsStream(languageZstdPath);
-      if (in == null) {
-        throw new UncheckedIOException(
-            new IOException(
-                "Could not load language profile Zstd-compressed from: " + languageZstdPath));
+      try (final InputStream in = getClass().getResourceAsStream(languageZstdPath)) {
+        if (in == null) {
+          throw new UncheckedIOException(
+              new IOException(
+                  "Could not load language profile Zstd-compressed from: " + languageZstdPath));
+        }
+        allLoadedProfiles.add(LanguageProfile.fromZstdCompressedJson(in));
       }
-      allLoadedProfiles.add(LanguageProfile.fromZstdCompressedJson(in));
     }
     for (int idx = 0; idx < allLoadedProfiles.size(); idx++) {
       addProfile(allLoadedProfiles.get(idx), idx, allLoadedProfiles.size());
+    }
+  }
+
+  private Model loadModelParameters() throws IOException {
+    final String modelParametersPath = "/model/parameters.json";
+    try (final InputStream in = getClass().getResourceAsStream(modelParametersPath)) {
+      if (in == null) {
+        throw new UncheckedIOException(
+            new IOException("Could not load model parameters from: " + modelParametersPath));
+      }
+
+      return Model.fromJson(in);
     }
   }
 
@@ -159,6 +178,7 @@ class LanguageDetectorFactory {
       }
     }
     return new LanguageDetector(
+        instance.getModel(),
         instance.getSupportedIsoCodes639_1(),
         instance.getLanguageCorporaProbabilities(),
         instance.getMinNGramLength(),

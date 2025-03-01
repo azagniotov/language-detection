@@ -23,14 +23,24 @@ public class LanguageDetectorTest {
   private static final String TRAINING_FR = "a b b c c c d d d";
   private static final String TRAINING_JA = "\u3042 \u3042 \u3042 \u3044 \u3046 \u3048 \u3048";
 
+  private static Model MODEL;
   private static LanguageDetector DEFAULT_DETECTOR;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
+    final int baseFreq = 10000;
+    final int iterationLimit = 10000;
+    final int numberOfTrials = 7;
+    final float alpha = 0.5f;
+    final float alphaWidth = 0.05f;
+    final float convThreshold = 0.99999f;
+    MODEL = new Model(baseFreq, iterationLimit, numberOfTrials, alpha, alphaWidth, convThreshold);
+
     final LanguageDetectorFactory factory =
         new LanguageDetectorFactory(DEFAULT_SETTINGS_ALL_LANGUAGES);
     DEFAULT_DETECTOR =
         new LanguageDetector(
+            MODEL,
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MIN_NGRAM_LENGTH,
@@ -71,6 +81,7 @@ public class LanguageDetectorTest {
 
     languageDetector =
         new LanguageDetector(
+            MODEL,
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MIN_NGRAM_LENGTH,
@@ -119,6 +130,7 @@ public class LanguageDetectorTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
+            MODEL,
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MIN_NGRAM_LENGTH,
@@ -343,6 +355,7 @@ public class LanguageDetectorTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
+            MODEL,
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MIN_NGRAM_LENGTH,
@@ -363,6 +376,7 @@ public class LanguageDetectorTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
+            MODEL,
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MIN_NGRAM_LENGTH,

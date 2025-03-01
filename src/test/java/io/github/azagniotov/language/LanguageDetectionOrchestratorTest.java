@@ -32,13 +32,23 @@ public class LanguageDetectionOrchestratorTest {
   private static final LanguageDetectionSettings SETTINGS =
       LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withMininumCertainty(0.1f).build();
 
+  private static Model MODEL;
   private static LanguageDetector DEFAULT_DETECTOR;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
+    final int baseFreq = 10000;
+    final int iterationLimit = 10000;
+    final int numberOfTrials = 7;
+    final float alpha = 0.5f;
+    final float alphaWidth = 0.05f;
+    final float convThreshold = 0.99999f;
+    MODEL = new Model(baseFreq, iterationLimit, numberOfTrials, alpha, alphaWidth, convThreshold);
+
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(SETTINGS);
     DEFAULT_DETECTOR =
         new LanguageDetector(
+            MODEL,
             factory.getSupportedIsoCodes639_1(),
             factory.getLanguageCorporaProbabilities(),
             MIN_NGRAM_LENGTH,
