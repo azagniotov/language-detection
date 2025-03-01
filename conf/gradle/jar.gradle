@@ -16,9 +16,7 @@ def getVersion = { ->
 
 
 ext {
-	thirdPartyDependencies = configurations.runtimeClasspath.resolve().findAll { file ->
-		return file.name.contains("gson")
-	}
+	thirdPartyDependencies = configurations.runtimeClasspath.resolve().findAll()
 }
 
 tasks.withType(Jar).configureEach {
