@@ -1,8 +1,8 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.LanguageDetectionSettings.ALL_SUPPORTED_ISO_CODES_639_1;
 import static io.github.azagniotov.language.StringConstants.COMMA;
 import static io.github.azagniotov.language.TestHelper.ACCURACY_DELTA;
-import static io.github.azagniotov.language.TestHelper.ALL_LANGUAGES;
 import static io.github.azagniotov.language.TestHelper.getResourceReader;
 import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static io.github.azagniotov.language.TestHelper.readDataset;
@@ -36,15 +36,14 @@ import org.junit.runners.Parameterized;
 
 /**
  * This class tests classification accuracy on datasets with single-words, as specified in the
- * accuracies-single-words.csv resource file.
+ * accuracies-single-words.csv resource file. The single-word accuracies are only tested for
+ * EN,IT,ES,DE,JA,FR and ZH-CN
  *
  * <p>Original author and ideas: By @yanirs, <a
  * href="https://github.com/jprante/elasticsearch-langdetect/pull/69">https://github.com/jprante/elasticsearch-langdetect/pull/69</a>
  */
 @RunWith(Parameterized.class)
 public class LanguageDetectorSingleWordAccuracyTest {
-
-  private static final String HIGH_ACCURACY_SUPPORTED_ISO_CODES = "de,en,es,fr,it";
 
   private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
   private static final String ACCURACY_REPORT_PATH_TEMPLATE =
@@ -54,7 +53,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
   private static Map<String, Map<String, List<String>>> allDatasets;
 
   private final String dataset;
-  private final String profile;
+  private final String profilesHome;
   private final Map<String, Float> languageToExpectedAccuracy;
 
   /**
@@ -67,15 +66,15 @@ public class LanguageDetectorSingleWordAccuracyTest {
    * TestHelper#ACCURACY_DELTA} from the expected accuracy for the language.
    *
    * @param dataset multi-language dataset name, as read in the setup step (see {@link #setUp()})
-   * @param profile profile name parameter to pass to the detection service
+   * @param profilesHome profiles home directory parameter to pass to the detection service
    * @param languageToExpectedAccuracy mapping from language code to expected accuracy
    */
   public LanguageDetectorSingleWordAccuracyTest(
       final String dataset,
-      final String profile,
+      final String profilesHome,
       final Map<String, Float> languageToExpectedAccuracy) {
     this.dataset = dataset;
-    this.profile = profile;
+    this.profilesHome = profilesHome;
     this.languageToExpectedAccuracy = Map.copyOf(languageToExpectedAccuracy);
   }
 
@@ -99,12 +98,12 @@ public class LanguageDetectorSingleWordAccuracyTest {
       }
     }
 
-    final String header = "dataset,profile,";
+    final String header = "dataset,profilesHome,";
     final long reportTimestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
     ACCURACY_REPORT_NAME = String.format(ACCURACY_REPORT_PATH_TEMPLATE, reportTimestamp);
     Files.write(
         Path.of(ACCURACY_REPORT_NAME),
-        Collections.singletonList(header + ALL_LANGUAGES),
+        Collections.singletonList(header + ALL_SUPPORTED_ISO_CODES_639_1),
         StandardCharsets.UTF_8);
   }
 
@@ -119,7 +118,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
     final String languageCodes = configureProfileDependentLanguageCodes();
     final LanguageDetectionSettings configuredSettings =
         LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
-            .withProfile(this.profile)
+            .withProfilesHome(this.profilesHome)
             .build();
 
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
@@ -172,21 +171,18 @@ public class LanguageDetectorSingleWordAccuracyTest {
   }
 
   private String configureProfileDependentLanguageCodes() {
-    if (profile.equals("high-accuracy")) {
-      return HIGH_ACCURACY_SUPPORTED_ISO_CODES;
-    } else if (profile.equals("merged-average")) {
-      return ALL_LANGUAGES;
-    } else {
-      return "NULL";
+    if (profilesHome.equals("profiles")) {
+      return ALL_SUPPORTED_ISO_CODES_639_1;
     }
+    throw new IllegalStateException(profilesHome);
   }
 
   private void writeAccuracyReport(final Map<String, Float> languageToDetectedAccuracy)
       throws IOException {
     final List<String> row = new ArrayList<>();
-    Collections.addAll(row, dataset, profile);
+    Collections.addAll(row, dataset, profilesHome);
 
-    for (final String language : ALL_LANGUAGES.split(COMMA)) {
+    for (final String language : ALL_SUPPORTED_ISO_CODES_639_1.split(COMMA)) {
       row.add(languageToDetectedAccuracy.getOrDefault(language, Float.NaN).toString());
     }
     Files.write(
@@ -201,7 +197,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
    *
    * @return the parsed parameters
    */
-  @Parameterized.Parameters(name = "{0}: profile={1}")
+  @Parameterized.Parameters(name = "{0}: profilesHome={1}")
   public static Collection<Object[]> data() throws IOException {
     final List<Object[]> data = new ArrayList<>();
     try (final BufferedReader bufferedReader = getResourceReader("/accuracies-single-words.csv")) {
@@ -214,14 +210,14 @@ public class LanguageDetectorSingleWordAccuracyTest {
             new Object[] {
               // dataset
               scanner.next(),
-              // profile
+              // profilesHome
               scanner.next(),
               // expectedAccuraciesPerLanguage
               null
             });
 
         final Map<String, Float> expectedAccuraciesPerLanguage = new HashMap<>();
-        for (String language : ALL_LANGUAGES.split(COMMA)) {
+        for (String language : ALL_SUPPORTED_ISO_CODES_639_1.split(COMMA)) {
           float expectedAccuracy = scanner.nextFloat();
 
           // To disable a language from being evaluated, we need to set its

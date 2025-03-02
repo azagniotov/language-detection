@@ -1,8 +1,8 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.LanguageDetectionSettings.ALL_SUPPORTED_ISO_CODES_639_1;
 import static io.github.azagniotov.language.StringConstants.COMMA;
 import static io.github.azagniotov.language.TestHelper.ACCURACY_DELTA;
-import static io.github.azagniotov.language.TestHelper.ALL_LANGUAGES;
 import static io.github.azagniotov.language.TestHelper.getResourceReader;
 import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static io.github.azagniotov.language.TestHelper.readDataset;
@@ -47,16 +47,6 @@ public class LanguageDetectorAccuracyTest {
 
   private static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it";
 
-  private static final String OLD_DEFAULT_LANGUAGES =
-      "ar,bg,bn,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,ko,lt,lv,mk,ml,nl,no,pa,pl,pt,ro,ru,sq,sv,ta,"
-          + "te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
-  private static final String ALL_DEFAULT_PROFILE_LANGUAGES =
-      "af,ar,bg,bn,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,kn,ko,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,ro,"
-          + "ru,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
-  private static final String ALL_SHORT_PROFILE_LANGUAGES =
-      "ar,bg,bn,ca,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,ko,lt,lv,mk,ml,nl,no,pa,pl,pt,ro,ru,si,sq,"
-          + "sv,ta,te,th,tl,tr,uk,ur,vi,zh-cn,zh-tw";
-
   private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
   private static final String ACCURACY_REPORT_PATH_TEMPLATE =
       ACCURACY_REPORT_HOME + "/accuracy-report-%s.csv";
@@ -67,8 +57,7 @@ public class LanguageDetectorAccuracyTest {
   private final String dataset;
   private final int substringLength;
   private final int sampleSize;
-  private final String profile;
-  private final boolean useAllLanguages;
+  private final String profilesHome;
   private final Map<String, Float> languageToExpectedAccuracy;
 
   /**
@@ -81,27 +70,23 @@ public class LanguageDetectorAccuracyTest {
    * TestHelper#ACCURACY_DELTA} from the expected accuracy for the language.
    *
    * @param dataset multi-language dataset name, as read in the setup step (see {@link #setUp()})
-   * @param profile profile name parameter to pass to the detection service
+   * @param profilesHome profiles home directory parameter to pass to the detection service
    * @param substringLength substring length to test (see {@link #sampleText(String, String, int,
    *     int)})
    * @param sampleSize number of substrings to test (see {@link #sampleText(String, String, int,
    *     int)})
-   * @param useAllLanguages if true, all supported languages will be used instead of just the old
-   *     default ones
    * @param languageToExpectedAccuracy mapping from language code to expected accuracy
    */
   public LanguageDetectorAccuracyTest(
       final String dataset,
-      final String profile,
+      final String profilesHome,
       final int substringLength,
       final int sampleSize,
-      final boolean useAllLanguages,
       final Map<String, Float> languageToExpectedAccuracy) {
     this.dataset = dataset;
-    this.profile = profile;
+    this.profilesHome = profilesHome;
     this.substringLength = substringLength;
     this.sampleSize = sampleSize;
-    this.useAllLanguages = useAllLanguages;
     this.languageToExpectedAccuracy = Map.copyOf(languageToExpectedAccuracy);
   }
 
@@ -125,12 +110,12 @@ public class LanguageDetectorAccuracyTest {
       }
     }
 
-    final String header = "dataset,profile,substringLength,sampleSize,useAllLanguages,";
+    final String header = "dataset,profilesHome,substringLength,sampleSize,";
     final long reportTimestamp = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
     ACCURACY_REPORT_NAME = String.format(ACCURACY_REPORT_PATH_TEMPLATE, reportTimestamp);
     Files.write(
         Path.of(ACCURACY_REPORT_NAME),
-        Collections.singletonList(header + ALL_LANGUAGES),
+        Collections.singletonList(header + ALL_SUPPORTED_ISO_CODES_639_1),
         StandardCharsets.UTF_8);
   }
 
@@ -143,12 +128,14 @@ public class LanguageDetectorAccuracyTest {
   @Test
   public void simulation() throws Exception {
     final String languageCodes = configureProfileDependentLanguageCodes();
+
+    // small-lang-subset is not a real directory under resources
     final String canonicalProfile =
-        profile.equals("small-lang-subset") ? "merged-average" : profile;
+        profilesHome.equals("small-lang-subset") ? "profiles" : profilesHome;
 
     final LanguageDetectionSettings configuredSettings =
         LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
-            .withProfile(canonicalProfile)
+            .withProfilesHome(canonicalProfile)
             .build();
 
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
@@ -210,36 +197,20 @@ public class LanguageDetectorAccuracyTest {
     // Any new language configuration that will be added to the
     // accuracies.csv will not be a part of the following decision tree.
     // The following profiles were not a part of @yanirs's work.
-    if (profile.equals("small-lang-subset")) {
+    if (profilesHome.equals("small-lang-subset")) {
       return SMALL_LANG_SUBSET;
+    } else {
+      return ALL_SUPPORTED_ISO_CODES_639_1;
     }
-
-    if (useAllLanguages) {
-      if (profile.equals("original")) {
-        return ALL_DEFAULT_PROFILE_LANGUAGES;
-      } else if (profile.equals("short-text")) {
-        return ALL_SHORT_PROFILE_LANGUAGES;
-      } else {
-        return ALL_LANGUAGES;
-      }
-    }
-
-    // Default... Not sure where these "old" languages came from. Keeping for posterity
-    return OLD_DEFAULT_LANGUAGES;
   }
 
   private void writeAccuracyReport(final Map<String, Float> languageToDetectedAccuracy)
       throws IOException {
     final List<String> row = new ArrayList<>();
     Collections.addAll(
-        row,
-        dataset,
-        profile,
-        String.valueOf(substringLength),
-        String.valueOf(sampleSize),
-        String.valueOf(useAllLanguages));
+        row, dataset, profilesHome, String.valueOf(substringLength), String.valueOf(sampleSize));
 
-    for (final String language : ALL_LANGUAGES.split(COMMA)) {
+    for (final String language : ALL_SUPPORTED_ISO_CODES_639_1.split(COMMA)) {
       row.add(languageToDetectedAccuracy.getOrDefault(language, Float.NaN).toString());
     }
     Files.write(
@@ -254,8 +225,7 @@ public class LanguageDetectorAccuracyTest {
    *
    * @return the parsed parameters
    */
-  @Parameterized.Parameters(
-      name = "{0}: profile={1} substringLength={2} sampleSize={3} useAllLanguages={4}")
+  @Parameterized.Parameters(name = "{0}: profilesHome={1} substringLength={2} sampleSize={3}")
   public static Collection<Object[]> data() throws IOException {
     final List<Object[]> data = new ArrayList<>();
     try (final BufferedReader bufferedReader = getResourceReader("/accuracies.csv")) {
@@ -268,20 +238,18 @@ public class LanguageDetectorAccuracyTest {
             new Object[] {
               // dataset
               scanner.next(),
-              // profile
+              // profilesHome
               scanner.next(),
               // substringLength
               scanner.nextInt(),
               // sampleSize
               scanner.nextInt(),
-              // useAllLanguages
-              scanner.nextBoolean(),
               // expectedAccuraciesPerLanguage
               null
             });
 
         final Map<String, Float> expectedAccuraciesPerLanguage = new HashMap<>();
-        for (String language : ALL_LANGUAGES.split(COMMA)) {
+        for (String language : ALL_SUPPORTED_ISO_CODES_639_1.split(COMMA)) {
           float expectedAccuracy = scanner.nextFloat();
 
           // To disable a language from being evaluated, we need to set its

@@ -113,9 +113,9 @@ class LanguageDetectorFactory {
       if (isoCode639_1 == null || isoCode639_1.trim().isEmpty()) {
         continue;
       }
-      final String profile = this.languageDetectionSettings.getProfile();
+      final String profilesHome = this.languageDetectionSettings.getProfilesHome();
       final String languageZstdPath =
-          String.format("/profiles/%s/%s%s", profile, isoCode639_1, ZSTD_EXTENSION);
+          String.format("/%s/%s%s", profilesHome, isoCode639_1, ZSTD_EXTENSION);
       try (final InputStream in = getClass().getResourceAsStream(languageZstdPath)) {
         if (in == null) {
           throw new UncheckedIOException(

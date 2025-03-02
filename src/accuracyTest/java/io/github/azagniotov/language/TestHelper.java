@@ -19,12 +19,6 @@ final class TestHelper {
 
   static final float ACCURACY_DELTA = 1e-6f;
 
-  // To disable a language from being evaluated, we need to set its
-  // probability in the CSV as NaN. Then, it will be filtered out.
-  static final String ALL_LANGUAGES =
-      "af,ar,bg,bn,ca,cs,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,kn,ko,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,"
-          + "ro,ru,si,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,uk,ur,vi,yi,zh-cn,zh-tw";
-
   /**
    * Read and parse a multi-language dataset from the given path.
    *
