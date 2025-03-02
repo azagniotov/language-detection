@@ -14,7 +14,7 @@ public class LanguageDetectionSettingsTest {
     final LanguageDetectionSettings settings =
         LanguageDetectionSettings.fromIsoCodes639_1("ja,en").build();
 
-    assertEquals(settings.getProfile(), "merged-average");
+    assertEquals(settings.getProfilesHome(), "profiles");
     assertEquals(settings.getMinNGramLength(), 1);
     assertEquals(settings.getMaxNGramLength(), 3);
     assertEquals(settings.getMaxTextChars(), 3000);

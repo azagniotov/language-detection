@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class LanguageDetectionSettings {
 
-  private static final String ALL_SUPPORTED_ISO_CODES_639_1 =
+  static final String ALL_SUPPORTED_ISO_CODES_639_1 =
       "af,am,ar,az,bg,bn,bo,br,ca,cs,cy,da,de,el,en,es,et,eu,fa,fi,fr,ga,gu,he,hi,hr,hu,hy,id,it,ja,ka,kk,kn,ko,ky,lb,lt,lv,mk,ml,mn,mr,ne,nl,no,pa,pl,pt,"
           + "ro,ru,si,sk,sl,so,sr,sq,sv,sw,ta,te,tg,th,ti,tl,tr,uk,ur,vi,yi,zh-cn,zh-tw";
 
@@ -23,7 +23,7 @@ public class LanguageDetectionSettings {
   private static final int FLAG_SANITIZE_FOR_SEARCH = 4; // 0100
   private static final int FLAG_CLASSIFY_AS_JAPANESE = 8; // 1000
 
-  private final String profile;
+  private final String profiles;
   private final int minNGramLength;
   private final int maxNGramLength;
   private final int maxTextChars;
@@ -38,7 +38,7 @@ public class LanguageDetectionSettings {
   private final int bitFlags;
 
   private LanguageDetectionSettings(final Builder builder) {
-    this.profile = builder.profile;
+    this.profiles = builder.profiles;
     this.minNGramLength = builder.minNGramLength;
     this.maxNGramLength = builder.maxNGramLength;
     this.maxTextChars = builder.maxTextChars;
@@ -53,8 +53,8 @@ public class LanguageDetectionSettings {
     this.bitFlags = builder.bitFlags;
   }
 
-  String getProfile() {
-    return profile;
+  String getProfilesHome() {
+    return profiles;
   }
 
   int getMinNGramLength() {
@@ -126,7 +126,7 @@ public class LanguageDetectionSettings {
 
   public static class Builder {
 
-    private String profile;
+    private String profiles;
     private int minNGramLength;
     private int maxNGramLength;
     private int maxTextChars;
@@ -146,7 +146,7 @@ public class LanguageDetectionSettings {
 
     private Builder(final List<String> isoCodes639_1) {
       this.isoCodes639_1 = List.copyOf(isoCodes639_1);
-      this.profile = "merged-average"; // A name of a subdirectory under the resources
+      this.profiles = "profiles"; // A name of a subdirectory under the resources
       this.minNGramLength = 1;
       this.maxNGramLength = 3;
       this.maxTextChars = 3000;
@@ -159,7 +159,7 @@ public class LanguageDetectionSettings {
     }
 
     private Builder(final Builder that) {
-      this.profile = that.profile;
+      this.profiles = that.profiles;
       this.minNGramLength = that.minNGramLength;
       this.maxNGramLength = that.maxNGramLength;
       this.maxTextChars = that.maxTextChars;
@@ -172,8 +172,8 @@ public class LanguageDetectionSettings {
       this.bitFlags = that.bitFlags;
     }
 
-    public Builder withProfile(final String profile) {
-      this.profile = profile;
+    public Builder withProfilesHome(final String profile) {
+      this.profiles = profile;
       return new Builder(this);
     }
 

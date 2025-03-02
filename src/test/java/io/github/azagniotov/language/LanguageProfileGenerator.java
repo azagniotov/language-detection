@@ -75,7 +75,7 @@ public class LanguageProfileGenerator {
             + "] profiles for ISO 639-1 codes: "
             + targetCodes);
     for (final String targetCode : targetCodes) {
-      generate(targetCode, "merged-average");
+      generate(targetCode, "profiles");
     }
   }
 
@@ -166,10 +166,10 @@ public class LanguageProfileGenerator {
     }
   }
 
-  private void writeProfileZstd(final String path, final String targetCode, final String json)
-      throws IOException {
-    final String resourcesRoot = "src/main/resources/profiles";
-    final File childResourcesDir = new File(resourcesRoot + "/" + path);
+  private void writeProfileZstd(
+      final String profilesHome, final String targetCode, final String json) throws IOException {
+    final String resourcesRoot = "src/main/resources";
+    final File childResourcesDir = new File(resourcesRoot + "/" + profilesHome);
     final File childResourcesDirFile = new File(childResourcesDir, targetCode + ZSTD_EXTENSION);
 
     try (final InputStream zstdJsonStream = ZstdUtils.zstdString(json);
