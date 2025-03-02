@@ -18,6 +18,7 @@ final class TestHelper {
   private TestHelper() {}
 
   static final float ACCURACY_DELTA = 1e-6f;
+  static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it,zh-cn";
 
   /**
    * Read and parse a multi-language dataset from the given path.
