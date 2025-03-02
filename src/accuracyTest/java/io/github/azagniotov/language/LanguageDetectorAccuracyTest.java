@@ -3,6 +3,7 @@ package io.github.azagniotov.language;
 import static io.github.azagniotov.language.LanguageDetectionSettings.ALL_SUPPORTED_ISO_CODES_639_1;
 import static io.github.azagniotov.language.StringConstants.COMMA;
 import static io.github.azagniotov.language.TestHelper.ACCURACY_DELTA;
+import static io.github.azagniotov.language.TestHelper.SMALL_LANG_SUBSET;
 import static io.github.azagniotov.language.TestHelper.getResourceReader;
 import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
 import static io.github.azagniotov.language.TestHelper.readDataset;
@@ -44,8 +45,6 @@ import org.junit.runners.Parameterized;
  */
 @RunWith(Parameterized.class)
 public class LanguageDetectorAccuracyTest {
-
-  private static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it";
 
   private static final String ACCURACY_REPORT_HOME = "./build/reports/accuracy";
   private static final String ACCURACY_REPORT_PATH_TEMPLATE =
