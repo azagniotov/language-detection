@@ -2,7 +2,7 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
-import static io.github.azagniotov.language.StringConstants.ZSTD_EXTENSION;
+import static io.github.azagniotov.language.StringConstants.GZIP_EXTENSION;
 import static java.util.Collections.nCopies;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.Ignore;
 import org.junit.Test;
-import util.ZstdUtils;
 
 public class LanguageProfileGenerator {
 
@@ -100,7 +99,7 @@ public class LanguageProfileGenerator {
     System.out.println(".getNGramCounts(): " + languageProfile.getNGramCounts() + "\n");
 
     final String languageProfileJson = languageProfile.toJson();
-    writeProfileZstd(profilesHome, targetCode, languageProfileJson);
+    writeProfileGzipped(profilesHome, targetCode, languageProfileJson);
 
     assertTrue(true);
   }
@@ -166,19 +165,19 @@ public class LanguageProfileGenerator {
     }
   }
 
-  private void writeProfileZstd(
+  private void writeProfileGzipped(
       final String profilesHome, final String targetCode, final String json) throws IOException {
     final String resourcesRoot = "src/main/resources";
     final File childResourcesDir = new File(resourcesRoot + "/" + profilesHome);
-    final File childResourcesDirFile = new File(childResourcesDir, targetCode + ZSTD_EXTENSION);
+    final File childResourcesDirFile = new File(childResourcesDir, targetCode + GZIP_EXTENSION);
 
-    try (final InputStream zstdJsonStream = ZstdUtils.zstdString(json);
+    try (final InputStream gzippedJsonStream = GzipUtils.gzipString(json);
         final FileOutputStream fileOutputStream = new FileOutputStream(childResourcesDirFile);
         final BufferedOutputStream bufferedOutputStream =
             new BufferedOutputStream(fileOutputStream)) {
       final byte[] buffer = new byte[2048];
       while (true) {
-        final int bytesRead = zstdJsonStream.read(buffer);
+        final int bytesRead = gzippedJsonStream.read(buffer);
         if (bytesRead == -1) {
           break;
         }

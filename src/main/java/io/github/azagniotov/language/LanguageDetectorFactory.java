@@ -1,6 +1,6 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.StringConstants.ZSTD_EXTENSION;
+import static io.github.azagniotov.language.StringConstants.GZIP_EXTENSION;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -115,14 +115,14 @@ class LanguageDetectorFactory {
       }
       final String profilesHome = this.languageDetectionSettings.getProfilesHome();
       final String languageZstdPath =
-          String.format("/%s/%s%s", profilesHome, isoCode639_1, ZSTD_EXTENSION);
+          String.format("/%s/%s%s", profilesHome, isoCode639_1, GZIP_EXTENSION);
       try (final InputStream in = getClass().getResourceAsStream(languageZstdPath)) {
         if (in == null) {
           throw new UncheckedIOException(
               new IOException(
                   "Could not load language profile Zstd-compressed from: " + languageZstdPath));
         }
-        allLoadedProfiles.add(LanguageProfile.fromZstdCompressedJson(in));
+        allLoadedProfiles.add(LanguageProfile.fromGzippedJson(in));
       }
     }
     for (int idx = 0; idx < allLoadedProfiles.size(); idx++) {
