@@ -7,7 +7,7 @@ class StringConstants {
   static final String BLANK_SPACE = " ";
   static final String COMMA = ",";
   static final String TAB = "\t";
-  static final String ZSTD_EXTENSION = ".zst";
+  static final String GZIP_EXTENSION = ".gz";
 
   private StringConstants() {}
 }

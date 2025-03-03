@@ -2,7 +2,6 @@ package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
 import static io.github.azagniotov.language.LanguageDetector.PERFECT_PROBABILITY;
-import static util.ZstdUtils.decompressWithPrefix;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +13,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 class LanguageProfile {
   private static final Gson GSON =
@@ -47,7 +48,6 @@ class LanguageProfile {
   private int minNGramLength;
   private int maxNGramLength;
 
-  /** Create a language profile from a JSON input stream. */
   LanguageProfile(
       final String isoCode639_1, final Map<String, Long> freq, final List<Float> nWords) {
     this.isoCode639_1 = isoCode639_1;
@@ -55,13 +55,14 @@ class LanguageProfile {
     this.nWords = nWords;
   }
 
-  /** Create a language profile from a Zstd-compressed JSON input stream. */
-  static LanguageProfile fromZstdCompressedJson(final InputStream zstdCompressed)
+  /** Create a language profile from a Gzipped JSON input stream. */
+  static LanguageProfile fromGzippedJson(final InputStream compressedInputStream)
       throws IOException {
-    try (final InputStream inputStream = decompressWithPrefix(zstdCompressed);
-        final InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+    try (final GZIPInputStream gzipInputStream = new GZIPInputStream(compressedInputStream);
+        final BufferedReader bufferedReader =
+            new BufferedReader(new InputStreamReader(gzipInputStream))) {
 
-      return GSON.fromJson(inputStreamReader, LanguageProfile.class);
+      return GSON.fromJson(bufferedReader, LanguageProfile.class);
     }
   }
 

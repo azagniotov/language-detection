@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.GzipUtils.gzipString;
 import static io.github.azagniotov.language.LanguageDetectionSettings.DEFAULT_SETTINGS_ALL_LANGUAGES;
 import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
@@ -8,7 +9,6 @@ import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGT
 import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
 import static org.junit.Assert.assertEquals;
-import static util.ZstdUtils.zstdString;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -58,23 +58,23 @@ public class LanguageDetectorTest {
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(emptySettings);
 
     final String profileTemplate = "{\"freq\":{},\"n_words\":[0.0, 0.0, 0.0],\"name\":\"%s\"}";
-    final InputStream enTest = zstdString(String.format(profileTemplate, "en_test"));
-    final LanguageProfile enProfile = LanguageProfile.fromZstdCompressedJson(enTest);
-    for (String w : TRAINING_EN.split(BLANK_SPACE)) {
+    final InputStream enTest = gzipString(String.format(profileTemplate, "en_test"));
+    final LanguageProfile enProfile = LanguageProfile.fromGzippedJson(enTest);
+    for (final String w : TRAINING_EN.split(BLANK_SPACE)) {
       enProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(enProfile, 0, 3);
 
-    final InputStream frTest = zstdString(String.format(profileTemplate, "fr_test"));
-    final LanguageProfile frProfile = LanguageProfile.fromZstdCompressedJson(frTest);
-    for (String w : TRAINING_FR.split(BLANK_SPACE)) {
+    final InputStream frTest = gzipString(String.format(profileTemplate, "fr_test"));
+    final LanguageProfile frProfile = LanguageProfile.fromGzippedJson(frTest);
+    for (final String w : TRAINING_FR.split(BLANK_SPACE)) {
       frProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(frProfile, 1, 3);
 
-    final InputStream jaTest = zstdString(String.format(profileTemplate, "ja_test"));
-    final LanguageProfile jaProfile = LanguageProfile.fromZstdCompressedJson(jaTest);
-    for (String w : TRAINING_JA.split(BLANK_SPACE)) {
+    final InputStream jaTest = gzipString(String.format(profileTemplate, "ja_test"));
+    final LanguageProfile jaProfile = LanguageProfile.fromGzippedJson(jaTest);
+    for (final String w : TRAINING_JA.split(BLANK_SPACE)) {
       jaProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(jaProfile, 2, 3);
