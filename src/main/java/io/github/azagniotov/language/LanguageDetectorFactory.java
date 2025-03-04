@@ -114,13 +114,13 @@ class LanguageDetectorFactory {
         continue;
       }
       final String profilesHome = this.languageDetectionSettings.getProfilesHome();
-      final String languageZstdPath =
+      final String profileGzipArchive =
           String.format("/%s/%s%s", profilesHome, isoCode639_1, GZIP_EXTENSION);
-      try (final InputStream in = getClass().getResourceAsStream(languageZstdPath)) {
+      try (final InputStream in = getClass().getResourceAsStream(profileGzipArchive)) {
         if (in == null) {
           throw new UncheckedIOException(
               new IOException(
-                  "Could not load language profile Zstd-compressed from: " + languageZstdPath));
+                  "Could not load language profile Gzip-compressed from: " + profileGzipArchive));
         }
         allLoadedProfiles.add(LanguageProfile.fromGzippedJson(in));
       }
