@@ -168,13 +168,15 @@ class LanguageDetector {
 
         // Smoothing is essential in Naive Bayes to prevent zero probabilities when encountering
         // unseen n-grams.
-        float weight = alphaSmoothing / baseFreq;
+        final float weight = alphaSmoothing / baseFreq;
+        float probSum = 0.0f;
         for (int probIdx = 0; probIdx < probabilities.length; ++probIdx) {
 
           // Multiplying the existing probability of a language by the probability of
           // the n-gram appearing in that language. This aligns strongly with the
           // multiplicative nature of Naive Bayes probability calculations.
           probabilities[probIdx] *= weight + wordProbabilities[probIdx];
+          probSum += probabilities[probIdx];
         }
 
         // Probabilities are normalized and checked for convergence threshold
@@ -188,7 +190,7 @@ class LanguageDetector {
         if (iteration % CONVERGENCE_CHECK_FREQUENCY == 0) {
           // Normalization is often used in probability calculations to ensure that
           // the probabilities sum to 1. This is a standard practice in Naive Bayes.
-          if (normalizeProbabilitiesAndReturnMax(probabilities) > convergenceThreshold) {
+          if (normalizeProbabilitiesAndReturnMax(probSum, probabilities) > convergenceThreshold) {
             break;
           }
         }
@@ -248,21 +250,15 @@ class LanguageDetector {
    * @return the maximum value found within the normalized probability array. This maximum value is
    *     used as a convergence check, to determine if the probability distribution has stabilized.
    */
-  private float normalizeProbabilitiesAndReturnMax(final float[] prob) {
-    if (prob.length == 0) {
+  private float normalizeProbabilitiesAndReturnMax(final float sump, final float[] prob) {
+    if (prob.length == 0 || sump == 0) {
       return ZERO_PROBABILITY;
     }
-    float sump = prob[0];
-    for (int i = 1; i < prob.length; i++) {
-      sump += prob[i];
-    }
+
     float maxp = ZERO_PROBABILITY;
     for (int i = 0; i < prob.length; i++) {
-      float p = prob[i] / sump;
-      if (maxp < p) {
-        maxp = p;
-      }
-      prob[i] = p;
+      prob[i] = prob[i] / sump;
+      maxp = Math.max(maxp, prob[i]);
     }
     return maxp;
   }
