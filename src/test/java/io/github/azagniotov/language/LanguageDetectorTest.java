@@ -28,13 +28,9 @@ public class LanguageDetectorTest {
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    final int baseFreq = 10000;
-    final int iterationLimit = 10000;
-    final int numberOfTrials = 7;
-    final float alpha = 0.5f;
-    final float alphaWidth = 0.05f;
-    final float convThreshold = 0.99999f;
-    MODEL = new Model(baseFreq, iterationLimit, numberOfTrials, alpha, alphaWidth, convThreshold);
+    MODEL =
+        Model.fromJson(
+            LanguageDetectorTest.class.getResourceAsStream("/model/testParameters.json"));
 
     final LanguageDetectorFactory factory =
         new LanguageDetectorFactory(DEFAULT_SETTINGS_ALL_LANGUAGES);

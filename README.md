@@ -136,20 +136,20 @@ The following is a list of ISO 639-1 languages code supported by the library:
 
 ### Model parameters
 
-These settings can be set as ENV vars to modify language detection. [TBD / WiP]
+The following model [src/main/resources/model/parameters.json](src/main/resources/model/parameters.json) can be set as ENV vars to modify language detection at runtime.
 
 Use with caution. You don't need to modify settings. This list is just for the sake of completeness.
 For successful modification of the model parameters, you should study the source code and be familiar with
 probabilistic matching using naive bayes with character n-gram. See also Ted Dunning, [Statistical Identification of Language](https://www.researchgate.net/publication/2263394_Statistical_Identification_of_Language), 1994.
 
-| Name               | Description                                                                                  |
-|--------------------|----------------------------------------------------------------------------------------------|
-| `number_of_trials` | Number of trials, affects CPU usage (default: 7)                                             |
-| `alpha`            | Additional smoothing parameter, default: 0.5                                                 |
-| `alpha_width`      | The width of smoothing, default: 0.05                                                        |
-| `iteration_limit`  | Safeguard to break loop, default: 10000                                                      |
-| `conv_threshold`   | Detection is terminated when normalized probability exceeds this threshold, default: 0.99999 |
-| `base_freq`        | Default: 10000                                                                               |
+| Name                   | ENV                                     | Description                                                                                  |
+|------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------|
+| `baseFrequency`        | `LANGUAGE_DETECT_BASE_FREQUENCY`        | Default: 10000                                                                               |
+| `iterationLimit`       | `LANGUAGE_DETECT_ITERATION_LIMIT`       | Safeguard to break loop, default: 10000                                                      |
+| `numberOfTrials`       | `LANGUAGE_DETECT_NUMBER_OF_TRIALS`      | Number of trials, affects CPU usage (default: 7)                                             |
+| `alpha`                | `LANGUAGE_DETECT_ALPHA`                 | Additional smoothing parameter, default: 0.5                                                 |
+| `alphaWidth`           | `LANGUAGE_DETECT_ALPHA_WIDTH`           | The width of smoothing, default: 0.05                                                        |
+| `convergenceThreshold` | `LANGUAGE_DETECT_CONVERGENCE_THRESHOLD` | Detection is terminated when normalized probability exceeds this threshold, default: 0.99999 |
 
 ### Quick detection of CJK languages
 
