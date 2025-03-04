@@ -2,20 +2,13 @@ package io.github.azagniotov.language;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 
 class Model {
 
-  private static final Gson GSON =
-      new GsonBuilder().registerTypeAdapter(Model.class, new Model.ModelDeserializer()).create();
+  private static final Gson GSON = new GsonBuilder().create();
 
   private final int baseFrequency;
   private final int iterationLimit;
@@ -63,38 +56,24 @@ class Model {
     return convergenceThreshold;
   }
 
-  static Model fromJson(final InputStream inputStream) throws IOException {
+  static Model fromJsonOrEnv(final InputStream inputStream) throws IOException {
     try (final InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-      return GSON.fromJson(inputStreamReader, Model.class);
-    }
-  }
-
-  private static class ModelDeserializer implements JsonDeserializer<Model> {
-    @Override
-    public Model deserialize(
-        final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
-        throws JsonParseException {
-      final JsonObject jsonObject = json.getAsJsonObject();
+      final Model defaultModel = GSON.fromJson(inputStreamReader, Model.class);
 
       final int baseFrequency =
-          EnvironmentUtils.getEnvInt(
-              "LANGUAGE_DETECT_BASE_FREQUENCY", jsonObject.get("baseFrequency").getAsInt());
+          EnvironmentUtils.getEnvInt("LANGUAGE_DETECT_BASE_FREQUENCY", defaultModel.baseFrequency);
       final int iterationLimit =
           EnvironmentUtils.getEnvInt(
-              "LANGUAGE_DETECT_ITERATION_LIMIT", jsonObject.get("iterationLimit").getAsInt());
+              "LANGUAGE_DETECT_ITERATION_LIMIT", defaultModel.iterationLimit);
       final int numberOfTrials =
           EnvironmentUtils.getEnvInt(
-              "LANGUAGE_DETECT_NUMBER_OF_TRIALS", jsonObject.get("numberOfTrials").getAsInt());
-      final float alpha =
-          EnvironmentUtils.getEnvFloat(
-              "LANGUAGE_DETECT_ALPHA", jsonObject.get("alpha").getAsFloat());
+              "LANGUAGE_DETECT_NUMBER_OF_TRIALS", defaultModel.numberOfTrials);
+      final float alpha = EnvironmentUtils.getEnvFloat("LANGUAGE_DETECT_ALPHA", defaultModel.alpha);
       final float alphaWidth =
-          EnvironmentUtils.getEnvFloat(
-              "LANGUAGE_DETECT_ALPHA_WIDTH", jsonObject.get("alphaWidth").getAsFloat());
+          EnvironmentUtils.getEnvFloat("LANGUAGE_DETECT_ALPHA_WIDTH", defaultModel.alphaWidth);
       final float convergenceThreshold =
           EnvironmentUtils.getEnvFloat(
-              "LANGUAGE_DETECT_CONVERGENCE_THRESHOLD",
-              jsonObject.get("convergenceThreshold").getAsFloat());
+              "LANGUAGE_DETECT_CONVERGENCE_THRESHOLD", defaultModel.convergenceThreshold);
 
       return new Model(
           baseFrequency, iterationLimit, numberOfTrials, alpha, alphaWidth, convergenceThreshold);
