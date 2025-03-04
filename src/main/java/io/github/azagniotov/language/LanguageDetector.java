@@ -36,6 +36,9 @@ class LanguageDetector {
   // return up to top 10 detected language when calling detectAll(String)
   private static final int MAX_DETECTED_CLASSES = 10;
 
+  // An empirically derived value
+  private static final int CONVERGENCE_CHECK_FREQUENCY = 5;
+
   // All the loaded ISO 639-1 codes that have been configured by the user,
   // e.g.: en, ja, es. The codes are in exactly the same order as the data
   // is in the float[] in languageCorporaProbabilities.
@@ -101,6 +104,19 @@ class LanguageDetector {
     return languages.subList(0, Math.min(languages.size(), MAX_DETECTED_CLASSES));
   }
 
+  /**
+   * Naive Bayes classification algorithm implementation.
+   *
+   * <p>The core principle of Naive Bayes is based on Bayes' Theorem, which calculates the
+   * conditional probability of an event based on prior knowledge of related conditions.
+   *
+   * <p>The detectBlock() method calculates language probabilities for each supported language. This
+   * is a core function of Naive Bayes, which aims to determine the probability of a document
+   * belonging to each class (language).
+   *
+   * @param input input string
+   * @return an array of probabilities.
+   */
   private float[] detectBlock(final String input) {
     final List<String> extractedNGrams = extractNGrams(input);
 
@@ -112,20 +128,67 @@ class LanguageDetector {
     final Random random = new Random();
     random.setSeed(0L);
 
+    // 1. The random selection of n-grams in the following code, and the multiple trials, indicates
+    //    that this is a stochastic approximation of the Naive Bayes calculations. This is useful
+    //    when dealing with very large datasets.
+    // 2. Due to numberOfTrials the algorithm runs multiple times with slightly different parameters
+    //    (due to the random smoothing, see below), and the results are averaged. This helps improve
+    //    the robustness of the predictions.
     for (int t = 0; t < numberOfTrials; ++t) {
       final float[] probabilities = initProbabilies();
+
+      // 1. Smoothing is essential in Naive Bayes to prevent zero probabilities when encountering
+      //    unseen n-grams. This is a form of smoothing, likely a variant of Laplace smoothing or
+      //    Lidstone smoothing adapted for this specific application. The alpha and alphaWidth
+      //    parameters control the degree of smoothing.
+      // 2. The random gaussian addition to alpha, implies the alpha value is being varied slightly
+      //    between trials.This random variation of the alpha smoothing parameter is a unique
+      //    implementation detail.
       float alphaSmoothing = (float) (this.alpha + random.nextGaussian() * alphaWidth);
 
-      for (int i = 0; i <= iterationLimit; ++i) {
+      for (int iteration = 0; iteration <= iterationLimit; ++iteration) {
         final int randomIdx = random.nextInt(extractedNGrams.size());
         final String nGram = extractedNGrams.get(randomIdx);
-        updateLangProb(probabilities, nGram, alphaSmoothing);
 
-        if (i % 5 == 0 && normalizeProb(probabilities) > convergenceThreshold) {
-          break;
+        // Retrieving the probabilities for a specific n-gram appears in each language.
+        float[] wordProbabilities = languageCorporaProbabilities.get(nGram);
+
+        // Smoothing is essential in Naive Bayes to prevent zero probabilities when encountering
+        // unseen n-grams.
+        float weight = alphaSmoothing / baseFreq;
+        for (int probIdx = 0; probIdx < probabilities.length; ++probIdx) {
+
+          // Multiplying the existing probability of a language by the probability of
+          // the n-gram appearing in that language. This aligns strongly with the
+          // multiplicative nature of Naive Bayes probability calculations.
+          probabilities[probIdx] *= weight + wordProbabilities[probIdx];
+        }
+
+        // Probabilities are normalized and checked for convergence threshold
+        // on every 5th iteration with the help of CONVERGENCE_CHECK_FREQUENCY,
+        // which was probably an empirically derived value. Why 5th in particular?
+        // Probably to reduce the computational overhead of the loop, and potentially
+        // improving performance because checking for convergence can be computationally
+        // expensive, especially if the probabilities array is large. I guess this was
+        // the trade-off between the accuracy of the convergence check and the speed
+        // of the algorithm chosen by Nakatani Shuyo, the original author.
+        if (iteration % CONVERGENCE_CHECK_FREQUENCY == 0) {
+          // Normalization is often used in probability calculations to ensure that
+          // the probabilities sum to 1. This is a standard practice in Naive Bayes.
+          if (normalizeProbabilitiesAndReturnMax(probabilities) > convergenceThreshold) {
+            break;
+          }
         }
       }
 
+      // This loop averages the probability estimates obtained from multiple
+      // trials (iterations of the outer loop, controlled by numberOfTrials).
+      // This averaging helps to smooth out the variations in probability estimates
+      // that might occur between the individual trials due to the stochastic nature
+      // of the algorithm (random n-gram selection and alpha variation). In other
+      // words, this averaging process inherently contributes to a more stable and
+      // representative probability distribution by reducing the variance of the
+      // probability estimates, making the results more stable and reliable.
       for (int j = 0; j < languageProbabilities.length; ++j) {
         languageProbabilities[j] += probabilities[j] / numberOfTrials;
       }
@@ -157,24 +220,22 @@ class LanguageDetector {
   }
 
   /**
-   * Update language probabilities with N-gram string(N=1,2,3)
+   * The method has two functions:
    *
-   * @param word N-gram string
-   */
-  private void updateLangProb(final float[] prob, final String word, final float alpha) {
-    float[] wordProbabilities = languageCorporaProbabilities.get(word);
-    float weight = alpha / baseFreq;
-    for (int i = 0; i < prob.length; ++i) {
-      prob[i] *= weight + wordProbabilities[i];
-    }
-  }
-
-  /**
-   * Normalize probabilities and check convergence by the maximun probability
+   * <p>1. Normalizes the input probability array to sum to 1. This is achieved by dividing each
+   * element of the array by the total sum of all elements. This results in probability
+   * distribution.
    *
-   * @return maximum of probabilities
+   * <p>2. Returns the maximum value found within the normalized probability array.
+   *
+   * <p>This function is essential for ensuring that the probabilities returned by the {@link
+   * #detectBlock(String)} represent a valid probability distribution across all supported
+   * languages.
+   *
+   * @return the maximum value found within the normalized probability array. This maximum value is
+   *     used as a convergence check, to determine if the probability distribution has stabilized.
    */
-  private float normalizeProb(final float[] prob) {
+  private float normalizeProbabilitiesAndReturnMax(final float[] prob) {
     if (prob.length == 0) {
       return ZERO_PROBABILITY;
     }
