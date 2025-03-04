@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.stream.JsonReader;
 import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,11 +59,14 @@ class LanguageProfile {
   /** Create a language profile from a Gzipped JSON input stream. */
   static LanguageProfile fromGzippedJson(final InputStream compressedInputStream)
       throws IOException {
-    try (final GZIPInputStream gzipInputStream = new GZIPInputStream(compressedInputStream);
-        final BufferedReader bufferedReader =
-            new BufferedReader(new InputStreamReader(gzipInputStream))) {
 
-      return GSON.fromJson(bufferedReader, LanguageProfile.class);
+    try (final GZIPInputStream gzipInputStream = new GZIPInputStream(compressedInputStream);
+        final InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream);
+        final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        final JsonReader jsonReader = new JsonReader(bufferedReader)) {
+
+      // JsonReader provides a streaming API which is recommended for large JSONs
+      return GSON.fromJson(jsonReader, LanguageProfile.class);
     }
   }
 

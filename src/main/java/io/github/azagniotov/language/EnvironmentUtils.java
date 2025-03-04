@@ -2,6 +2,8 @@ package io.github.azagniotov.language;
 
 class EnvironmentUtils {
 
+  private static final String ENV_BASE = "LANGUAGE_DETECT_";
+
   /**
    * Retrieves the value of an environment variable, with a default fallback.
    *
@@ -51,7 +53,7 @@ class EnvironmentUtils {
    * @return The value of the environment variable, or null if it's not set or empty.
    */
   private static String getEnv(final String variableName) {
-    final String value = System.getenv(variableName);
+    final String value = System.getenv(String.format("%s%s", ENV_BASE, variableName));
     if (value == null || value.trim().isEmpty()) {
       return null;
     }

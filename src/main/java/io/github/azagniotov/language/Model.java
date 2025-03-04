@@ -1,5 +1,8 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.EnvironmentUtils.getEnvFloat;
+import static io.github.azagniotov.language.EnvironmentUtils.getEnvInt;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -58,25 +61,15 @@ class Model {
 
   static Model fromJsonOrEnv(final InputStream inputStream) throws IOException {
     try (final InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
-      final Model defaultModel = GSON.fromJson(inputStreamReader, Model.class);
 
-      final int baseFrequency =
-          EnvironmentUtils.getEnvInt("LANGUAGE_DETECT_BASE_FREQUENCY", defaultModel.baseFrequency);
-      final int iterationLimit =
-          EnvironmentUtils.getEnvInt(
-              "LANGUAGE_DETECT_ITERATION_LIMIT", defaultModel.iterationLimit);
-      final int numberOfTrials =
-          EnvironmentUtils.getEnvInt(
-              "LANGUAGE_DETECT_NUMBER_OF_TRIALS", defaultModel.numberOfTrials);
-      final float alpha = EnvironmentUtils.getEnvFloat("LANGUAGE_DETECT_ALPHA", defaultModel.alpha);
-      final float alphaWidth =
-          EnvironmentUtils.getEnvFloat("LANGUAGE_DETECT_ALPHA_WIDTH", defaultModel.alphaWidth);
-      final float convergenceThreshold =
-          EnvironmentUtils.getEnvFloat(
-              "LANGUAGE_DETECT_CONVERGENCE_THRESHOLD", defaultModel.convergenceThreshold);
-
+      final Model defaults = GSON.fromJson(inputStreamReader, Model.class);
       return new Model(
-          baseFrequency, iterationLimit, numberOfTrials, alpha, alphaWidth, convergenceThreshold);
+          getEnvInt("BASE_FREQUENCY", defaults.baseFrequency),
+          getEnvInt("ITERATION_LIMIT", defaults.iterationLimit),
+          getEnvInt("NUMBER_OF_TRIALS", defaults.numberOfTrials),
+          getEnvFloat("ALPHA", defaults.alpha),
+          getEnvFloat("ALPHA_WIDTH", defaults.alphaWidth),
+          getEnvFloat("CONVERGENCE_THRESHOLD", defaults.convergenceThreshold));
     }
   }
 }
