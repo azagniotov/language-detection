@@ -1,0 +1,8 @@
+{
+  "baseFrequency": 10000,
+  "iterationLimit": 10000,
+  "numberOfTrials": 7,
+  "alpha": 0.5,
+  "alphaWidth": 0.05,
+  "convergenceThreshold": 0.99999
+}
