@@ -29,7 +29,7 @@ public class LanguageDetectorTest {
   @BeforeClass
   public static void beforeClass() throws Exception {
     MODEL =
-        Model.fromJson(
+        Model.fromJsonOrEnv(
             LanguageDetectorTest.class.getResourceAsStream("/model/testParameters.json"));
 
     final LanguageDetectorFactory factory =

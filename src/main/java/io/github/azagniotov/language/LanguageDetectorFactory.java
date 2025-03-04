@@ -138,7 +138,7 @@ class LanguageDetectorFactory {
             new IOException("Could not load model parameters from: " + modelParametersPath));
       }
 
-      return Model.fromJson(in);
+      return Model.fromJsonOrEnv(in);
     }
   }
 
