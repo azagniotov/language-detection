@@ -141,17 +141,30 @@ class LanguageDetector {
       //    unseen n-grams. This is a form of smoothing, likely a variant of Laplace smoothing or
       //    Lidstone smoothing adapted for this specific application. The alpha and alphaWidth
       //    parameters control the degree of smoothing.
-      // 2. The random gaussian addition to alpha, implies the alpha value is being varied slightly
-      //    between trials.This random variation of the alpha smoothing parameter is a unique
-      //    implementation detail.
-      float alphaSmoothing = (float) (this.alpha + random.nextGaussian() * alphaWidth);
+      // 2. Gaussian: the random gaussian addition to alpha, implies the alpha value is being
+      //    varied slightly between trials. This random variation of the alpha smoothing parameter
+      //    is a unique implementation detail and something which is not "normally" used by Naive
+      //    Bayers. By introducing random variation, the algorithm becomes less sensitive to the
+      //    specific value of alpha and alphaWidth, which provides more robust performance, even if
+      //    the hyperparameters are not perfectly tuned. Because the algorithm runs multiple trials
+      //    with different alpha values, it effectively creates an ensemble of models. Averaging the
+      //    results from these trials can improve the overall accuracy of the predictions.
+      //    Most standard Naive Bayes implementations use fixed smoothing constants (like in Laplace
+      //    or Lidstone smoothing) or more deterministic techniques (like Kneser-Ney). Random
+      //    variation adds complexity and computational overhead, which might not be necessary for
+      //    many applications. It is harder to analyze the results of a stochastic application,
+      //    than a deterministic one. In essence, the Gaussian variation is a more advanced and
+      //    potentially more powerful approach to smoothing. It allows the algorithm to adapt to
+      //    the data and find a more optimal smoothing parameter. However, it's not the "normal"
+      //    approach because it adds complexity and is not always necessary.
+      final float alphaSmoothing = (float) (this.alpha + random.nextGaussian() * alphaWidth);
 
       for (int iteration = 0; iteration <= iterationLimit; ++iteration) {
         final int randomIdx = random.nextInt(extractedNGrams.size());
         final String nGram = extractedNGrams.get(randomIdx);
 
         // Retrieving the probabilities for a specific n-gram appears in each language.
-        float[] wordProbabilities = languageCorporaProbabilities.get(nGram);
+        final float[] wordProbabilities = languageCorporaProbabilities.get(nGram);
 
         // Smoothing is essential in Naive Bayes to prevent zero probabilities when encountering
         // unseen n-grams.
