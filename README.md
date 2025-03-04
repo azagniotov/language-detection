@@ -38,7 +38,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 ## About this library
 
-The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from 1 to 3, alongside a Bayesian filter that incorporates various normalization techniques and feature sampling methods.
+The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from `1` to `3` (incl.), alongside a Bayesian classifier (Naive Bayes classification algorithm, see [LanguageDetector#detectBlock(String)](src/main/java/io/github/azagniotov/language/LanguageDetector.java)) that incorporates various normalization techniques and feature sampling methods.
 
 The precision is over **99%** for **72** languages. See the following PR description to read about the benchmaks done by @yanirs : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
@@ -136,20 +136,19 @@ The following is a list of ISO 639-1 languages code supported by the library:
 
 ### Model parameters
 
-The following model [src/main/resources/model/parameters.json](src/main/resources/model/parameters.json) can be set as ENV vars to modify language detection at runtime.
+The following model [src/main/resources/model/parameters.json](src/main/resources/model/parameters.json) can be configured as ENV vars to modify language detection at runtime.
 
-Use with caution. You don't need to modify settings. This list is just for the sake of completeness.
-For successful modification of the model parameters, you should study the source code and be familiar with
-probabilistic matching using naive bayes with character n-gram. See also Ted Dunning, [Statistical Identification of Language](https://www.researchgate.net/publication/2263394_Statistical_Identification_of_Language), 1994.
+Use with caution. You don't need to modify the default settings. This list is just for the sake of completeness.
+For successful modification of the model parameters, you should study the source code (see [LanguageDetector#detectBlock(String)](src/main/java/io/github/azagniotov/language/LanguageDetector.java)) to familiarize yourself with probabilistic matching using Naive Bayes classification algorithm with character n-gram. See also Ted Dunning, [Statistical Identification of Language](https://www.researchgate.net/publication/2263394_Statistical_Identification_of_Language), 1994.
 
-| Name                   | ENV                                     | Description                                                                                  |
-|------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------|
-| `baseFrequency`        | `LANGUAGE_DETECT_BASE_FREQUENCY`        | Default: 10000                                                                               |
-| `iterationLimit`       | `LANGUAGE_DETECT_ITERATION_LIMIT`       | Safeguard to break loop, default: 10000                                                      |
-| `numberOfTrials`       | `LANGUAGE_DETECT_NUMBER_OF_TRIALS`      | Number of trials, affects CPU usage (default: 7)                                             |
-| `alpha`                | `LANGUAGE_DETECT_ALPHA`                 | Additional smoothing parameter, default: 0.5                                                 |
-| `alphaWidth`           | `LANGUAGE_DETECT_ALPHA_WIDTH`           | The width of smoothing, default: 0.05                                                        |
-| `convergenceThreshold` | `LANGUAGE_DETECT_CONVERGENCE_THRESHOLD` | Detection is terminated when normalized probability exceeds this threshold, default: 0.99999 |
+| Name                   | Configured by the ENV variable          | Description                                                                                                                          |
+|------------------------|-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `baseFrequency`        | `LANGUAGE_DETECT_BASE_FREQUENCY`        | Default: `10000`                                                                                                                     |
+| `iterationLimit`       | `LANGUAGE_DETECT_ITERATION_LIMIT`       | Safeguard to break loop. Default: `10000`                                                                                            |
+| `numberOfTrials`       | `LANGUAGE_DETECT_NUMBER_OF_TRIALS`      | Number of trials (affects CPU usage). Default: `7`                                                                                   |
+| `alpha`                | `LANGUAGE_DETECT_ALPHA`                 | Naive Bayes classifier smoothing parameterto prevent zero probabilities and improve the robustness of the classifier. Default: `0.5` |
+| `alphaWidth`           | `LANGUAGE_DETECT_ALPHA_WIDTH`           | The width of smoothing. Default: `0.05`                                                                                              |
+| `convergenceThreshold` | `LANGUAGE_DETECT_CONVERGENCE_THRESHOLD` | Detection is terminated when normalized probability exceeds this threshold. Default: `0.99999`                                       |
 
 ### Quick detection of CJK languages
 
