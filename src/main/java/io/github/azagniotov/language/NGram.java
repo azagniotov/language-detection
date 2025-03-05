@@ -13,10 +13,12 @@ import static java.lang.Character.UnicodeBlock.GENERAL_PUNCTUATION;
 import static java.lang.Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
 import static java.lang.Character.UnicodeBlock.HANGUL_SYLLABLES;
 import static java.lang.Character.UnicodeBlock.HIRAGANA;
+import static java.lang.Character.UnicodeBlock.IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION;
 import static java.lang.Character.UnicodeBlock.KATAKANA;
 import static java.lang.Character.UnicodeBlock.LATIN_1_SUPPLEMENT;
 import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_ADDITIONAL;
 import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_B;
+import static java.lang.Character.UnicodeBlock.SUPPLEMENTAL_PUNCTUATION;
 
 import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
 import java.lang.Character.UnicodeBlock;
@@ -35,7 +37,12 @@ class NGram {
   // Character.MAX_VALUE has the Unicode code point U+FFFF, which is
   // the largest value of type char in Java (which uses UTF-16 encoding).
   private static final char[] NORMALIZED_BMP_CHARS = new char[Character.MAX_VALUE + 1];
-
+  private static final Set<UnicodeBlock> PUNCTUATION_BLOCKS =
+      Set.of(
+          GENERAL_PUNCTUATION,
+          CJK_SYMBOLS_AND_PUNCTUATION,
+          IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION,
+          SUPPLEMENTAL_PUNCTUATION);
   private static final int UNIGRAM_SIZE = 1;
 
   private static final String[] CJK_CLASS = {
@@ -177,8 +184,8 @@ class NGram {
   private static final String LATIN1_EXCLUDED = "\u00A0\u00AB\u00B0\u00BB";
 
   static {
-    for (String cjk_list : CJK_CLASS) {
-      char representative = cjk_list.charAt(0);
+    for (final String cjk_list : CJK_CLASS) {
+      final char representative = cjk_list.charAt(0);
       for (int i = 0; i < cjk_list.length(); ++i) {
         CJK_CHAR_TO_CHAR_MAP.put(cjk_list.charAt(i), representative);
       }
@@ -262,8 +269,10 @@ class NGram {
   }
 
   private static char normalizeOriginal(char ch) {
-    UnicodeBlock block = UnicodeBlock.of(ch);
-    if (block == BASIC_LATIN) {
+    final UnicodeBlock block = UnicodeBlock.of(ch);
+    if (block == null) {
+      return ch;
+    } else if (block == BASIC_LATIN) {
       if (ch < 'A' || (ch < 'a' && ch > 'Z') || ch > 'z') {
         return BLANK_CHAR;
       }
@@ -278,7 +287,7 @@ class NGram {
       if (ch == '\u021b') {
         return '\u0163'; // Romanian 't' with comma below (ț) to 't' with cedilla
       }
-    } else if (block == GENERAL_PUNCTUATION || block == CJK_SYMBOLS_AND_PUNCTUATION) {
+    } else if (PUNCTUATION_BLOCKS.contains(block)) {
       return BLANK_CHAR;
     } else if (block == HALFWIDTH_AND_FULLWIDTH_FORMS) {
       // Filters out some more CJK punctuation marks
@@ -289,6 +298,9 @@ class NGram {
       }
     } else if (block == ARABIC) {
       // Farsi yeh ("ye" in "yes") => Arabic yeh ("ye" in "yes")
+      // (azagniotov): I do not know why this particular Farsi
+      // letter gets mapped to its Arabic counterpart, as there
+      // are other similar pair of letters in both languages.
       if (ch == '\u06cc') {
         return '\u064a';
       }
@@ -307,7 +319,7 @@ class NGram {
         return CJK_CHAR_TO_CHAR_MAP.get(ch);
       }
     } else if (block == HANGUL_SYLLABLES) {
-      return '\uac00';
+      return '\uac00'; // Korean partical ga: 가
     }
     return ch;
   }

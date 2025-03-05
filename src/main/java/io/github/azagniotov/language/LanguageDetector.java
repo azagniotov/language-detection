@@ -158,6 +158,9 @@ class LanguageDetector {
       //    the data and find a more optimal smoothing parameter. However, it's not the "normal"
       //    approach because it adds complexity and is not always necessary.
       final float alphaSmoothing = (float) (this.alpha + random.nextGaussian() * alphaWidth);
+      // Smoothing is essential in Naive Bayes to prevent
+      // zero probabilities when encountering unseen n-grams.
+      final float weight = alphaSmoothing / baseFreq;
 
       for (int iteration = 0; iteration <= iterationLimit; ++iteration) {
         final int randomIdx = random.nextInt(extractedNGrams.size());
@@ -165,10 +168,6 @@ class LanguageDetector {
 
         // Retrieving the probabilities for a specific n-gram appears in each language.
         final float[] wordProbabilities = languageCorporaProbabilities.get(nGram);
-
-        // Smoothing is essential in Naive Bayes to prevent zero probabilities when encountering
-        // unseen n-grams.
-        final float weight = alphaSmoothing / baseFreq;
         float probSum = 0.0f;
         for (int probIdx = 0; probIdx < probabilities.length; ++probIdx) {
 

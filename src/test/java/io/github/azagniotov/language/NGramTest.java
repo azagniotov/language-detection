@@ -95,6 +95,10 @@ public class NGramTest {
     assertEquals(NGram.normalize('※'), BLANK_CHAR); // Reference mark (U+203B)
     assertEquals(NGram.normalize('％'), BLANK_CHAR); // Full-width percent sign (U+FF05)
     assertEquals(NGram.normalize('＠'), BLANK_CHAR); // Full-width at symbol (U+FF20)
+
+    // SUPPLEMENTAL_PUNCTUATION UnicodeBlock
+    assertEquals(NGram.normalize('⸀'), BLANK_CHAR); // (U+2E00)
+    assertEquals(NGram.normalize('⸁'), BLANK_CHAR); // (U+2E01)
   }
 
   @Test
