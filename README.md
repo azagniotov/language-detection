@@ -55,6 +55,8 @@ For clarity, I'm linking these enhancements to the original implementation with 
 2. **Removing per-character normalization at runtime**. In the current implementation, instead of normalizing characters during execution, all `65,535` Unicode BMP characters are pre-normalized into a char[] array, making runtime normalization a simple array lookup.
 [See the original code here](https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/util/NGram.java#L75-L103).
 
+3. **Using a float-level precision**. Since Java's `double`-level precision is not neccessary for the current library, a switch to `float` type has been made when storing and computing probabilities. This will improve memory efficiency, and may also potentially provide a slight performance boost. Modern CPUs are very efficient at floating point calculations, so the performance increase may be small, but it will be there.
+
 ### Supported ISO 639-1 codes
 
 The following is a list of ISO 639-1 languages code supported by the library:
