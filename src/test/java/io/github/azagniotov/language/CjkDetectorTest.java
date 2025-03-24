@@ -185,9 +185,9 @@ public class CjkDetectorTest {
 
   private String s(final String input) {
     if (input == null || input.trim().isEmpty()) {
-      return "";
+      return EMPTY_STRING;
     } else {
-      return InputSanitizer.sanitizeForSearch(input);
+      return InputSanitizer.sanitize(input);
     }
   }
 }

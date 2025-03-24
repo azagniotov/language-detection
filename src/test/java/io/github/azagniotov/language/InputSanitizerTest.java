@@ -1,7 +1,7 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.InputSanitizer.filterOutNonWords;
-import static io.github.azagniotov.language.InputSanitizer.sanitizeForSearch;
+import static io.github.azagniotov.language.InputSanitizer.sanitize;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -49,39 +49,37 @@ public class InputSanitizerTest {
   }
 
   @Test
-  public void shouldSanitizeForSearch() {
-    assertEquals(sanitizeForSearch("NOT banana AND apple OR AND"), "banana   apple");
-    assertEquals(sanitizeForSearch("not banana and apple or and"), "not banana and apple or and");
-    assertEquals(sanitizeForSearch(".pptx"), "");
+  public void shouldsanitize() {
+    assertEquals(sanitize("NOT banana AND apple OR AND"), "banana   apple");
+    assertEquals(sanitize("not banana and apple or and"), "not banana and apple or and");
+    assertEquals(sanitize(".pptx"), "");
     assertEquals(
-        sanitizeForSearch("Hello How .t .tt .ttt are .xls you .pdf today.boxnote"),
+        sanitize("Hello How .t .tt .ttt are .xls you .pdf today.gdoc"),
         "Hello How       are   you   today");
-    assertEquals(sanitizeForSearch("123.xls"), "123");
+    assertEquals(sanitize("123.xls"), "123");
     assertEquals(
-        sanitizeForSearch(
+        sanitize(
             "Oops .txt .csv .pdf .ppt .xls .xlsx .xlsm .doc .docx .docm .pptx .pptm .ppsx .rtf .tiff .png .jpg .jpeg"),
         "Oops");
-    assertEquals(sanitizeForSearch("報告 123.xls"), "報告 123");
-    assertEquals(sanitizeForSearch("七月の報告.xls"), "七月の報告");
-    assertEquals(sanitizeForSearch("1234567890.xls 報告"), "1234567890  報告");
-    assertEquals(sanitizeForSearch("１２３４５６７８９０.xls 報告"), "１２３４５６７８９０  報告");
-    assertEquals(sanitizeForSearch("２０２４七月　報告"), "２０２４七月　報告");
-    assertEquals(sanitizeForSearch("２０２４七月　報告.pptx"), "２０２４七月　報告");
+    assertEquals(sanitize("報告 123.xls"), "報告 123");
+    assertEquals(sanitize("七月の報告.xls"), "七月の報告");
+    assertEquals(sanitize("1234567890.xls 報告"), "1234567890  報告");
+    assertEquals(sanitize("１２３４５６７８９０.xls 報告"), "１２３４５６７８９０  報告");
+    assertEquals(sanitize("２０２４七月　報告"), "２０２４七月　報告");
+    assertEquals(sanitize("２０２４七月　報告.pptx"), "２０２４七月　報告");
   }
 
   @Test
   public void shouldPerformCombinedSanitization() {
-    assertEquals(filterOutNonWords(sanitizeForSearch("...")), "");
+    assertEquals(filterOutNonWords(sanitize("...")), "");
     assertEquals(
-        filterOutNonWords(sanitizeForSearch("in1729x01_J-LCM刷新プロジェクト.docx")),
-        "in1729x01 J LCM刷新プロジェクト");
+        filterOutNonWords(sanitize("in1729x01_J-LCM刷新プロジェクト.docx")), "in1729x01 J LCM刷新プロジェクト");
     assertEquals(
-        filterOutNonWords(sanitizeForSearch("Fußball-Weltmeisterschaft-Haus-Tür-Schlüssel.pdf")),
+        filterOutNonWords(sanitize("Fußball-Weltmeisterschaft-Haus-Tür-Schlüssel.pdf")),
         "Fußball Weltmeisterschaft Haus Tür Schlüssel");
-    assertEquals(filterOutNonWords(sanitizeForSearch("㈱_(株)_①②③_㈱㈲㈹.pdf")), "   株         ");
-    assertEquals(filterOutNonWords(sanitizeForSearch("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ.pdf")), "ｼｰｻｲﾄﾞ ﾗｲﾅｰ");
-    assertEquals(filterOutNonWords(sanitizeForSearch("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf")), "Ｃｕｌｔｕｒｅ ｏｆ Ｊａｐａｎ");
-    assertEquals(
-        filterOutNonWords(sanitizeForSearch("#4_pj_23D002_HCMJ_デジ戦")), "4 pj 23D002 HCMJ デジ戦");
+    assertEquals(filterOutNonWords(sanitize("㈱_(株)_①②③_㈱㈲㈹.pdf")), "   株         ");
+    assertEquals(filterOutNonWords(sanitize("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ.pdf")), "ｼｰｻｲﾄﾞ ﾗｲﾅｰ");
+    assertEquals(filterOutNonWords(sanitize("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf")), "Ｃｕｌｔｕｒｅ ｏｆ Ｊａｐａｎ");
+    assertEquals(filterOutNonWords(sanitize("#4_pj_23D002_HCMJ_デジ戦")), "4 pj 23D002 HCMJ デジ戦");
   }
 }

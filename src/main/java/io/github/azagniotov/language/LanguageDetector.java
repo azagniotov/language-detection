@@ -32,6 +32,7 @@ class LanguageDetector {
   static final Language UNDETERMINED_LANGUAGE_RESPONSE =
       new Language(ISO_CODE_639_3_UND, ZERO_PROBABILITY);
   static final Language JAPANESE_LANGUAGE_RESPONSE = new Language("ja", PERFECT_PROBABILITY);
+  static final Language CHINESE_LANGUAGE_RESPONSE = new Language("zh-cn", PERFECT_PROBABILITY);
 
   // return up to top 10 detected language when calling detectAll(String)
   private static final int MAX_DETECTED_CLASSES = 10;

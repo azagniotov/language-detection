@@ -20,31 +20,29 @@ public class LanguageDetectionSettings {
 
   private static final int FLAG_MINIMUM_CERTAINTY = 1; // 0001
   private static final int FLAG_TOP_LANGUAGE_CERTAINTY = 2; // 0010
-  private static final int FLAG_SANITIZE_FOR_SEARCH = 4; // 0100
+  private static final int FLAG_SANITIZE_INPUT = 4; // 0100
   private static final int FLAG_CLASSIFY_AS_JAPANESE = 8; // 1000
 
-  private final String profiles;
+  private final String profilesHome;
   private final int minNGramLength;
   private final int maxNGramLength;
   private final int maxTextChars;
   private final List<String> isoCodes639_1;
-  private final int sanitizeForSearchThreshold;
-  private final float classifyChineseAsJapaneseThreshold;
+  private final double cjkDetectionThreshold;
 
-  private final float topLanguageCertaintyThreshold;
+  private final double topLanguageCertaintyThreshold;
   private final String topLanguageFallbackIsoCode639_1;
-  private final float minimumCertaintyThreshold;
+  private final double minimumCertaintyThreshold;
 
   private final int bitFlags;
 
   private LanguageDetectionSettings(final Builder builder) {
-    this.profiles = builder.profiles;
+    this.profilesHome = builder.profilesHome;
     this.minNGramLength = builder.minNGramLength;
     this.maxNGramLength = builder.maxNGramLength;
     this.maxTextChars = builder.maxTextChars;
     this.isoCodes639_1 = builder.isoCodes639_1;
-    this.sanitizeForSearchThreshold = builder.sanitizeForSearchThreshold;
-    this.classifyChineseAsJapaneseThreshold = builder.classifyChineseAsJapaneseThreshold;
+    this.cjkDetectionThreshold = builder.cjkDetectionThreshold;
 
     this.topLanguageCertaintyThreshold = builder.topLanguageCertaintyThreshold;
     this.topLanguageFallbackIsoCode639_1 = builder.topLanguageFallbackIsoCode639_1;
@@ -54,7 +52,7 @@ public class LanguageDetectionSettings {
   }
 
   String getProfilesHome() {
-    return profiles;
+    return profilesHome;
   }
 
   int getMinNGramLength() {
@@ -73,23 +71,19 @@ public class LanguageDetectionSettings {
     return isoCodes639_1;
   }
 
-  int getSanitizeForSearchThreshold() {
-    return sanitizeForSearchThreshold;
-  }
-
-  boolean isSanitizeForSearch() {
-    return (bitFlags & FLAG_SANITIZE_FOR_SEARCH) != 0;
+  boolean isSanitizeInput() {
+    return (bitFlags & FLAG_SANITIZE_INPUT) != 0;
   }
 
   boolean isClassifyChineseAsJapanese() {
     return (bitFlags & FLAG_CLASSIFY_AS_JAPANESE) != 0;
   }
 
-  float getClassifyChineseAsJapaneseThreshold() {
-    return classifyChineseAsJapaneseThreshold;
+  double getCjkDetectionThreshold() {
+    return cjkDetectionThreshold;
   }
 
-  float getTopLanguageCertaintyThreshold() {
+  double getTopLanguageCertaintyThreshold() {
     return topLanguageCertaintyThreshold;
   }
 
@@ -101,7 +95,7 @@ public class LanguageDetectionSettings {
     return (bitFlags & FLAG_TOP_LANGUAGE_CERTAINTY) != 0;
   }
 
-  float getMinimumCertaintyThreshold() {
+  double getMinimumCertaintyThreshold() {
     return minimumCertaintyThreshold;
   }
 
@@ -126,55 +120,45 @@ public class LanguageDetectionSettings {
 
   public static class Builder {
 
-    private String profiles;
-    private int minNGramLength;
-    private int maxNGramLength;
+    // At this point these are not exposed to configure via a Buildr setter
+    private final String profilesHome;
+    private final int minNGramLength;
+    private final int maxNGramLength;
+    private final double cjkDetectionThreshold;
+
     private int maxTextChars;
-    private List<String> isoCodes639_1;
+    private final List<String> isoCodes639_1;
 
-    // Deeming an input string of 128 characters as 'short input'
-    // At this point this is not exposed to configure via a Buildr setter
-    private int sanitizeForSearchThreshold;
-
-    // At this point this is not exposed to configure via a Buildr setter
-    private float classifyChineseAsJapaneseThreshold;
-    private float topLanguageCertaintyThreshold;
     private String topLanguageFallbackIsoCode639_1;
-    private float minimumCertaintyThreshold;
+    private double topLanguageCertaintyThreshold;
+    private double minimumCertaintyThreshold;
 
     private int bitFlags;
 
     private Builder(final List<String> isoCodes639_1) {
       this.isoCodes639_1 = List.copyOf(isoCodes639_1);
-      this.profiles = "profiles"; // A name of a subdirectory under the resources
+      this.profilesHome = "profiles"; // A name of a subdirectory under the resources
       this.minNGramLength = 1;
       this.maxNGramLength = 3;
-      this.maxTextChars = 3000;
-      this.sanitizeForSearchThreshold = 128;
-      this.classifyChineseAsJapaneseThreshold = 0.1f;
-      this.topLanguageCertaintyThreshold = 0.65f;
+      this.maxTextChars = 2000;
+      this.cjkDetectionThreshold = 0.1;
       this.topLanguageFallbackIsoCode639_1 = "en";
-      this.minimumCertaintyThreshold = 0.1f;
-      this.bitFlags = FLAG_SANITIZE_FOR_SEARCH | FLAG_MINIMUM_CERTAINTY;
+      this.topLanguageCertaintyThreshold = 0.65;
+      this.minimumCertaintyThreshold = 0.1;
+      this.bitFlags = FLAG_SANITIZE_INPUT | FLAG_MINIMUM_CERTAINTY;
     }
 
     private Builder(final Builder that) {
-      this.profiles = that.profiles;
+      this.profilesHome = that.profilesHome;
       this.minNGramLength = that.minNGramLength;
       this.maxNGramLength = that.maxNGramLength;
       this.maxTextChars = that.maxTextChars;
       this.isoCodes639_1 = that.isoCodes639_1;
-      this.sanitizeForSearchThreshold = that.sanitizeForSearchThreshold;
-      this.classifyChineseAsJapaneseThreshold = that.classifyChineseAsJapaneseThreshold;
+      this.cjkDetectionThreshold = that.cjkDetectionThreshold;
       this.topLanguageCertaintyThreshold = that.topLanguageCertaintyThreshold;
       this.topLanguageFallbackIsoCode639_1 = that.topLanguageFallbackIsoCode639_1;
       this.minimumCertaintyThreshold = that.minimumCertaintyThreshold;
       this.bitFlags = that.bitFlags;
-    }
-
-    public Builder withProfilesHome(final String profile) {
-      this.profiles = profile;
-      return new Builder(this);
     }
 
     public Builder withMaxTextChars(final int maxTextChars) {
@@ -182,8 +166,8 @@ public class LanguageDetectionSettings {
       return new Builder(this);
     }
 
-    public Builder withoutSanitizeForSearch() {
-      this.bitFlags = this.bitFlags & ~FLAG_SANITIZE_FOR_SEARCH;
+    public Builder withoutInputSanitize() {
+      this.bitFlags = this.bitFlags & ~FLAG_SANITIZE_INPUT;
       return new Builder(this);
     }
 
@@ -193,7 +177,7 @@ public class LanguageDetectionSettings {
     }
 
     public Builder withTopLanguageMininumCertainty(
-        final float topLanguageCertaintyThreshold, final String topLanguageFallbackIsoCode639_1) {
+        final double topLanguageCertaintyThreshold, final String topLanguageFallbackIsoCode639_1) {
       this.topLanguageCertaintyThreshold = topLanguageCertaintyThreshold;
       this.topLanguageFallbackIsoCode639_1 = topLanguageFallbackIsoCode639_1;
       // Unset MINIMUM_CERTAINTY_THRESHOLD, set TOP_LANGUAGE_CERTAINTY_THRESHOLD
@@ -201,7 +185,7 @@ public class LanguageDetectionSettings {
       return new Builder(this);
     }
 
-    public Builder withMininumCertainty(final float minimumCertaintyThreshold) {
+    public Builder withMininumCertainty(final double minimumCertaintyThreshold) {
       this.minimumCertaintyThreshold = minimumCertaintyThreshold;
       // Unset TOP_LANGUAGE_CERTAINTY_THRESHOLD, set MINIMUM_CERTAINTY_THRESHOLD
       this.bitFlags = (this.bitFlags & ~FLAG_TOP_LANGUAGE_CERTAINTY) | FLAG_MINIMUM_CERTAINTY;

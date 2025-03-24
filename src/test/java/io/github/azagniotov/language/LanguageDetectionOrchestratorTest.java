@@ -156,7 +156,31 @@ public class LanguageDetectionOrchestratorTest {
   }
 
   @Test
-  public void detectsLanguage() throws Exception {
+  public final void languageDetectorShouldDetectChinese() throws Exception {
+    final LanguageDetectorFactory factory = new LanguageDetectorFactory(SETTINGS);
+    final LanguageDetector detector =
+        new LanguageDetector(
+            MODEL,
+            factory.getSupportedIsoCodes639_1(),
+            factory.getLanguageCorporaProbabilities(),
+            MIN_NGRAM_LENGTH,
+            MAX_NGRAM_LENGTH);
+
+    assertEquals(
+        "zh-cn",
+        detector
+            .detectAll(
+                "位于美国首都华盛顿都会圈的希望中文学校５日晚举办活动庆祝建立２０周年。"
+                    + "从中国大陆留学生为子女学中文而自发建立的学习班，"
+                    + "到学生规模在全美名列前茅的中文学校，这个平台的发展也折射出美国的中文教育热度逐步提升。"
+                    + "希望中文学校是大华盛顿地区最大中文学校，现有７个校区逾４０００名学生，"
+                    + "规模在美国东部数一数二。不过，见证了希望中文学校２０年发展的人们起初根本无法想象这个小小的中文教育平台能发展到今日之规模。")
+            .get(0)
+            .getIsoCode639_1());
+  }
+
+  @Test
+  public void languageDetectorShouldDetectShortStringsWithDefaultSanitization() throws Exception {
     final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
 
     assertEquals("ja", orchestrator.detect("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ.pdf").getIsoCode639_1());
@@ -176,31 +200,20 @@ public class LanguageDetectionOrchestratorTest {
     assertEquals("ja", orchestrator.detect("東京 ABCDEF").getIsoCode639_1());
 
     assertEquals("ja", orchestrator.detect("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C).pdf").getIsoCode639_1());
-    assertEquals("en", orchestrator.detect("刷新eclipseRCPExt.pdf").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("刷新eclipseRCPExt.pdf").getIsoCode639_1());
 
     assertEquals("en", orchestrator.detect("This is a very small test").getIsoCode639_1());
 
     assertEquals("de", orchestrator.detect("Das kann deutsch sein").getIsoCode639_1());
     assertEquals("de", orchestrator.detect("Das ist ein Text").getIsoCode639_1());
 
-    assertEquals("zh-cn", orchestrator.detect("TOEIC 分布").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("TOEIC 分布").getIsoCode639_1());
 
-    assertEquals("zh-cn", orchestrator.detect("【12.21s】【流山運動公園：流山市市野谷】【中村P：3台】").getIsoCode639_1());
-    assertEquals("zh-cn", orchestrator.detect("AND \"杉山\" OR \"分布\"").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("【12.21s】【流山運動公園：流山市市野谷】【中村P：3台】").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("AND \"杉山\" OR \"分布\"").getIsoCode639_1());
 
-    assertEquals("zh-cn", orchestrator.detect("㈱_(株)_①②③_㈱㈲㈹").getIsoCode639_1());
-    assertEquals("zh-cn", orchestrator.detect("帮助他们以截然不同的方式探索和分析数据.pdf").getIsoCode639_1());
-
-    assertEquals(
-        "zh-cn",
-        orchestrator
-            .detect(
-                "位于美国首都华盛顿都会圈的希望中文学校５日晚举办活动庆祝建立２０周年。"
-                    + "从中国大陆留学生为子女学中文而自发建立的学习班，"
-                    + "到学生规模在全美名列前茅的中文学校，这个平台的发展也折射出美国的中文教育热度逐步提升。"
-                    + "希望中文学校是大华盛顿地区最大中文学校，现有７个校区逾４０００名学生，"
-                    + "规模在美国东部数一数二。不过，见证了希望中文学校２０年发展的人们起初根本无法想象这个小小的中文教育平台能发展到今日之规模。")
-            .getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("㈱_(株)_①②③_㈱㈲㈹").getIsoCode639_1());
+    assertEquals("ja", orchestrator.detect("帮助他们以截然不同的方式探索和分析数据.pdf").getIsoCode639_1());
   }
 
   @Test
@@ -233,7 +246,7 @@ public class LanguageDetectionOrchestratorTest {
   @Test
   public void detectsLanguageWithAndWithoutInputSanitizationForSearch() throws Exception {
     final LanguageDetectionSettings settingsWithoutSearchSanitize =
-        LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withoutSanitizeForSearch().build();
+        LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withoutInputSanitize().build();
 
     LanguageDetectionOrchestrator orchestrator =
         new LanguageDetectionOrchestrator(settingsWithoutSearchSanitize);

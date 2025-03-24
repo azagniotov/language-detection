@@ -133,9 +133,7 @@ public class LanguageDetectorAccuracyTest {
         profilesHome.equals("small-lang-subset") ? "profiles" : profilesHome;
 
     final LanguageDetectionSettings configuredSettings =
-        LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
-            .withProfilesHome(canonicalProfile)
-            .build();
+        LanguageDetectionSettings.fromIsoCodes639_1(languageCodes).build();
 
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
     final LanguageDetector languageDetector =

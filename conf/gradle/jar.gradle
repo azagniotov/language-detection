@@ -23,6 +23,7 @@ tasks.withType(Jar).configureEach {
 	manifest {
 		def manifestClasspath = thirdPartyDependencies.collect { it.name }.join(',')
 		attributes(
+				"Main-Class": "io.github.azagniotov.language.Main",
 				"Class-Path": manifestClasspath,
 				"Implementation-Title": project.findProperty("projectName").toString(),
 				"Implementation-Version": getVersion(),
