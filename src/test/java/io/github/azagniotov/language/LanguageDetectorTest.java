@@ -121,7 +121,7 @@ public class LanguageDetectorTest {
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1(
-                "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,ky,lb,mn,ru,sr,tg,ti,yi")
+                "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,kw,ky,lb,mn,ru,sr,tg,ti,yi")
             .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
@@ -144,6 +144,9 @@ public class LanguageDetectorTest {
     assertEquals("eu", detector.detectAll("Euskara ikasten ari naiz").get(0).getIsoCode639_1());
     // Breton
     assertEquals("br", detector.detectAll("Emaon o teskiñ brezhoneg").get(0).getIsoCode639_1());
+    // Cornish (Kernewek)
+    assertEquals(
+        "kw", detector.detectAll("Yth esov vy ow tyski an yeth Kernewek").get(0).getIsoCode639_1());
     // Georgian
     assertEquals("ka", detector.detectAll("ვსწავლობ ქართულს").get(0).getIsoCode639_1());
     // German
@@ -209,6 +212,11 @@ public class LanguageDetectorTest {
   @Test
   public void testChinese() throws Exception {
     testLanguage("chinese.txt", "zh-cn", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testCornish() throws Exception {
+    testLanguage("cornish.txt", "kw", DEFAULT_DETECTOR);
   }
 
   @Test
