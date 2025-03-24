@@ -118,9 +118,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
   public void simulation() throws Exception {
     final String languageCodes = configureProfileDependentLanguageCodes();
     final LanguageDetectionSettings configuredSettings =
-        LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
-            .withProfilesHome(this.profilesHome)
-            .build();
+        LanguageDetectionSettings.fromIsoCodes639_1(languageCodes).build();
 
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
     final LanguageDetector languageDetector =

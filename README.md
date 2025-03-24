@@ -20,10 +20,11 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
     * [Methods to build the LanguageDetectionSettings](#methods-to-build-the-languagedetectionsettings)
       * [Configuring ISO 639-1 codes](#configuring-iso-639-1-codes)
       * [Maximum text chars](#maximum-text-chars)
-      * [Skipping input sanitization for search](#skipping-input-sanitization-for-search)
+      * [Skipping input sanitization](#skipping-input-sanitization)
       * [Classify any Chinese content as Japanese](#classify-any-chinese-content-as-japanese)
       * [General minimum detection certainty](#general-minimum-detection-certainty)
       * [Minimum detection certainty for top language with a fallback](#minimum-detection-certainty-for-top-language-with-a-fallback)
+  * [Running language detection benchmarks](#running-language-detection-benchmarks)
   * [Local development](#local-development)
     * [System requirements](#system-requirements)
     * [Pre-commit Hook](#pre-commit-hook)
@@ -195,15 +196,17 @@ In some classification tasks, you may already know that your language data is no
 - **Default**: N/A
 - **Description**: Enables the library to perform language detection for all the 53 languages by the ISO 639-1 codes
 
+```java
+LanguageDetectionSettings
+    .fromAllIsoCodes639_1()
+    .build();
+```
+
 `.fromIsoCodes639_1(String)`
 - **Default**: N/A
 - **Description**: Enables the library to perform language detection for specific languages by the ISO 639-1 codes
 
 ```java
-LanguageDetectionSettings
-    .fromAllIsoCodes639_1()
-    .build();
-
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
     .build();
@@ -214,30 +217,30 @@ LanguageDetectionSettings
 #### Maximum text chars
 
 `.withMaxTextChars(Integer)`
-- **Default**: `3,000`. The default limit is set to `3,000` characters (this corresponds to around 2 to 3 page document). For comparison, in Solr, the default maximum text length is set to `20,000` characters.
+- **Default**: `2,000`. The default limit is set to `2,000` characters (this corresponds to around 2 to 3-page document). For comparison, in Solr, the default maximum text length is set to `20,000` characters.
 - **Description**: Restricts the maximum number of characters from the input text that will be processed for language detection by the library. This functionality is valuable because the library does not need to analyze the entire document to accurately detect the language; a sufficient portion of the text is often enough to achieve reliable results.
 
 
 ```java
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
-    .withMaxTextChars(3000)
+    .withMaxTextChars(2000)
     .build();
 ```
 
 [`Back to top`](#table-of-contents)
 
-#### Skipping input sanitization for search
+#### Skipping input sanitization
 
-`.withoutSanitizeForSearch()`
-- **Default**: `true` (perform input sanitization for search). By default, the library sanitizes short input strings for search purposes by removing file extensions from any part of the text and filtering out Solr boolean operators (AND, NOT, and OR), as these elements are irrelevant to language detection.
-- **Description**: Invoking the API bypasses this sanitization process for short input strings, allowing the text to be processed without such modifications.
+`.withoutInputSanitize()`
+- **Default**: `false` (input sanitization is enabled by default). By default, the library sanitizes input strings by removing file extensions from any part of the text, URLs and filtering out Solr boolean operators (AND, NOT, and OR), as these elements are irrelevant to language detection.
+- **Description**: Invoking the API bypasses this input sanitization process for, allowing the text to be processed without such modifications.
 
 
 ```java
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
-    .withoutSanitizeForSearch()
+    .withoutInputSanitize()
     .build();
 ```
 
@@ -247,7 +250,7 @@ LanguageDetectionSettings
 
 `.withClassifyChineseAsJapanese()`
 - **Default**: `false` (does not classify Chinese text as Japanese)
-- **Description**: Invoking this API enables the classification of Kanji-only text (text containing only Chinese characters, without any Japanese Hiragana or Katakana characters) or mixed text containing both Latin and Kanji characters as Japanese. This functionality is particularly important when Japanese identification must be prioritized. As such, this config option aims to optimize for more accurate language detection to minimize the misclassification of Japanese text. Additionally, this approach proves useful when identifying the language of very short strings.
+- **Description**: Invoking this API enables the classification of Kanji-only text (text containing only Chinese characters, without any Japanese Hiragana or Katakana characters) or mixed text containing both Latin and Kanji characters as Japanese. This functionality is particularly important when we aim to optimize for more accurate language detection to minimize the misclassification of Japanese text. Additionally, this approach proves useful when indexing short strings such as `#7_pj_12345_ABCD_戦` or `SOMETHING_2010下_詳細_20130304.xls`.
 
 
 ```java
@@ -261,16 +264,16 @@ LanguageDetectionSettings
 
 #### General minimum detection certainty
 
-`.withMininumCertainty(Float)`
-- **Default**: `0.1f`. Specifies a certainty threshold value between `0...1`.
+`.withMininumCertainty(Double)`
+- **Default**: `0.1`. Specifies a certainty threshold value between `0...1`.
 - **Description**: The library requires that the language identification probability surpass a predefined threshold for any detected language. If the probability falls short of this threshold, the library systematically filters out those languages, excluding them from the results.
 
-Please be aware that the `.withMininumCertainty(Float)` method cannot be used in conjunction with the `.withTopLanguageMininumCertainty(Float, String)` method (explained in the next section). The setting that is applied last during the configuration process will take priority.
+Please be aware that the `.withMininumCertainty(Double)` method cannot be used in conjunction with the `.withTopLanguageMininumCertainty(Double, String)` method (explained in the next section). The setting that is applied last during the configuration process will take priority.
 
 ```java
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
-    .withMininumCertainty(0.65f)
+    .withMininumCertainty(0.65)
     .build();
 ```
 
@@ -278,17 +281,61 @@ LanguageDetectionSettings
 
 #### Minimum detection certainty for top language with a fallback
 
-`.withTopLanguageMininumCertainty(Float, String)`
+`.withTopLanguageMininumCertainty(Double, String)`
 - **Default**: Not set. Specifies a certainty threshold value between `0...1` and a fallback language ISO 639-1 code.
 - **Description**: The language identification probability must exceed the threshold value for the top detected language. If this threshold is not met, the library defaults to the configured ISO 639-1 fallback code, treating it as the top and sole detected language.
 
-Please be aware that the `.withTopLanguageMininumCertainty(Float, String)` method cannot be used in conjunction with the `.withMinimumCertainty(Float)` method (explained in the previous section). The setting that is applied last during the configuration process will take priority.
+Please be aware that the `.withTopLanguageMininumCertainty(Double, String)` method cannot be used in conjunction with the `.withMinimumCertainty(Double)` method (explained in the previous section). The setting that is applied last during the configuration process will take priority.
 
 ```java
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
-    .withTopLanguageMininumCertainty(0.65f, "en")
+    .withTopLanguageMininumCertainty(0.65, "en")
     .build();
+```
+
+[`Back to top`](#table-of-contents)
+
+## Running language detection benchmarks
+
+This library provides an executable Uber JAR, which can be invoked from the command line to perform language detection. The JAR file contains a main method that enables it to be run directly, making it easy to detect languages from files in the local filesystem.
+
+To use the library, direct the JAR to a parent directory on your computer that holds subdirectories for each language. Each subdirectory should be named using the appropriate ISO 639-1 code for that language. Inside each subdirectory, you'll place .txt files that will be used for language detection.
+
+The datasets you provide will be checked against a fixed set of languages: `Japanese (ja)`, `English (en)`, `French (fr)`, `Spanish (es)`, `Italian (it)`, and `German (de)`. For now this is not configurable. PR is pending.
+
+The JAR file accepts the following command-line arguments:
+
+| Status     | Argument name                  |
+|------------|--------------------------------|
+| `REQUIRED` | `<NUM_OF_WORKERS>`             |
+| `REQUIRED` | `<ISO_639-1_CODE_CSV>`         |
+| `REQUIRED` | `<ABSOLUTE_PATH_TO_DIRECTORY>` |
+| `OPTIONAL` | `<VERBOSE_MODE>`               |
+
+```bash
+java -jar build/libs/language-detection-x.x.x.jar <NUM_OF_WORKERS> <ISO_639-1_CODE_CSV> <ABSOLUTE_PATH_TO_DIRECTORY> <VERBOSE_MODE>
+```
+
+Example usage:
+```bash
+java -jar build/libs/language-detection-3.1.0.jar 2 ja,en /Users/aschwarzenegger/datasets true
+```
+In this example, the argument `<ISO_639-1_CODE_CSV>` specifies a comma-separated list of ISO 639-1 language codes (such as `ja`, `en`, `fr`, etc.). These codes must correspond to the names of the subdirectories located within the specified directory (`<ABSOLUTE_PATH_TO_DIRECTORY>`).
+
+Once the process is complete, a report will be generated and displayed, similar to the example below:
+
+``` bash
+Total runtime: 14 seconds and 419 millis. Detection results:
+
+{
+  Dataset-DE : { de=58910 , en=173   , es=2     , fr=7     , it=4     , ja=2     , und=1 }
+  Dataset-EN : { de=18    , en=59041 , es=9     , fr=22    , it=6     , ja=2     , und=1 }
+  Dataset-ES : { de=7     , en=151   , es=58905 , fr=11    , it=22    , ja=2     , und=1 }
+  Dataset-FR : { de=17    , en=139   , es=11    , fr=58925 , it=4     , ja=2     , und=1 }
+  Dataset-IT : { de=6     , en=209   , es=7     , fr=4     , it=58870 , ja=2     , und=1 }
+  Dataset-JA : { en=2     , it=1     , ja=59095 , und=1 }
+}
 ```
 
 [`Back to top`](#table-of-contents)

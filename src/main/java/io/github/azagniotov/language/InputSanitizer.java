@@ -7,12 +7,19 @@ import java.util.regex.Pattern;
 
 final class InputSanitizer {
 
+  private static final String BLANK_SPACE = " ";
+
   private static final Pattern PATTERN_NOT_A_WORD =
       Pattern.compile("\\P{IsWord}", Pattern.UNICODE_CHARACTER_CLASS);
 
   private static final String FILENAME_EXTENSION_ANYWHERE = "\\.[a-zA-Z0-9]{0,10}(?=\\s|$)";
   private static final String SOLR_BOOLEAN_QUERIES = "(AND|OR|NOT)";
-  private static final String SUBSET_LATIN_PUNCTUATION_MARKS = "[.#\\[\\],_\"\\-]";
+
+  // Seen in some Japanese filenames
+  private static final String SUBSET_LATIN_PUNCTUATION_MARKS = "[.#\\[\\],_\"\\-<>]";
+  private static final String URLS = "(https?://[\\w.-]+(?:/[\\w\\d&%_./=-]*)?)([\\p{P}\\s]+)?";
+
+  private static final Pattern URLS_PATTERN = Pattern.compile(URLS);
 
   private static final Pattern COMBINED_PATTERN =
       Pattern.compile(
@@ -52,10 +59,16 @@ final class InputSanitizer {
    *
    * <p>3. A subset of Latin punctuation marks.
    */
-  static String sanitizeForSearch(final String input) {
+  static String sanitize(final String input) {
+    final String withoutUrls;
+    if (input.contains("http://") || input.contains("https://")) {
+      withoutUrls = URLS_PATTERN.matcher(input).replaceAll(StringConstants.EMPTY_STRING);
+    } else {
+      withoutUrls = input;
+    }
     // Removing file extensions and Solr boolean operators, which may cause
     // language detection for filenames and/or short search queries to misdetect
-    final Matcher matcher = COMBINED_PATTERN.matcher(input);
+    final Matcher matcher = COMBINED_PATTERN.matcher(withoutUrls);
     final StringBuilder result = new StringBuilder();
     while (matcher.find()) {
       // It is recommended to avoid using .replaceAll when replacing
