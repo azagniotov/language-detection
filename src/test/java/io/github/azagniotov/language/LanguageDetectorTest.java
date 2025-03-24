@@ -121,7 +121,7 @@ public class LanguageDetectorTest {
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1(
-                "az,am,bo,br,cy,de,eu,ga,he,hy,ka,kk,ky,lb,mn,ru,sr,tg,ti,yi")
+                "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,ky,lb,mn,ru,sr,tg,ti,yi")
             .build();
     final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
     final LanguageDetector detector =
@@ -160,6 +160,9 @@ public class LanguageDetectorTest {
         "ky", detector.detectAll("Мен кыргыз тилин үйрөнүп жатам").get(0).getIsoCode639_1());
     // Luxembourgish
     assertEquals("lb", detector.detectAll("Ech léiere Lëtzebuergesch").get(0).getIsoCode639_1());
+    // Manx
+    assertEquals(
+        "gv", detector.detectAll("Ta mee gynsagh yn Ghaelg Manninagh").get(0).getIsoCode639_1());
     // Mongolian
     assertEquals("mn", detector.detectAll("Би монгол хэл сурч байна").get(0).getIsoCode639_1());
     // Russian
@@ -251,6 +254,11 @@ public class LanguageDetectorTest {
   @Test
   public void testLuxembourgish() throws Exception {
     testLanguage("luxembourgish.txt", "lb", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testManx() throws Exception {
+    testLanguage("manx.txt", "gv", DEFAULT_DETECTOR);
   }
 
   @Test
