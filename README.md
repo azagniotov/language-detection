@@ -61,82 +61,82 @@ For clarity, I'm linking these enhancements to the original implementation with 
 
 The following is a list of ISO 639-1 languages code supported by the library:
 
-| Language           | Flag                         | Country         | ISO 639-1 |
-|--------------------|------------------------------|-----------------|-----------|
-| Afrikaans          | &nbsp;&nbsp;🇿🇦&nbsp;&nbsp; | South Africa    | af        |
-| Albanian           | &nbsp;&nbsp;🇦🇱&nbsp;&nbsp; | Albania         | sq        |
-| Amharic            | &nbsp;&nbsp;🇪🇹&nbsp;&nbsp; | Ethiopia        | am        |
-| Arabic             | &nbsp;&nbsp;🇦🇪&nbsp;&nbsp; | UAE             | ar        |
-| Armenian           | &nbsp;&nbsp;🇦🇲&nbsp;&nbsp; | Armenia         | hy        |
-| Azerbaijani        | &nbsp;&nbsp;🇦🇿&nbsp;&nbsp; | Azerbaijan      | az        |
-| Bangla             | &nbsp;&nbsp;🇧🇩&nbsp;&nbsp; | Bangladesh      | bn        |
-| Basque             | &nbsp;&nbsp;🇪🇸&nbsp;&nbsp; | Spain           | eu        |
-| Breton             | &nbsp;&nbsp;🇫🇷&nbsp;&nbsp; | France          | br        |
-| Bulgarian          | &nbsp;&nbsp;🇧🇬&nbsp;&nbsp; | Bulgaria        | bg        |
-| Catalan            | &nbsp;&nbsp;🇪🇸&nbsp;&nbsp; | Spain           | ca        |
-| Chinese (China)    | &nbsp;&nbsp;🇨🇳&nbsp;&nbsp; | China           | zh-cn     |
-| Chinese (Taiwan)   | &nbsp;&nbsp;🇹🇼&nbsp;&nbsp; | Taiwan          | zh-tw     |
-| Cornish (Kernewek) | &nbsp;&nbsp;🇬🇧&nbsp;&nbsp; | United Kingdom  | kw        |
-| Croatian           | &nbsp;&nbsp;🇭🇷&nbsp;&nbsp; | Croatia         | hr        |
-| Czech              | &nbsp;&nbsp;🇨🇿&nbsp;&nbsp; | Czech Republic  | cs        |
-| Danish             | &nbsp;&nbsp;🇩🇰&nbsp;&nbsp; | Denmark         | da        |
-| Dutch              | &nbsp;&nbsp;🇳🇱&nbsp;&nbsp; | Netherlands     | nl        |
-| English            | &nbsp;&nbsp;🇺🇸&nbsp;&nbsp; | United States   | en        |
-| Estonian           | &nbsp;&nbsp;🇪🇪&nbsp;&nbsp; | Estonia         | et        |
-| Filipino           | &nbsp;&nbsp;🇵🇭&nbsp;&nbsp; | Philippines     | tl        |
-| Finnish            | &nbsp;&nbsp;🇫🇮&nbsp;&nbsp; | Finland         | fi        |
-| French             | &nbsp;&nbsp;🇫🇷&nbsp;&nbsp; | France          | fr        |
-| Georgian           | &nbsp;&nbsp;🇬🇪&nbsp;&nbsp; | Georgia         | ka        |
-| German             | &nbsp;&nbsp;🇩🇪&nbsp;&nbsp; | Germany         | de        |
-| Greek              | &nbsp;&nbsp;🇬🇷&nbsp;&nbsp; | Greece          | el        |
-| Gujarati           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | gu        |
-| Hebrew             | &nbsp;&nbsp;🇮🇱&nbsp;&nbsp; | Israel          | he        |
-| Hindi              | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | hi        |
-| Hungarian          | &nbsp;&nbsp;🇭🇺&nbsp;&nbsp; | Hungary         | hu        |
-| Indonesian         | &nbsp;&nbsp;🇮🇩&nbsp;&nbsp; | Indonesia       | id        |
-| Irish              | &nbsp;&nbsp;🇮🇪&nbsp;&nbsp; | Ireland         | ga        |
-| Italian            | &nbsp;&nbsp;🇮🇹&nbsp;&nbsp; | Italy           | it        |
-| Japanese           | &nbsp;&nbsp;🇯🇵&nbsp;&nbsp; | Japan           | ja        |
-| Kannada            | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | kn        |
-| Kazakh             | &nbsp;&nbsp;🇰🇿&nbsp;&nbsp; | Kazakhstan      | kk        |
-| Korean             | &nbsp;&nbsp;🇰🇷&nbsp;&nbsp; | South Korea     | ko        |
-| Kyrgyz             | &nbsp;&nbsp;🇰🇬&nbsp;&nbsp; | Kyrgyzstan      | ky        |
-| Latvian            | &nbsp;&nbsp;🇱🇻&nbsp;&nbsp; | Latvia          | lv        |
-| Lithuanian         | &nbsp;&nbsp;🇱🇹&nbsp;&nbsp; | Lithuania       | lt        |
-| Luxembourgish      | &nbsp;&nbsp;🇱🇺&nbsp;&nbsp; | Luxembourg      | lb        |
-| Macedonian         | &nbsp;&nbsp;🇲🇰&nbsp;&nbsp; | North Macedonia | mk        |
-| Malayalam          | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | ml        |
-| Manx               | &nbsp;&nbsp;🇮🇲&nbsp;&nbsp; | Isle of Man     | gv        |
-| Marathi            | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | mr        |
-| Mongolian          | &nbsp;&nbsp;🇲🇳&nbsp;&nbsp; | Mongolia        | mn        |
-| Nepali             | &nbsp;&nbsp;🇳🇵&nbsp;&nbsp; | Nepal           | ne        |
-| Norwegian          | &nbsp;&nbsp;🇳🇴&nbsp;&nbsp; | Norway          | no        |
-| Persian            | &nbsp;&nbsp;🇮🇷&nbsp;&nbsp; | Iran            | fa        |
-| Polish             | &nbsp;&nbsp;🇵🇱&nbsp;&nbsp; | Poland          | pl        |
-| Portuguese         | &nbsp;&nbsp;🇵🇹&nbsp;&nbsp; | Portugal        | pt        |
-| Punjabi            | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | pa        |
-| Romanian           | &nbsp;&nbsp;🇷🇴&nbsp;&nbsp; | Romania         | ro        |
-| Russian            | &nbsp;&nbsp;🇷🇺&nbsp;&nbsp; | Russia          | ru        |
-| Serbian            | &nbsp;&nbsp;🇷🇸&nbsp;&nbsp; | Serbia          | sr        |
-| Sinhala            | &nbsp;&nbsp;🇱🇰&nbsp;&nbsp; | Sri Lanka       | si        |
-| Slovak             | &nbsp;&nbsp;🇸🇰&nbsp;&nbsp; | Slovakia        | sk        |
-| Slovenian          | &nbsp;&nbsp;🇸🇮&nbsp;&nbsp; | Slovenia        | sl        |
-| Somali             | &nbsp;&nbsp;🇸🇴&nbsp;&nbsp; | Somalia         | so        |
-| Spanish            | &nbsp;&nbsp;🇪🇸&nbsp;&nbsp; | Spain           | es        |
-| Swahili            | &nbsp;&nbsp;🇹🇿&nbsp;&nbsp; | Tanzania        | sw        |
-| Swedish            | &nbsp;&nbsp;🇸🇪&nbsp;&nbsp; | Sweden          | sv        |
-| Tajik              | &nbsp;&nbsp;🇹🇯&nbsp;&nbsp; | Tajikistan      | tg        |
-| Tamil              | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | ta        |
-| Telugu             | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; | India           | te        |
-| Thai               | &nbsp;&nbsp;🇹🇭&nbsp;&nbsp; | Thailand        | th        |
-| Tibetan            | &nbsp;&nbsp;🇨🇳&nbsp;&nbsp; | China           | bo        |
-| Tigrinya           | &nbsp;&nbsp;🇪🇷&nbsp;&nbsp; | Eritrea         | ti        |
-| Turkish            | &nbsp;&nbsp;🇹🇷&nbsp;&nbsp; | Turkey          | tr        |
-| Ukrainian          | &nbsp;&nbsp;🇺🇦&nbsp;&nbsp; | Ukraine         | uk        |
-| Urdu               | &nbsp;&nbsp;🇵🇰&nbsp;&nbsp; | Pakistan        | ur        |
-| Vietnamese         | &nbsp;&nbsp;🇻🇳&nbsp;&nbsp; | Vietnam         | vi        |
-| Welsh              | &nbsp;&nbsp;🇬🇧&nbsp;&nbsp; | United Kingdom  | cy        |
-| Yiddish            | &nbsp;&nbsp;🇮🇱&nbsp;&nbsp; | Israel          | yi        |
+| Language           | ISO 639-1 | Language family                                 | Country         | Flag                         |
+|--------------------|-----------|-------------------------------------------------|-----------------|------------------------------|
+| Afrikaans          | af        | Indo-European / Germanic / West Germanic        | South Africa    | &nbsp;&nbsp;🇿🇦&nbsp;&nbsp; |
+| Albanian           | sq        | Indo-European / Albanoid / Albanian             | Albania         | &nbsp;&nbsp;🇦🇱&nbsp;&nbsp; |
+| Amharic            | am        | Afro-Asiatic / Semitic / South Semitic          | Ethiopia        | &nbsp;&nbsp;🇪🇹&nbsp;&nbsp; |
+| Arabic             | ar        | Afro-Asiatic / Semitic / West Semitic           | UAE             | &nbsp;&nbsp;🇦🇪&nbsp;&nbsp; |
+| Armenian           | hy        | Indo-European / Armenian                        | Armenia         | &nbsp;&nbsp;🇦🇲&nbsp;&nbsp; |
+| Azerbaijani        | az        | Turkic / Oghuz / Western Oghuz                  | Azerbaijan      | &nbsp;&nbsp;🇦🇿&nbsp;&nbsp; |
+| Bangla             | bn        | Indo-European / Indo-Iranian / Indo-Aryan       | Bangladesh      | &nbsp;&nbsp;🇧🇩&nbsp;&nbsp; |
+| Basque             | eu        | Isolate                                         | Spain           | &nbsp;&nbsp;🇪🇸&nbsp;&nbsp; |
+| Breton             | br        | Indo-European / Celtic / Brythonic              | France          | &nbsp;&nbsp;🇫🇷&nbsp;&nbsp; |
+| Bulgarian          | bg        | Indo-European / Balto-Slavic / Slavic           | Bulgaria        | &nbsp;&nbsp;🇧🇬&nbsp;&nbsp; |
+| Catalan            | ca        | Indo-European / Italic / Romance                | Spain           | &nbsp;&nbsp;🇪🇸&nbsp;&nbsp; |
+| Chinese (China)    | zh-cn     | Sino-Tibetan / Sinitic                          | China           | &nbsp;&nbsp;🇨🇳&nbsp;&nbsp; |
+| Chinese (Taiwan)   | zh-tw     | Sino-Tibetan / Sinitic                          | Taiwan          | &nbsp;&nbsp;🇹🇼&nbsp;&nbsp; |
+| Cornish (Kernewek) | kw        | Indo-European / Celtic / Brythonic              | United Kingdom  | &nbsp;&nbsp;🇬🇧&nbsp;&nbsp; |
+| Croatian           | hr        | Indo-European / Balto-Slavic / Slavic           | Croatia         | &nbsp;&nbsp;🇭🇷&nbsp;&nbsp; |
+| Czech              | cs        | Indo-European / Balto-Slavic / Slavic           | Czech Republic  | &nbsp;&nbsp;🇨🇿&nbsp;&nbsp; |
+| Danish             | da        | Indo-European / Germanic / North Germanic       | Denmark         | &nbsp;&nbsp;🇩🇰&nbsp;&nbsp; |
+| Dutch              | nl        | Indo-European / Germanic / West Germanic        | Netherlands     | &nbsp;&nbsp;🇳🇱&nbsp;&nbsp; |
+| English            | en        | Indo-European / Germanic / West Germanic        | United States   | &nbsp;&nbsp;🇺🇸&nbsp;&nbsp; |
+| Estonian           | et        | Uralic / Finnic                                 | Estonia         | &nbsp;&nbsp;🇪🇪&nbsp;&nbsp; |
+| Filipino           | tl        | Austronesian / Malayo-Polynesian / Philippine   | Philippines     | &nbsp;&nbsp;🇵🇭&nbsp;&nbsp; |
+| Finnish            | fi        | Uralic / Finnic                                 | Finland         | &nbsp;&nbsp;🇫🇮&nbsp;&nbsp; |
+| French             | fr        | Indo-European / Italic / Romance                | France          | &nbsp;&nbsp;🇫🇷&nbsp;&nbsp; |
+| Georgian           | ka        | Kartvelian / Karto-Zan                          | Georgia         | &nbsp;&nbsp;🇬🇪&nbsp;&nbsp; |
+| German             | de        | Indo-European / Germanic / West Germanic        | Germany         | &nbsp;&nbsp;🇩🇪&nbsp;&nbsp; |
+| Greek              | el        | Indo-European / Hellenic                        | Greece          | &nbsp;&nbsp;🇬🇷&nbsp;&nbsp; |
+| Gujarati           | gu        | Indo-European / Indo-Iranian / Indo-Aryan       | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Hebrew             | he        | Afro-Asiatic / Semitic / West Semitic           | Israel          | &nbsp;&nbsp;🇮🇱&nbsp;&nbsp; |
+| Hindi              | hi        | Indo-European / Indo-Iranian / Indo-Aryan       | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Hungarian          | hu        | Uralic / Ugric                                  | Hungary         | &nbsp;&nbsp;🇭🇺&nbsp;&nbsp; |
+| Indonesian         | id        | Austronesian / Malayo-Polynesian / Sundic       | Indonesia       | &nbsp;&nbsp;🇮🇩&nbsp;&nbsp; |
+| Irish              | ga        | Indo-European / Celtic / Goidelic               | Ireland         | &nbsp;&nbsp;🇮🇪&nbsp;&nbsp; |
+| Italian            | it        | Indo-European / Italic / Latino-Faliscan        | Italy           | &nbsp;&nbsp;🇮🇹&nbsp;&nbsp; |
+| Japanese           | ja        | Japonic                                         | Japan           | &nbsp;&nbsp;🇯🇵&nbsp;&nbsp; |
+| Kannada            | kn        | Dravidian / Southern Dravidian                  | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Kazakh             | kk        | Turkic / Common Turkic/ Kipchak                 | Kazakhstan      | &nbsp;&nbsp;🇰🇿&nbsp;&nbsp; |
+| Korean             | ko        | Koreanic                                        | South Korea     | &nbsp;&nbsp;🇰🇷&nbsp;&nbsp; |
+| Kyrgyz             | ky        | Turkic / Common Turkic/ Kipchak                 | Kyrgyzstan      | &nbsp;&nbsp;🇰🇬&nbsp;&nbsp; |
+| Latvian            | lv        | Indo-European / Balto-Slavic / Baltic           | Latvia          | &nbsp;&nbsp;🇱🇻&nbsp;&nbsp; |
+| Lithuanian         | lt        | Indo-European / Balto-Slavic / Baltic           | Lithuania       | &nbsp;&nbsp;🇱🇹&nbsp;&nbsp; |
+| Luxembourgish      | lb        | Indo-European / Germanic / West Germanic        | Luxembourg      | &nbsp;&nbsp;🇱🇺&nbsp;&nbsp; |
+| Macedonian         | mk        | Indo-European / Balto-Slavic / Slavic           | North Macedonia | &nbsp;&nbsp;🇲🇰&nbsp;&nbsp; |
+| Malayalam          | ml        | Dravidian / Southern Dravidian                  | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Manx               | gv        | Indo-European / Celtic / Goidelic               | Isle of Man     | &nbsp;&nbsp;🇮🇲&nbsp;&nbsp; |
+| Marathi            | mr        | Indo-European / Indo-Iranian / Indo-Aryan       | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Mongolian          | mn        | Mongolic / Central Mongolic / Buryat–Mongolian  | Mongolia        | &nbsp;&nbsp;🇲🇳&nbsp;&nbsp; |
+| Nepali             | ne        | Indo-European / Indo-Iranian / Indo-Aryan       | Nepal           | &nbsp;&nbsp;🇳🇵&nbsp;&nbsp; |
+| Norwegian          | no        | Indo-European / Germanic / North Germanic       | Norway          | &nbsp;&nbsp;🇳🇴&nbsp;&nbsp; |
+| Persian            | fa        | Indo-European / Indo-Iranian / Iranian          | Iran            | &nbsp;&nbsp;🇮🇷&nbsp;&nbsp; |
+| Polish             | pl        | Indo-European / Balto-Slavic / Slavic           | Poland          | &nbsp;&nbsp;🇵🇱&nbsp;&nbsp; |
+| Portuguese         | pt        | Indo-European / Italic / Latino-Faliscan        | Portugal        | &nbsp;&nbsp;🇵🇹&nbsp;&nbsp; |
+| Punjabi            | pa        | Indo-European / Indo-Iranian / Indo-Aryan       | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Romanian           | ro        | Indo-European / Italic / Romance                | Romania         | &nbsp;&nbsp;🇷🇴&nbsp;&nbsp; |
+| Russian            | ru        | Indo-European / Balto-Slavic / Slavic           | Russia          | &nbsp;&nbsp;🇷🇺&nbsp;&nbsp; |
+| Serbian            | sr        | Indo-European / Balto-Slavic / Slavic           | Serbia          | &nbsp;&nbsp;🇷🇸&nbsp;&nbsp; |
+| Sinhala            | si        | Indo-European / Indo-Iranian / Indo-Aryan       | Sri Lanka       | &nbsp;&nbsp;🇱🇰&nbsp;&nbsp; |
+| Slovak             | sk        | Indo-European / Balto-Slavic / Slavic           | Slovakia        | &nbsp;&nbsp;🇸🇰&nbsp;&nbsp; |
+| Slovenian          | sl        | Indo-European / Balto-Slavic / Slavic           | Slovenia        | &nbsp;&nbsp;🇸🇮&nbsp;&nbsp; |
+| Somali             | so        | Afro-Asiatic / Cushitic / Lowland East Cushitic | Somalia         | &nbsp;&nbsp;🇸🇴&nbsp;&nbsp; |
+| Spanish            | es        | Indo-European / Italic / Latino-Faliscan        | Spain           | &nbsp;&nbsp;🇪🇸&nbsp;&nbsp; |
+| Swahili            | sw        | Niger-Congo / Atlantic-Congo / Bantu            | Tanzania        | &nbsp;&nbsp;🇹🇿&nbsp;&nbsp; |
+| Swedish            | sv        | Indo-European / Germanic / North Germanic       | Sweden          | &nbsp;&nbsp;🇸🇪&nbsp;&nbsp; |
+| Tajik              | tg        | Indo-European / Indo-Iranian / Iranian          | Tajikistan      | &nbsp;&nbsp;🇹🇯&nbsp;&nbsp; |
+| Tamil              | ta        | Dravidian / Southern Dravidian                  | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Telugu             | te        | Dravidian / South-Central Dravidian             | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
+| Thai               | th        | Kra-Dai / Tai / Southwestern Tai                | Thailand        | &nbsp;&nbsp;🇹🇭&nbsp;&nbsp; |
+| Tibetan            | bo        | Sino-Tibetan / Tibeto-Burman                    | China           | &nbsp;&nbsp;🇨🇳&nbsp;&nbsp; |
+| Tigrinya           | ti        | Afro-Asiatic / Semitic / South Semitic          | Eritrea         | &nbsp;&nbsp;🇪🇷&nbsp;&nbsp; |
+| Turkish            | tr        | Turkic / Common Turkic / Oghuz                  | Turkey          | &nbsp;&nbsp;🇹🇷&nbsp;&nbsp; |
+| Ukrainian          | uk        | Indo-European / Balto-Slavic / Slavic           | Ukraine         | &nbsp;&nbsp;🇺🇦&nbsp;&nbsp; |
+| Urdu               | ur        | Indo-European / Indo-Iranian / Indo-Aryan       | Pakistan        | &nbsp;&nbsp;🇵🇰&nbsp;&nbsp; |
+| Vietnamese         | vi        | Austroasiatic / Vietic                          | Vietnam         | &nbsp;&nbsp;🇻🇳&nbsp;&nbsp; |
+| Welsh              | cy        | Indo-European / Celtic / Brythonic              | United Kingdom  | &nbsp;&nbsp;🇬🇧&nbsp;&nbsp; |
+| Yiddish            | yi        | Indo-European / Germanic / West Germanic        | Israel          | &nbsp;&nbsp;🇮🇱&nbsp;&nbsp; |
 
 
 ### Model parameters
