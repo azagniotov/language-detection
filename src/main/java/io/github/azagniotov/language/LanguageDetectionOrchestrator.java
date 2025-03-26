@@ -14,6 +14,7 @@ import java.util.List;
 public class LanguageDetectionOrchestrator {
 
   private final LanguageDetectionSettings settings;
+  private static final List<Language> EMPTY_RESULTS = Collections.emptyList();
 
   public LanguageDetectionOrchestrator(final LanguageDetectionSettings settings) {
     this.settings = settings;
@@ -46,67 +47,78 @@ public class LanguageDetectionOrchestrator {
         return Collections.singletonList(UNDETERMINED_LANGUAGE_RESPONSE);
       }
 
-      // Do a quick heuristic to check if this is a Chinese / Japanese input
-      if (this.settings.getCjkDetectionThreshold() > 0) {
-        final CjkDecision decision =
-            CjkDetector.decide(sanitizedInput, this.settings.getCjkDetectionThreshold());
-        if (decision == CjkDecision.DECISION_JAPANESE) {
+      final List<Language> cjkLanguages = doCjkHeuristic(sanitizedInput);
+      if (cjkLanguages.isEmpty()) {
+        return doStatisticalDetection(sanitizedInput);
+      } else {
+        return cjkLanguages;
+      }
+    }
+  }
+
+  private List<Language> doCjkHeuristic(String sanitizedInput) {
+    // Do a quick heuristic to check if this is a Chinese / Japanese input
+    if (this.settings.getCjkDetectionThreshold() > 0) {
+      final CjkDecision decision =
+          CjkDetector.decide(sanitizedInput, this.settings.getCjkDetectionThreshold());
+      if (decision == CjkDecision.DECISION_JAPANESE) {
+        return Collections.singletonList(JAPANESE_LANGUAGE_RESPONSE);
+      } else if (decision == CjkDecision.DECISION_CHINESE) {
+        if (this.settings.isClassifyChineseAsJapanese()) {
           return Collections.singletonList(JAPANESE_LANGUAGE_RESPONSE);
-        } else if (decision == CjkDecision.DECISION_CHINESE) {
-          if (this.settings.isClassifyChineseAsJapanese()) {
-            return Collections.singletonList(JAPANESE_LANGUAGE_RESPONSE);
-          } else {
-            // If it is a Chinese input, then enforce
-            // the input to be a Japanese string
-            return Collections.singletonList(CHINESE_LANGUAGE_RESPONSE);
-          }
+        } else {
+          // If it is a Chinese input, then enforce
+          // the input to be a Japanese string
+          return Collections.singletonList(CHINESE_LANGUAGE_RESPONSE);
+        }
+      }
+    }
+    return EMPTY_RESULTS;
+  }
+
+  private List<Language> doStatisticalDetection(String sanitizedInput) {
+    // For non-Chinese/Japanese decisions we are going through
+    // Naive Bayes below (the original LangDetect flow)
+    final LanguageDetector languageDetector;
+    try {
+      languageDetector = LanguageDetectorFactory.detector(this.settings);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+
+    final List<Language> languages = languageDetector.detectAll(sanitizedInput);
+    final Language topLanguage = languages.get(0);
+    if (topLanguage.getIsoCode639_1().equals(UNDETERMINED_LANGUAGE_RESPONSE.getIsoCode639_1())) {
+      // Return undetermined ISO code to the client,
+      // so that client can make a decision what to do,
+      // e.g.: cross-index into all languages or search through all language fields
+      return languages;
+    }
+
+    if (this.settings.isTopLanguageCertaintyThresholdSet()) {
+      if (topLanguage.getProbability() < this.settings.getTopLanguageCertaintyThreshold()) {
+        return Collections.singletonList(
+            new Language(this.settings.getTopLanguageFallbackIsoCode639_1(), PERFECT_PROBABILITY));
+      }
+    } else if (this.settings.isMinimumCertaintyThresholdSet()) {
+      final List<Language> aboveThreshold = new ArrayList<>();
+      for (final Language language : languages) {
+        if (language.getProbability() >= this.settings.getMinimumCertaintyThreshold()) {
+          aboveThreshold.add(language);
         }
       }
 
-      // For non-Chinese/Japanese decisions we are going through
-      // Naive Bayes below (the original LangDetect flow)
-      final LanguageDetector languageDetector;
-      try {
-        languageDetector = LanguageDetectorFactory.detector(this.settings);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-
-      final List<Language> languages = languageDetector.detectAll(sanitizedInput);
-      final Language topLanguage = languages.get(0);
-      if (topLanguage.getIsoCode639_1().equals(UNDETERMINED_LANGUAGE_RESPONSE.getIsoCode639_1())) {
+      if (aboveThreshold.isEmpty()) {
         // Return undetermined ISO code to the client,
         // so that client can make a decision what to do,
         // e.g.: cross-index into all languages or search through all language fields
-        return languages;
+        return Collections.singletonList(UNDETERMINED_LANGUAGE_RESPONSE);
+      } else {
+        return aboveThreshold;
       }
-
-      if (this.settings.isTopLanguageCertaintyThresholdSet()) {
-        if (topLanguage.getProbability() < this.settings.getTopLanguageCertaintyThreshold()) {
-          return Collections.singletonList(
-              new Language(
-                  this.settings.getTopLanguageFallbackIsoCode639_1(), PERFECT_PROBABILITY));
-        }
-      } else if (this.settings.isMinimumCertaintyThresholdSet()) {
-        final List<Language> aboveThreshold = new ArrayList<>();
-        for (final Language language : languages) {
-          if (language.getProbability() >= this.settings.getMinimumCertaintyThreshold()) {
-            aboveThreshold.add(language);
-          }
-        }
-
-        if (aboveThreshold.isEmpty()) {
-          // Return undetermined ISO code to the client,
-          // so that client can make a decision what to do,
-          // e.g.: cross-index into all languages or search through all language fields
-          return Collections.singletonList(UNDETERMINED_LANGUAGE_RESPONSE);
-        } else {
-          return aboveThreshold;
-        }
-      }
-
-      return languages;
     }
+
+    return languages;
   }
 
   private String conditionallySanitizeInput(final String truncatedInput) {
