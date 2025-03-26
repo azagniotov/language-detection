@@ -167,11 +167,11 @@ significantly faster and simpler for short texts, avoiding the complexities of s
 
 ## How to use?
 
-Search language detection can be used programmatically in your own code
+The language detection library can be integrated into your code using a Builder with the fluent API.
+
+The API is simple to use, enabling easy configuration of the language detector. Additionally, the public API of the library is designed to never return `null`.
 
 ### Basic usage
-
-The API is fairly straightforward that allows to configure the language detector via a builder. The public API of the library never returns `null`.
 
 The following is a reasonable configuration:
 ```java
@@ -185,7 +185,7 @@ final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestr
 final Language language = orchestrator.detect("languages are awesome");
 
 final String languageCode = language.getIsoCode639_1();
-final double probability = language.getProbability();
+final float probability = language.getProbability();
 ```
 
 [`Back to top`](#table-of-contents)
@@ -198,7 +198,7 @@ In some classification tasks, you may already know that your language data is no
 
 `.fromAllIsoCodes639_1()`
 - **Default**: N/A
-- **Description**: Enables the library to perform language detection for all the 53 languages by the ISO 639-1 codes
+- **Description**: Enables the library to perform language detection for all the supported languages by the ISO 639-1 codes
 
 ```java
 LanguageDetectionSettings
