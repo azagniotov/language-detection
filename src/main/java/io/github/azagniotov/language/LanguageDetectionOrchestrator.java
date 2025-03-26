@@ -19,6 +19,10 @@ public class LanguageDetectionOrchestrator {
     this.settings = settings;
 
     // Warm-up.
+
+    // Fake call to the class to cause it to be loaded and the static initializer executed
+    NGram.normalize('\u0000');
+
     // The warm-up sentence must be a non-CJK sentence in case if the config
     // settings.getCjkDetectionThreshold() > 0, as we need to ensure we are
     // calling the LanguageDetectorFactory.detector(this.settings) to load

@@ -104,9 +104,6 @@ class LanguageDetectorFactory {
    * performing language detection.
    */
   private void addProfiles() throws IOException {
-    // Fake call to the class to cause it to be loaded and the static initializers executed
-    NGram.normalize('\u0000');
-
     final List<String> supportedIsoCodes = this.languageDetectionSettings.getIsoCodes639_1();
     final List<LanguageProfile> allLoadedProfiles = new ArrayList<>(supportedIsoCodes.size());
     for (final String isoCode639_1 : supportedIsoCodes) {
