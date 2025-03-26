@@ -168,14 +168,22 @@ class LanguageDetectorFactory {
     }
   }
 
+  /**
+   * In general, this is not thread-safe for the first access, but I am opting for the lazy
+   * initialization without explicit synchronization to avoid a performance hit. But, since the
+   * {@link LanguageDetectionOrchestrator} constructor performs a warm-up, the non-thread safe first
+   * access is no longer an issue.
+   *
+   * @param languageDetectionSettings settings for the language detector
+   * @return
+   * @throws IOException
+   * @see LanguageDetector
+   * @see LanguageDetectionOrchestrator
+   */
   public static LanguageDetector detector(final LanguageDetectionSettings languageDetectionSettings)
       throws IOException {
     if (instance == null) {
-      synchronized (LanguageDetectorFactory.class) {
-        if (instance == null) {
-          instance = new LanguageDetectorFactory(languageDetectionSettings);
-        }
-      }
+      instance = new LanguageDetectorFactory(languageDetectionSettings);
     }
     return new LanguageDetector(
         instance.getModel(),
