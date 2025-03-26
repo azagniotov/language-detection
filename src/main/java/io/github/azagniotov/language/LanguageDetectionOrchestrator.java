@@ -17,6 +17,13 @@ public class LanguageDetectionOrchestrator {
 
   public LanguageDetectionOrchestrator(final LanguageDetectionSettings settings) {
     this.settings = settings;
+
+    // Warm-up.
+    // The warm-up sentence must be a non-CJK sentence in case if the config
+    // settings.getCjkDetectionThreshold() > 0, as we need to ensure we are
+    // calling the LanguageDetectorFactory.detector(this.settings) to load
+    // the language profiles and init the LanguageDetectorFactory singleton.
+    detect("Let's warm up, because languages are awesome!");
   }
 
   public Language detect(final String input) {
