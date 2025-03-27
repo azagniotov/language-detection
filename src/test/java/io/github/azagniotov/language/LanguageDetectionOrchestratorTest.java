@@ -45,7 +45,7 @@ public class LanguageDetectionOrchestratorTest {
     final float convThreshold = 0.99999f;
     MODEL = new Model(baseFreq, iterationLimit, numberOfTrials, alpha, alphaWidth, convThreshold);
 
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(SETTINGS);
+    final LanguageDetectorFactory factory = LanguageDetectorFactory.fromSettings(SETTINGS);
     DEFAULT_DETECTOR =
         new LanguageDetector(
             MODEL,
@@ -162,7 +162,7 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public final void languageDetectorShouldDetectChinese() throws Exception {
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(SETTINGS);
+    final LanguageDetectorFactory factory = LanguageDetectorFactory.fromSettings(SETTINGS);
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,

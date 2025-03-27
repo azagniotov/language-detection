@@ -59,17 +59,24 @@ class LanguageDetectorFactory {
   private final int minNGramLength;
   private final int maxNGramLength;
 
-  private final Model model;
+  private Model model;
 
-  LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings)
-      throws IOException {
+  private LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings) {
     this.languageDetectionSettings = languageDetectionSettings;
     this.supportedIsoCodes639_1 = new LinkedList<>();
     this.languageCorporaProbabilities = new HashMap<>();
     this.minNGramLength = this.languageDetectionSettings.getMinNGramLength();
     this.maxNGramLength = this.languageDetectionSettings.getMaxNGramLength();
-    this.model = loadModelParameters();
-    addProfiles();
+  }
+
+  static LanguageDetectorFactory fromSettings(
+      final LanguageDetectionSettings languageDetectionSettings) throws IOException {
+    final LanguageDetectorFactory languageDetectorFactory =
+        new LanguageDetectorFactory(languageDetectionSettings);
+    languageDetectorFactory.model = languageDetectorFactory.loadModelParameters();
+    languageDetectorFactory.addProfiles();
+
+    return languageDetectorFactory;
   }
 
   Model getModel() {
@@ -180,7 +187,7 @@ class LanguageDetectorFactory {
   public static LanguageDetector detector(final LanguageDetectionSettings languageDetectionSettings)
       throws IOException {
     if (instance == null) {
-      instance = new LanguageDetectorFactory(languageDetectionSettings);
+      instance = LanguageDetectorFactory.fromSettings(languageDetectionSettings);
     }
     return new LanguageDetector(
         instance.getModel(),

@@ -33,7 +33,7 @@ public class LanguageDetectorTest {
             LanguageDetectorTest.class.getResourceAsStream("/model/testParameters.json"));
 
     final LanguageDetectorFactory factory =
-        new LanguageDetectorFactory(DEFAULT_SETTINGS_ALL_LANGUAGES);
+        LanguageDetectorFactory.fromSettings(DEFAULT_SETTINGS_ALL_LANGUAGES);
     DEFAULT_DETECTOR =
         new LanguageDetector(
             MODEL,
@@ -51,7 +51,7 @@ public class LanguageDetectorTest {
 
     final LanguageDetectionSettings emptySettings =
         LanguageDetectionSettings.fromIsoCodes639_1(EMPTY_STRING).build();
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(emptySettings);
+    final LanguageDetectorFactory factory = LanguageDetectorFactory.fromSettings(emptySettings);
 
     final String profileTemplate = "{\"freq\":{},\"n_words\":[0.0, 0.0, 0.0],\"name\":\"%s\"}";
     final InputStream enTest = gzipString(String.format(profileTemplate, "en_test"));
@@ -123,7 +123,8 @@ public class LanguageDetectorTest {
         LanguageDetectionSettings.fromIsoCodes639_1(
                 "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,kw,ky,lb,mn,ru,sr,tg,ti,yi")
             .build();
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
+    final LanguageDetectorFactory factory =
+        LanguageDetectorFactory.fromSettings(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
@@ -364,7 +365,8 @@ public class LanguageDetectorTest {
   public final void languageDetectorRespondsWithUndeterminedLanguage() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1("en,de").build();
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
+    final LanguageDetectorFactory factory =
+        LanguageDetectorFactory.fromSettings(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
@@ -385,7 +387,8 @@ public class LanguageDetectorTest {
   public final void singleWords() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1("en,de,fr,es,it").build();
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(supportedLanguages);
+    final LanguageDetectorFactory factory =
+        LanguageDetectorFactory.fromSettings(supportedLanguages);
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
