@@ -25,10 +25,6 @@ import java.util.Set;
  */
 class JapaneseHan {
 
-  static boolean of(final char character) {
-    return JOUYOU_SET.contains(character);
-  }
-
   private static final Set<Character> JOUYOU_SET =
       new HashSet<>(
           Arrays.asList(
@@ -158,4 +154,27 @@ class JapaneseHan {
               '艶', '願', '鏡', '繰', '警', '鶏', '鯨', '璽', '識', '蹴', '髄', '瀬', '藻', '臓', '覇', '爆', '譜',
               '簿', '霧', '羅', '離', '麗', '麓', '議', '競', '響', '懸', '護', '鐘', '譲', '醸', '籍', '騰', '欄',
               '艦', '顧', '鶴', '魔', '躍', '露', '驚', '襲', '籠', '鑑', '鬱'));
+
+  // Unicode BMP (Basic Multilingual Plane) lookup.
+  // Character.MAX_VALUE has the Unicode code point U+FFFF, which is
+  // the largest value of type char in Java (which uses UTF-16 encoding).
+  private static final int[] JOUYOU_SET_UNICODE_POINTS = new int[Character.MAX_VALUE + 1];
+
+  static {
+    for (final Character character : JOUYOU_SET) {
+      final int codePoint = (int) character;
+      JOUYOU_SET_UNICODE_POINTS[codePoint] = codePoint;
+    }
+
+    // We do not need this anymore at runtime
+    JOUYOU_SET.clear();
+  }
+
+  static boolean of(final int codePoint) {
+    if (!Character.isValidCodePoint(codePoint) || codePoint >= JOUYOU_SET_UNICODE_POINTS.length) {
+      return false;
+    } else {
+      return JOUYOU_SET_UNICODE_POINTS[codePoint] != 0;
+    }
+  }
 }
