@@ -220,7 +220,7 @@ class NGram {
     this.capitalWord = false;
   }
 
-  static char normalize(char c) {
+  static char normalize(final char c) {
     return NORMALIZED_BMP_CHARS[c];
   }
 

@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import io.github.azagniotov.language.annotations.GeneratedCodeClassCoverageExclusion;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+@GeneratedCodeClassCoverageExclusion
 public class Main {
 
   private static final Map<String, Map<String, Integer>> detectionCounts =
@@ -108,7 +110,7 @@ public class Main {
             .withClassifyChineseAsJapanese()
             .withMaxTextChars(DEFAULT_MAX_CHARS)
             .build();
-    languageDetectionOrchestrator = new LanguageDetectionOrchestrator(settings);
+    languageDetectionOrchestrator = LanguageDetectionOrchestrator.fromSettings(settings);
 
     for (final String targetCode : targetCodes) {
       if (!detectionCounts.containsKey(targetCode.toUpperCase())) {

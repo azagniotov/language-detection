@@ -6,8 +6,8 @@ import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
-import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
+import static io.github.azagniotov.language.TestReflectionUtils.resetLanguageDetectorFactoryInstance;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;

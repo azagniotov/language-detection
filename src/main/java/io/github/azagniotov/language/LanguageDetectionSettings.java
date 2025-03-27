@@ -120,11 +120,10 @@ public class LanguageDetectionSettings {
 
   public static class Builder {
 
-    // At this point these are not exposed to configure via a Buildr setter
+    // At this point these are not exposed to configure via a Builder setter
     private final String profilesHome;
     private final int minNGramLength;
     private final int maxNGramLength;
-    private final double cjkDetectionThreshold;
 
     private int maxTextChars;
     private final List<String> isoCodes639_1;
@@ -132,6 +131,7 @@ public class LanguageDetectionSettings {
     private String topLanguageFallbackIsoCode639_1;
     private double topLanguageCertaintyThreshold;
     private double minimumCertaintyThreshold;
+    private double cjkDetectionThreshold;
 
     private int bitFlags;
 
@@ -168,6 +168,11 @@ public class LanguageDetectionSettings {
 
     public Builder withoutInputSanitize() {
       this.bitFlags = this.bitFlags & ~FLAG_SANITIZE_INPUT;
+      return new Builder(this);
+    }
+
+    public Builder withCjkDetectionThreshold(final double cjkDetectionThreshold) {
+      this.cjkDetectionThreshold = cjkDetectionThreshold;
       return new Builder(this);
     }
 

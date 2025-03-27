@@ -1,13 +1,12 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.AccuracyTestHelper.ACCURACY_DELTA;
+import static io.github.azagniotov.language.AccuracyTestHelper.SMALL_LANG_SUBSET;
+import static io.github.azagniotov.language.AccuracyTestHelper.getResourceReader;
+import static io.github.azagniotov.language.AccuracyTestHelper.readDataset;
 import static io.github.azagniotov.language.LanguageDetectionSettings.ALL_SUPPORTED_ISO_CODES_639_1;
 import static io.github.azagniotov.language.StringConstants.COMMA;
-import static io.github.azagniotov.language.TestHelper.ACCURACY_DELTA;
-import static io.github.azagniotov.language.TestHelper.SMALL_LANG_SUBSET;
-import static io.github.azagniotov.language.TestHelper.getResourceReader;
-import static io.github.azagniotov.language.TestHelper.getTopLanguageCode;
-import static io.github.azagniotov.language.TestHelper.readDataset;
-import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
+import static io.github.azagniotov.language.TestReflectionUtils.resetLanguageDetectorFactoryInstance;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -64,7 +63,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
    * uniformly with replacement from the set of possible substrings of the given length), runs the
    * language identification code, measures the per-language accuracy (percentage of substrings
    * classified correctly), and fails if the accuracy varies by more than {@link
-   * TestHelper#ACCURACY_DELTA} from the expected accuracy for the language.
+   * AccuracyTestHelper#ACCURACY_DELTA} from the expected accuracy for the language.
    *
    * @param dataset multi-language dataset name, as read in the setup step (see {@link #setUp()})
    * @param profilesHome profiles home directory parameter to pass to the detection service
@@ -117,24 +116,23 @@ public class LanguageDetectorSingleWordAccuracyTest {
   @Test
   public void simulation() throws Exception {
     final String languageCodes = configureProfileDependentLanguageCodes();
-    final LanguageDetectionSettings configuredSettings =
-        LanguageDetectionSettings.fromIsoCodes639_1(languageCodes).build();
 
-    final LanguageDetectorFactory factory = new LanguageDetectorFactory(configuredSettings);
-    final LanguageDetector languageDetector =
-        new LanguageDetector(
-            factory.getModel(),
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
-            factory.getMinNGramLength(),
-            factory.getMaxNGramLength());
+    final LanguageDetectionSettings settings =
+        LanguageDetectionSettings.fromIsoCodes639_1(languageCodes)
+            .withMaxTextChars(20000)
+            .withCjkDetectionThreshold(0.0)
+            .withoutInputSanitize()
+            .build();
+
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
 
     final Map<String, List<String>> languageToWords = allDatasets.get(dataset);
     final Set<String> datasetTargetLanguages = new TreeSet<>(languageToWords.keySet());
 
     // Based on what language codes we passed in the setting,
     // we want to make sure that our target dataset has the same languages
-    datasetTargetLanguages.retainAll(configuredSettings.getIsoCodes639_1());
+    datasetTargetLanguages.retainAll(settings.getIsoCodes639_1());
 
     // Classify the texts and calculate the accuracy for each language
     final Map<String, Float> languageToDetectedAccuracy =
@@ -144,7 +142,7 @@ public class LanguageDetectorSingleWordAccuracyTest {
       float correctDetections = 0;
       final List<String> languageAllWords = languageToWords.get(targetLanguage);
       for (final String word : languageAllWords) {
-        if (Objects.equals(getTopLanguageCode(languageDetector, word), targetLanguage)) {
+        if (Objects.equals(orchestrator.detect(word).getIsoCode639_1(), targetLanguage)) {
           correctDetections++;
         }
       }

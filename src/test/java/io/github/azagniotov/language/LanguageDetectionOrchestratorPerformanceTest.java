@@ -1,6 +1,6 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
+import static io.github.azagniotov.language.TestReflectionUtils.resetLanguageDetectorFactoryInstance;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -24,8 +24,8 @@ import org.junit.runners.Parameterized;
  * the loaded ISO codes and profiles.
  *
  * <p>With that in mind, please make sure to invoke {@link
- * TestHelper#resetLanguageDetectorFactoryInstance()} in setUp() to avoid flaky tests due to the
- * cached singleton instance of the {@link LanguageDetectorFactory}.
+ * TestReflectionUtils#resetLanguageDetectorFactoryInstance()} in setUp() to avoid flaky tests due
+ * to the cached singleton instance of the {@link LanguageDetectorFactory}.
  */
 @RunWith(Parameterized.class)
 public class LanguageDetectionOrchestratorPerformanceTest {
@@ -77,7 +77,8 @@ public class LanguageDetectionOrchestratorPerformanceTest {
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES)
             .withMaxTextChars(this.maxTextChars)
             .build();
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
 
     // Causes LanguageDetectorFactory instance to be created
     // and language profiles are loaded and cached.
