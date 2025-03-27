@@ -9,10 +9,10 @@ class CharacterCounts {
     JAPANESE_HAN,
     HIRAGANA,
     KATAKANA,
-    CJK_PUNCTUATION,
+    CJK_PUNCTUATION_AND_MISC,
     IRRELEVANT,
     CHINESE_HAN,
-    CJK
+    INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK
   }
 
   private final Map<CharType, Integer> charTypeCounts;
@@ -29,7 +29,7 @@ class CharacterCounts {
     return get(CharType.KATAKANA)
         + get(CharType.HIRAGANA)
         + get(CharType.JAPANESE_HAN)
-        + get(CharType.CJK_PUNCTUATION);
+        + get(CharType.CJK_PUNCTUATION_AND_MISC);
   }
 
   double irrelevant() {
