@@ -1,5 +1,8 @@
 package io.github.azagniotov.language;
 
+import io.github.azagniotov.language.annotations.GeneratedCodeClassCoverageExclusion;
+
+@GeneratedCodeClassCoverageExclusion
 class EnvironmentUtils {
 
   private static final String ENV_BASE = "LANGUAGE_DETECT_";

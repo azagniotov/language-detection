@@ -3,8 +3,8 @@ package io.github.azagniotov.language;
 import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
-import static io.github.azagniotov.language.TestHelper.resetLanguageDetectorFactoryInstance;
 import static io.github.azagniotov.language.TestHelper.testLanguage;
+import static io.github.azagniotov.language.TestReflectionUtils.resetLanguageDetectorFactoryInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -23,8 +23,8 @@ import org.junit.Test;
  * the loaded ISO codes and profiles.
  *
  * <p>With that in mind, please make sure to invoke {@link
- * TestHelper#resetLanguageDetectorFactoryInstance()} in setUp() to avoid flaky tests due to the
- * cached singleton instance of the {@link LanguageDetectorFactory}.
+ * TestReflectionUtils#resetLanguageDetectorFactoryInstance()} in setUp() to avoid flaky tests due
+ * to the cached singleton instance of the {@link LanguageDetectorFactory}.
  */
 public class LanguageDetectionOrchestratorTest {
 
@@ -62,7 +62,8 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public void detectsNullInput() throws Exception {
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(SETTINGS);
     final Language language = orchestrator.detect(null);
 
     assertEquals("und", language.getIsoCode639_1());
@@ -71,7 +72,8 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public void detectsEmptyInput() throws Exception {
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(SETTINGS);
     final Language language = orchestrator.detect("");
 
     assertEquals("und", language.getIsoCode639_1());
@@ -80,7 +82,8 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public void detectsBlankInput() throws Exception {
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(SETTINGS);
     final Language language = orchestrator.detect(BLANK_SPACE);
 
     assertEquals("und", language.getIsoCode639_1());
@@ -94,7 +97,8 @@ public class LanguageDetectionOrchestratorTest {
             .withClassifyChineseAsJapanese()
             .build();
 
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
     final List<String> inputs =
         Arrays.asList(
             "QRコード",
@@ -145,7 +149,8 @@ public class LanguageDetectionOrchestratorTest {
             .withClassifyChineseAsJapanese()
             .build();
 
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
     final List<String> inputs = Arrays.asList("report.xls", "山 ABCDEFGHJKL");
 
     for (final String input : inputs) {
@@ -181,7 +186,8 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public void languageDetectorShouldDetectShortStringsWithDefaultSanitization() throws Exception {
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(SETTINGS);
 
     assertEquals("ja", orchestrator.detect("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ.pdf").getIsoCode639_1());
     assertEquals("ja", orchestrator.detect("東京に行き ABCDEF").getIsoCode639_1());
@@ -218,7 +224,8 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public void detectsAll() throws Exception {
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(SETTINGS);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(SETTINGS);
 
     final List<Language> languages =
         orchestrator.detectAll(" deel te neem, om die kunste te geniet en in weten");
@@ -235,7 +242,8 @@ public class LanguageDetectionOrchestratorTest {
     final LanguageDetectionSettings settings =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withMaxTextChars(5).build();
 
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
 
     assertEquals("es", orchestrator.detect("abcdef 東京に行き").getIsoCode639_1());
     assertEquals("ja", orchestrator.detect("東京に行き abcdef").getIsoCode639_1());
@@ -245,19 +253,19 @@ public class LanguageDetectionOrchestratorTest {
 
   @Test
   public void detectsLanguageWithAndWithoutInputSanitizationForSearch() throws Exception {
-    final LanguageDetectionSettings settingsWithoutSearchSanitize =
+    final LanguageDetectionSettings settingsWithoutSanitize =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withoutInputSanitize().build();
 
     LanguageDetectionOrchestrator orchestrator =
-        new LanguageDetectionOrchestrator(settingsWithoutSearchSanitize);
+        LanguageDetectionOrchestrator.fromSettings(settingsWithoutSanitize);
     assertEquals("ja", orchestrator.detect("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf").getIsoCode639_1());
     assertEquals("ja", orchestrator.detect("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C).pdf").getIsoCode639_1());
     assertEquals("fr", orchestrator.detect("report.xls").getIsoCode639_1());
 
-    final LanguageDetectionSettings settingsWithSearchSanitize =
+    final LanguageDetectionSettings settingsWithSanitize =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).build();
 
-    orchestrator = new LanguageDetectionOrchestrator(settingsWithSearchSanitize);
+    orchestrator = LanguageDetectionOrchestrator.fromSettings(settingsWithSanitize);
     assertEquals("ja", orchestrator.detect("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf").getIsoCode639_1());
     assertEquals("ja", orchestrator.detect("ﾊｰﾄﾞｶﾌﾟｾﾙ(ｻｲｽﾞ3号 NATURAL B／C).pdf").getIsoCode639_1());
     assertEquals("es", orchestrator.detect("report.xls").getIsoCode639_1());
@@ -267,10 +275,11 @@ public class LanguageDetectionOrchestratorTest {
   public void respondsWithFallbackLanguageForTopDetectedLanguage() throws Exception {
     final LanguageDetectionSettings settings =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES)
-            .withTopLanguageMininumCertainty(0.95f, "ru")
+            .withTopLanguageMininumCertainty(0.95, "ru")
             .build();
 
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
 
     assertEquals("und", orchestrator.detect("...").getIsoCode639_1());
     assertEquals("und", orchestrator.detect("2025").getIsoCode639_1());
@@ -285,7 +294,8 @@ public class LanguageDetectionOrchestratorTest {
     final LanguageDetectionSettings settings =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withMininumCertainty(0.72f).build();
 
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
 
     // Would return: [ES=0.7142833, EN=0.14285952, FR=0.14285715]
     final List<Language> languages = orchestrator.detectAll("ourney mi casa sen");
@@ -300,7 +310,8 @@ public class LanguageDetectionOrchestratorTest {
     final LanguageDetectionSettings settings =
         LanguageDetectionSettings.fromIsoCodes639_1(ISO_CODES).withMininumCertainty(0.7f).build();
 
-    final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+    final LanguageDetectionOrchestrator orchestrator =
+        LanguageDetectionOrchestrator.fromSettings(settings);
 
     // Would return: [ES=0.7142833, EN=0.14285952, FR=0.14285715]
     final List<Language> languages = orchestrator.detectAll("ourney mi casa sen");

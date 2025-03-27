@@ -5,7 +5,6 @@ import static io.github.azagniotov.language.StringConstants.TAB;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-final class TestHelper {
+final class AccuracyTestHelper {
 
-  private TestHelper() {}
+  private AccuracyTestHelper() {}
 
   static final float ACCURACY_DELTA = 1e-6f;
   static final String SMALL_LANG_SUBSET = "en,ja,de,es,fr,it,zh-cn";
@@ -48,21 +47,5 @@ final class TestHelper {
         new InputStreamReader(
             Objects.requireNonNull(LanguageDetectorAccuracyTest.class.getResourceAsStream(path)),
             StandardCharsets.UTF_8));
-  }
-
-  static String getTopLanguageCode(final LanguageDetector languageDetector, final String text) {
-    final List<Language> languages = languageDetector.detectAll(text);
-    return languages.get(0).getIsoCode639_1();
-  }
-
-  static void resetLanguageDetectorFactoryInstance()
-      throws NoSuchFieldException, IllegalAccessException {
-    try {
-      final Field field = LanguageDetectorFactory.class.getDeclaredField("instance");
-      field.setAccessible(true);
-      field.set(null, null); // Set to null
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      throw e; // Re-throw the exceptions
-    }
   }
 }

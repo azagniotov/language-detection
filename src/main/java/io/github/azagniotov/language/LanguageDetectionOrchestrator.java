@@ -16,19 +16,28 @@ public class LanguageDetectionOrchestrator {
   private final LanguageDetectionSettings settings;
   private static final List<Language> EMPTY_RESULTS = Collections.emptyList();
 
-  public LanguageDetectionOrchestrator(final LanguageDetectionSettings settings) {
-    this.settings = settings;
-
+  public static LanguageDetectionOrchestrator fromSettings(
+      final LanguageDetectionSettings settings) {
     // Warm-up.
 
     // Fake call to the class to cause it to be loaded and the static initializer executed
     NGram.normalize('\u0000');
 
+    final LanguageDetectionOrchestrator languageDetectionOrchestrator =
+        new LanguageDetectionOrchestrator(settings);
     // The warm-up sentence must be a non-CJK sentence in case if the config
     // settings.getCjkDetectionThreshold() > 0, as we need to ensure we are
     // calling the LanguageDetectorFactory.detector(this.settings) to load
     // the language profiles and init the LanguageDetectorFactory singleton.
-    detect("Let's warm up, because languages are awesome!");
+    languageDetectionOrchestrator.detect("Let's warm up, because languages are awesome!");
+    languageDetectionOrchestrator.detect("ウォームアップしましょう。言語は素晴らしいですから!");
+    languageDetectionOrchestrator.detect("Lasst uns aufwärmen, denn Sprachen sind großartig!");
+
+    return languageDetectionOrchestrator;
+  }
+
+  private LanguageDetectionOrchestrator(final LanguageDetectionSettings settings) {
+    this.settings = settings;
   }
 
   public Language detect(final String input) {
@@ -56,7 +65,7 @@ public class LanguageDetectionOrchestrator {
     }
   }
 
-  private List<Language> doCjkHeuristic(String sanitizedInput) {
+  private List<Language> doCjkHeuristic(final String sanitizedInput) {
     // Do a quick heuristic to check if this is a Chinese / Japanese input
     if (this.settings.getCjkDetectionThreshold() > 0) {
       final CjkDecision decision =
@@ -76,7 +85,7 @@ public class LanguageDetectionOrchestrator {
     return EMPTY_RESULTS;
   }
 
-  private List<Language> doStatisticalDetection(String sanitizedInput) {
+  private List<Language> doStatisticalDetection(final String sanitizedInput) {
     // For non-Chinese/Japanese decisions we are going through
     // Naive Bayes below (the original LangDetect flow)
     final LanguageDetector languageDetector;

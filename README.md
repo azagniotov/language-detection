@@ -21,6 +21,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
       * [Configuring ISO 639-1 codes](#configuring-iso-639-1-codes)
       * [Maximum text chars](#maximum-text-chars)
       * [Skipping input sanitization](#skipping-input-sanitization)
+      * [CJK detection threshold](#cjk-detection-threshold)
       * [Classify any Chinese content as Japanese](#classify-any-chinese-content-as-japanese)
       * [General minimum detection certainty](#general-minimum-detection-certainty)
       * [Minimum detection certainty for top language with a fallback](#minimum-detection-certainty-for-top-language-with-a-fallback)
@@ -181,7 +182,7 @@ final LanguageDetectionSettings languageDetectionSettings =
     .withClassifyChineseAsJapanese()
     .build();
 
-final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(languageDetectionSettings);
+final LanguageDetectionOrchestrator orchestrator = LanguageDetectionOrchestrator.fromSettings(languageDetectionSettings);
 final Language language = orchestrator.detect("languages are awesome");
 
 final String languageCode = language.getIsoCode639_1();
@@ -245,6 +246,22 @@ LanguageDetectionSettings
 LanguageDetectionSettings
     .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
     .withoutInputSanitize()
+    .build();
+```
+
+[`Back to top`](#table-of-contents)
+
+#### CJK detection threshold
+
+`.withCjkDetectionThreshold(Double)`
+- **Default**: `0.1`. When the proportion of CJK characters in the input string exceeds `10%`, the library bypasses statistical detection via Naive Bayes. This decision is based on the heuristic threshold, which indicates the input is likely CJK.
+- **Description**: When the threshold is set to a value greater than zero, the library first applies a heuristic check to determine whether the input string contains CJK characters. If the heuristic confirms the presence of CJK text, statistical detection via Naive Bayes is not performed.
+
+
+```java
+LanguageDetectionSettings
+    .fromIsoCodes639_1("en,ja,es,fr,de,it,zh-cn")
+    .withCjkDetectionThreshold(0.25)
     .build();
 ```
 

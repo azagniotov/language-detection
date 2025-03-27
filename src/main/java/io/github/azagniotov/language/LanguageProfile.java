@@ -13,6 +13,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.stream.JsonReader;
+import io.github.azagniotov.language.annotations.GeneratedCodeClassCoverageExclusion;
 import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -203,6 +204,7 @@ class LanguageProfile {
     }
   }
 
+  @GeneratedCodeClassCoverageExclusion
   private static class LanguageProfileSerializer implements JsonSerializer<LanguageProfile> {
     @Override
     public JsonElement serialize(
