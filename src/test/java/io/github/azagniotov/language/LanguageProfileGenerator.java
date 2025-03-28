@@ -67,7 +67,9 @@ public class LanguageProfileGenerator {
   @Ignore
   public void generateProfiles() throws Exception {
     TreeSet<String> targetCodes =
-        new TreeSet<>(Set.of("am,az,bo,br,cy,eu,ga,gv,hy,ka,kk,kw,ky,mn,sr,tg,ti,yi".split(",")));
+        new TreeSet<>(
+            Set.of("am,az,bo,br,cy,eu,ga,gv,hy,ka,kk,kw,ky,mn,om,sr,tg,ti,yi,yo,zu".split(",")));
+    targetCodes = new TreeSet<>(Set.of("zu".split(",")));
     System.out.println(
         "\nWill generate: ["
             + targetCodes.size()

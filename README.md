@@ -42,7 +42,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from `1` to `3` (incl.), alongside a Bayesian classifier (Naive Bayes classification algorithm, see [LanguageDetector#detectBlock(String)](src/main/java/io/github/azagniotov/language/LanguageDetector.java)) that incorporates various normalization techniques and feature sampling methods.
 
-The precision is over **99%** for **74** languages. See the following PR description to read about the benchmaks done by [@yanirs](https://github.com/yanirs) : https://github.com/jprante/elasticsearch-langdetect/pull/69
+The precision is over **99%** for **77** languages. See the following PR description to read about the benchmaks done by [@yanirs](https://github.com/yanirs) : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
 ### Enhancements over past implementations
 
@@ -112,6 +112,7 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Mongolian          | mn        | Mongolic / Central Mongolic         | Mongolia        | &nbsp;&nbsp;🇲🇳&nbsp;&nbsp; |
 | Nepali             | ne        | Indo-European / Indo-Iranian        | Nepal           | &nbsp;&nbsp;🇳🇵&nbsp;&nbsp; |
 | Norwegian          | no        | Indo-European / Germanic            | Norway          | &nbsp;&nbsp;🇳🇴&nbsp;&nbsp; |
+| Oromo              | om        | Afro-Asiatic / Cushitic             | Kenya           | &nbsp;&nbsp;🇰🇪&nbsp;&nbsp; |
 | Persian            | fa        | Indo-European / Indo-Iranian        | Iran            | &nbsp;&nbsp;🇮🇷&nbsp;&nbsp; |
 | Polish             | pl        | Indo-European / Balto-Slavic        | Poland          | &nbsp;&nbsp;🇵🇱&nbsp;&nbsp; |
 | Portuguese         | pt        | Indo-European / Italic              | Portugal        | &nbsp;&nbsp;🇵🇹&nbsp;&nbsp; |
@@ -138,6 +139,8 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Vietnamese         | vi        | Austroasiatic / Vietic              | Vietnam         | &nbsp;&nbsp;🇻🇳&nbsp;&nbsp; |
 | Welsh              | cy        | Indo-European / Celtic              | United Kingdom  | &nbsp;&nbsp;🇬🇧&nbsp;&nbsp; |
 | Yiddish            | yi        | Indo-European / Germanic            | Israel          | &nbsp;&nbsp;🇮🇱&nbsp;&nbsp; |
+| Yoruba             | yo        | Niger–Congo / Atlantic–Congo        | Nigeria         | &nbsp;&nbsp;🇳🇬&nbsp;&nbsp; |
+| Zulu               | zu        | Niger–Congo / Atlantic–Congo        | South Africa    | &nbsp;&nbsp;🇿🇦&nbsp;&nbsp; |
 
 
 ### Model parameters

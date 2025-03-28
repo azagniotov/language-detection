@@ -121,7 +121,7 @@ public class LanguageDetectorTest {
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1(
-                "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,kw,ky,lb,mn,ru,sr,tg,ti,yi")
+                "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,kw,ky,lb,mn,om,ru,sr,tg,ti,yi,yo,zu")
             .build();
     final LanguageDetectorFactory factory =
         LanguageDetectorFactory.fromSettings(supportedLanguages);
@@ -169,6 +169,8 @@ public class LanguageDetectorTest {
         "gv", detector.detectAll("Ta mee gynsagh yn Ghaelg Manninagh").get(0).getIsoCode639_1());
     // Mongolian
     assertEquals("mn", detector.detectAll("Би монгол хэл сурч байна").get(0).getIsoCode639_1());
+    // Oromo
+    assertEquals("om", detector.detectAll("Afaan Oromoo barachaa jira").get(0).getIsoCode639_1());
     // Russian
     assertEquals("ru", detector.detectAll("Я учу русский язык").get(0).getIsoCode639_1());
     // Serbian
@@ -183,6 +185,10 @@ public class LanguageDetectorTest {
     assertEquals("cy", detector.detectAll("Dw i'n dysgu Cymraeg").get(0).getIsoCode639_1());
     // Yiddish
     assertEquals("yi", detector.detectAll("איך לערן זיך ייִדיש").get(0).getIsoCode639_1());
+    // Yoruba
+    assertEquals("yo", detector.detectAll("Èdè Yorùbá ni mò ń kọ́").get(0).getIsoCode639_1());
+    // Zulu
+    assertEquals("zu", detector.detectAll("Ngifunda ulimi lwesi Zulu").get(0).getIsoCode639_1());
   }
 
   @Test
@@ -276,6 +282,11 @@ public class LanguageDetectorTest {
   }
 
   @Test
+  public void testOromo() throws Exception {
+    testLanguage("oromo.txt", "om", DEFAULT_DETECTOR);
+  }
+
+  @Test
   public void testRussian() throws Exception {
     testLanguage("russian.txt", "ru", DEFAULT_DETECTOR);
   }
@@ -308,6 +319,16 @@ public class LanguageDetectorTest {
   @Test
   public void testYiddish() throws Exception {
     testLanguage("yiddish.txt", "yi", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testYoruba() throws Exception {
+    testLanguage("yoruba.txt", "yo", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testZulu() throws Exception {
+    testLanguage("zulu.txt", "zu", DEFAULT_DETECTOR);
   }
 
   @Test
