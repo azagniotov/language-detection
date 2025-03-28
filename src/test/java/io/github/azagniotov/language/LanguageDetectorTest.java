@@ -121,7 +121,7 @@ public class LanguageDetectorTest {
   public void languageDetectorShortStrings() throws Exception {
     final LanguageDetectionSettings supportedLanguages =
         LanguageDetectionSettings.fromIsoCodes639_1(
-                "az,am,bo,br,cy,de,eu,ga,gv,he,hy,ka,kk,kw,ky,lb,mn,ru,sr,tg,ti,yi")
+                "az,am,bo,br,cy,de,eu,ga,gv,ha,he,hy,ka,kk,kw,ky,lb,mn,om,ru,sn,sr,tg,ti,yi,yo,zu")
             .build();
     final LanguageDetectorFactory factory =
         LanguageDetectorFactory.fromSettings(supportedLanguages);
@@ -152,6 +152,8 @@ public class LanguageDetectorTest {
     assertEquals("ka", detector.detectAll("ვსწავლობ ქართულს").get(0).getIsoCode639_1());
     // German
     assertEquals("de", detector.detectAll("Ich lerne Deutsch").get(0).getIsoCode639_1());
+    // Hausa
+    assertEquals("ha", detector.detectAll("Ina koyon harshen Hausa").get(0).getIsoCode639_1());
     // Irish
     assertEquals("ga", detector.detectAll("Tá mé ag foghlaim Gaeilge").get(0).getIsoCode639_1());
     // Hebrew
@@ -169,10 +171,14 @@ public class LanguageDetectorTest {
         "gv", detector.detectAll("Ta mee gynsagh yn Ghaelg Manninagh").get(0).getIsoCode639_1());
     // Mongolian
     assertEquals("mn", detector.detectAll("Би монгол хэл сурч байна").get(0).getIsoCode639_1());
+    // Oromo
+    assertEquals("om", detector.detectAll("Afaan Oromoo barachaa jira").get(0).getIsoCode639_1());
     // Russian
     assertEquals("ru", detector.detectAll("Я учу русский язык").get(0).getIsoCode639_1());
     // Serbian
     assertEquals("sr", detector.detectAll("Учим српски језик").get(0).getIsoCode639_1());
+    // Shona
+    assertEquals("sn", detector.detectAll("Ndiri kudzidza Shona").get(0).getIsoCode639_1());
     // Tajik
     assertEquals("tg", detector.detectAll("Ман забони тоҷикиро меомӯзам").get(0).getIsoCode639_1());
     // Tibetan
@@ -183,6 +189,10 @@ public class LanguageDetectorTest {
     assertEquals("cy", detector.detectAll("Dw i'n dysgu Cymraeg").get(0).getIsoCode639_1());
     // Yiddish
     assertEquals("yi", detector.detectAll("איך לערן זיך ייִדיש").get(0).getIsoCode639_1());
+    // Yoruba
+    assertEquals("yo", detector.detectAll("Èdè Yorùbá ni mò ń kọ́").get(0).getIsoCode639_1());
+    // Zulu
+    assertEquals("zu", detector.detectAll("Ngifunda ulimi lwesi Zulu").get(0).getIsoCode639_1());
   }
 
   @Test
@@ -236,6 +246,11 @@ public class LanguageDetectorTest {
   }
 
   @Test
+  public void testHausa() throws Exception {
+    testLanguage("hausa.txt", "ha", DEFAULT_DETECTOR);
+  }
+
+  @Test
   public void testIrish() throws Exception {
     testLanguage("irish.txt", "ga", DEFAULT_DETECTOR);
   }
@@ -276,6 +291,11 @@ public class LanguageDetectorTest {
   }
 
   @Test
+  public void testOromo() throws Exception {
+    testLanguage("oromo.txt", "om", DEFAULT_DETECTOR);
+  }
+
+  @Test
   public void testRussian() throws Exception {
     testLanguage("russian.txt", "ru", DEFAULT_DETECTOR);
   }
@@ -283,6 +303,11 @@ public class LanguageDetectorTest {
   @Test
   public void testSerbian() throws Exception {
     testLanguage("serbian.txt", "sr", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testShona() throws Exception {
+    testLanguage("shona.txt", "sn", DEFAULT_DETECTOR);
   }
 
   @Test
@@ -308,6 +333,16 @@ public class LanguageDetectorTest {
   @Test
   public void testYiddish() throws Exception {
     testLanguage("yiddish.txt", "yi", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testYoruba() throws Exception {
+    testLanguage("yoruba.txt", "yo", DEFAULT_DETECTOR);
+  }
+
+  @Test
+  public void testZulu() throws Exception {
+    testLanguage("zulu.txt", "zu", DEFAULT_DETECTOR);
   }
 
   @Test
