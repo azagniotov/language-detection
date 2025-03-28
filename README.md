@@ -42,7 +42,7 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
 
 The library leverages an n-gram probabilistic model, utilizing n-grams of sizes ranging from `1` to `3` (incl.), alongside a Bayesian classifier (Naive Bayes classification algorithm, see [LanguageDetector#detectBlock(String)](src/main/java/io/github/azagniotov/language/LanguageDetector.java)) that incorporates various normalization techniques and feature sampling methods.
 
-The precision is over **99%** for **74** languages. See the following PR description to read about the benchmaks done by [@yanirs](https://github.com/yanirs) : https://github.com/jprante/elasticsearch-langdetect/pull/69
+The precision is over **99%** for **78** languages. See the following PR description to read about the benchmaks done by [@yanirs](https://github.com/yanirs) : https://github.com/jprante/elasticsearch-langdetect/pull/69
 
 ### Enhancements over past implementations
 
@@ -107,11 +107,12 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Luxembourgish      | lb        | Indo-European / Germanic            | Luxembourg      | &nbsp;&nbsp;🇱🇺&nbsp;&nbsp; |
 | Macedonian         | mk        | Indo-European / Balto-Slavic        | North Macedonia | &nbsp;&nbsp;🇲🇰&nbsp;&nbsp; |
 | Malayalam          | ml        | Dravidian / Southern Dravidian      | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
-| Manx               | gv        | Indo-European / Celtic / Goidelic   | Isle of Man     | &nbsp;&nbsp;🇮🇲&nbsp;&nbsp; |
+| Manx               | gv        | Indo-European / Celtic              | Isle of Man     | &nbsp;&nbsp;🇮🇲&nbsp;&nbsp; |
 | Marathi            | mr        | Indo-European / Indo-Iranian        | India           | &nbsp;&nbsp;🇮🇳&nbsp;&nbsp; |
 | Mongolian          | mn        | Mongolic / Central Mongolic         | Mongolia        | &nbsp;&nbsp;🇲🇳&nbsp;&nbsp; |
 | Nepali             | ne        | Indo-European / Indo-Iranian        | Nepal           | &nbsp;&nbsp;🇳🇵&nbsp;&nbsp; |
 | Norwegian          | no        | Indo-European / Germanic            | Norway          | &nbsp;&nbsp;🇳🇴&nbsp;&nbsp; |
+| Oromo              | om        | Afro-Asiatic / Cushitic             | Kenya           | &nbsp;&nbsp;🇰🇪&nbsp;&nbsp; |
 | Persian            | fa        | Indo-European / Indo-Iranian        | Iran            | &nbsp;&nbsp;🇮🇷&nbsp;&nbsp; |
 | Polish             | pl        | Indo-European / Balto-Slavic        | Poland          | &nbsp;&nbsp;🇵🇱&nbsp;&nbsp; |
 | Portuguese         | pt        | Indo-European / Italic              | Portugal        | &nbsp;&nbsp;🇵🇹&nbsp;&nbsp; |
@@ -119,6 +120,7 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Romanian           | ro        | Indo-European / Italic              | Romania         | &nbsp;&nbsp;🇷🇴&nbsp;&nbsp; |
 | Russian            | ru        | Indo-European / Balto-Slavic        | Russia          | &nbsp;&nbsp;🇷🇺&nbsp;&nbsp; |
 | Serbian            | sr        | Indo-European / Balto-Slavic        | Serbia          | &nbsp;&nbsp;🇷🇸&nbsp;&nbsp; |
+| Shona              | sn        | Niger–Congo / Atlantic–Congo        | Zimbabwe        | &nbsp;&nbsp;🇿🇼&nbsp;&nbsp; |
 | Sinhala            | si        | Indo-European / Indo-Iranian        | Sri Lanka       | &nbsp;&nbsp;🇱🇰&nbsp;&nbsp; |
 | Slovak             | sk        | Indo-European / Balto-Slavic        | Slovakia        | &nbsp;&nbsp;🇸🇰&nbsp;&nbsp; |
 | Slovenian          | sl        | Indo-European / Balto-Slavic        | Slovenia        | &nbsp;&nbsp;🇸🇮&nbsp;&nbsp; |
@@ -138,6 +140,8 @@ The following is a list of ISO 639-1 languages code supported by the library:
 | Vietnamese         | vi        | Austroasiatic / Vietic              | Vietnam         | &nbsp;&nbsp;🇻🇳&nbsp;&nbsp; |
 | Welsh              | cy        | Indo-European / Celtic              | United Kingdom  | &nbsp;&nbsp;🇬🇧&nbsp;&nbsp; |
 | Yiddish            | yi        | Indo-European / Germanic            | Israel          | &nbsp;&nbsp;🇮🇱&nbsp;&nbsp; |
+| Yoruba             | yo        | Niger–Congo / Atlantic–Congo        | Nigeria         | &nbsp;&nbsp;🇳🇬&nbsp;&nbsp; |
+| Zulu               | zu        | Niger–Congo / Atlantic–Congo        | South Africa    | &nbsp;&nbsp;🇿🇦&nbsp;&nbsp; |
 
 
 ### Model parameters
