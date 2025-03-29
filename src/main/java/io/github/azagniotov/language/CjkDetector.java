@@ -70,11 +70,13 @@ class CjkDetector {
     }
     final char debugging = (char) codePoint;
 
-    final UnicodeScript charUnicodeScript = UnicodeScript.of(codePoint);
-    final UnicodeBlock charUnicodeBlock = UnicodeBlock.of(codePoint);
+    final UnicodeScript charUnicodeScript = UnicodeCache.scriptOf(codePoint);
+    final UnicodeBlock charUnicodeBlock = UnicodeCache.blockOf(codePoint);
 
     // Check the UnicodeScripts
-    if (JapaneseHan.of(codePoint)) {
+    if (charUnicodeScript == null) {
+      return CharType.INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK;
+    } else if (JapaneseHan.of(codePoint)) {
       return CharType.JAPANESE_HAN;
     } else if (UnicodeScript.HAN == charUnicodeScript) {
       return CharType.CHINESE_HAN;

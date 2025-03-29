@@ -23,6 +23,8 @@ public class LanguageDetectionOrchestrator {
     // Fake call to the class to cause it to be loaded and the static initializer executed
     NGram.normalize('\u0000');
     JapaneseHan.of('高');
+    UnicodeCache.scriptOf('高');
+    UnicodeCache.blockOf('高');
 
     final LanguageDetectionOrchestrator languageDetectionOrchestrator =
         new LanguageDetectionOrchestrator(settings);
