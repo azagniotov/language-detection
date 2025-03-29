@@ -1,8 +1,5 @@
 package io.github.azagniotov.language;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 class CharacterCounts {
 
   enum CharType {
@@ -15,14 +12,10 @@ class CharacterCounts {
     INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK
   }
 
-  private final Map<CharType, Integer> charTypeCounts;
+  private final int[] charTypeCounts;
 
   private CharacterCounts() {
-    charTypeCounts = new EnumMap<>(CharType.class);
-    // Initialize all types to 0
-    for (CharType type : CharType.values()) {
-      charTypeCounts.put(type, 0);
-    }
+    charTypeCounts = new int[CharType.values().length];
   }
 
   double allJapanese() {
@@ -37,11 +30,11 @@ class CharacterCounts {
   }
 
   double get(final CharType key) {
-    return charTypeCounts.getOrDefault(key, 0);
+    return charTypeCounts[key.ordinal()];
   }
 
   void mark(final CharType key) {
-    charTypeCounts.put(key, charTypeCounts.getOrDefault(key, 0) + 1);
+    charTypeCounts[key.ordinal()]++;
   }
 
   static CharacterCounts create() {
