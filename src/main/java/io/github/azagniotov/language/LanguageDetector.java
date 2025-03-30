@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * The {@link LanguageDetector} class identifies the language (ISO 639-1 code) of a given text. An
@@ -50,7 +49,7 @@ class LanguageDetector {
   // If languageCorporaProbabilities has an entry for the n-gram "foo", then for
   // each ISO code in the supportedIsoCodes639_1 here it has a probability value there.
   // Language codes that don't know the n-gram have the value 0d (zero probability).
-  private final Map<Integer, String> supportedIsoCodes639_1;
+  private final String[] supportedIsoCodes639_1;
 
   // This contains a mapping of all words from the language profiles (the profiles
   // which correspond to the configured ISO 639-1 code for detection), along with
@@ -75,9 +74,7 @@ class LanguageDetector {
       final Map<String, float[]> languageCorporaProbabilities,
       final int minNGramLength,
       final int maxNGramLength) {
-    this.supportedIsoCodes639_1 =
-        supportedIsoCodes639_1.stream()
-            .collect(Collectors.toMap(supportedIsoCodes639_1::indexOf, item -> item));
+    this.supportedIsoCodes639_1 = supportedIsoCodes639_1.toArray(new String[] {});
     this.isVietnameseConfigured = supportedIsoCodes639_1.contains(ISO_639_1_CODE_VIETNAMESE);
     this.languageCorporaProbabilities = languageCorporaProbabilities;
     this.minNGramLength = minNGramLength;
@@ -131,7 +128,7 @@ class LanguageDetector {
   private float[] detectBlock(final String input) {
     final List<String> extractedNGrams = extractNGrams(input);
 
-    final float[] languageProbabilities = new float[supportedIsoCodes639_1.size()];
+    final float[] languageProbabilities = new float[supportedIsoCodes639_1.length];
     if (extractedNGrams.isEmpty()) {
       return languageProbabilities;
     }
@@ -227,8 +224,8 @@ class LanguageDetector {
    * @return initialized array of language probabilities
    */
   private float[] initProbabilies() {
-    final float[] probabilities = new float[supportedIsoCodes639_1.size()];
-    Arrays.fill(probabilities, PERFECT_PROBABILITY / supportedIsoCodes639_1.size());
+    final float[] probabilities = new float[supportedIsoCodes639_1.length];
+    Arrays.fill(probabilities, PERFECT_PROBABILITY / supportedIsoCodes639_1.length);
 
     return probabilities;
   }
@@ -283,7 +280,7 @@ class LanguageDetector {
       final float currentLanguageProbability = probabilities[probIdx];
       probabilitiesSum[0] += currentLanguageProbability;
       if (currentLanguageProbability > ZERO_PROBABILITY) {
-        final String code = supportedIsoCodes639_1.get(probIdx);
+        final String code = supportedIsoCodes639_1[probIdx];
         languages.add(new Language(code, currentLanguageProbability));
       }
     }
