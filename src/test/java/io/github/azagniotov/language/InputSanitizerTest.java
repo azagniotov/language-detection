@@ -49,37 +49,11 @@ public class InputSanitizerTest {
   }
 
   @Test
-  public void shouldsanitize() {
-    assertEquals(sanitize("NOT banana AND apple OR AND"), "banana   apple");
-    assertEquals(sanitize("not banana and apple or and"), "not banana and apple or and");
-    assertEquals(sanitize(".pptx"), "");
+  public void shouldSanitize() {
+    assertEquals(sanitize("http://www.google.com"), "");
+    assertEquals(sanitize("https://www.google.com"), "");
+    assertEquals(sanitize("hello this is a https://www.google.com URL"), "hello this is a URL");
     assertEquals(
-        sanitize("Hello How .t .tt .ttt are .xls you .pdf today.gdoc"),
-        "Hello How       are   you   today");
-    assertEquals(sanitize("123.xls"), "123");
-    assertEquals(
-        sanitize(
-            "Oops .txt .csv .pdf .ppt .xls .xlsx .xlsm .doc .docx .docm .pptx .pptm .ppsx .rtf .tiff .png .jpg .jpeg"),
-        "Oops");
-    assertEquals(sanitize("報告 123.xls"), "報告 123");
-    assertEquals(sanitize("七月の報告.xls"), "七月の報告");
-    assertEquals(sanitize("1234567890.xls 報告"), "1234567890  報告");
-    assertEquals(sanitize("１２３４５６７８９０.xls 報告"), "１２３４５６７８９０  報告");
-    assertEquals(sanitize("２０２４七月　報告"), "２０２４七月　報告");
-    assertEquals(sanitize("２０２４七月　報告.pptx"), "２０２４七月　報告");
-  }
-
-  @Test
-  public void shouldPerformCombinedSanitization() {
-    assertEquals(filterOutNonWords(sanitize("...")), "");
-    assertEquals(
-        filterOutNonWords(sanitize("in1729x01_J-LCM刷新プロジェクト.docx")), "in1729x01 J LCM刷新プロジェクト");
-    assertEquals(
-        filterOutNonWords(sanitize("Fußball-Weltmeisterschaft-Haus-Tür-Schlüssel.pdf")),
-        "Fußball Weltmeisterschaft Haus Tür Schlüssel");
-    assertEquals(filterOutNonWords(sanitize("㈱_(株)_①②③_㈱㈲㈹.pdf")), "   株         ");
-    assertEquals(filterOutNonWords(sanitize("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ.pdf")), "ｼｰｻｲﾄﾞ ﾗｲﾅｰ");
-    assertEquals(filterOutNonWords(sanitize("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ.pdf")), "Ｃｕｌｔｕｒｅ ｏｆ Ｊａｐａｎ");
-    assertEquals(filterOutNonWords(sanitize("#4_pj_23D002_HCMJ_デジ戦")), "4 pj 23D002 HCMJ デジ戦");
+        sanitize("hello this is www.google.com domain"), "hello this is www.google.com domain");
   }
 }

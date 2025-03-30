@@ -40,33 +40,32 @@ class CjkDetector {
         && characterCounts.get(CharType.HIRAGANA) == 0) {
       if (characterCounts.get(CharType.JAPANESE_HAN) < characterCounts.get(CharType.CHINESE_HAN)) {
         // There are less Japanese Han kanji than Chinese Han.
-        // Not a Japanese language input, therefore check for a Chinese language input
+        // Therefore, if we passed the CJK threshold, we return decision Chinese
         final boolean decision =
             checkThreshold(
-                input,
-                characterCounts.get(CharType.CHINESE_HAN),
-                characterCounts.irrelevant(),
-                threshold);
+                input, characterCounts.allCjkCounts(), characterCounts.irrelevant(), threshold);
         return decision ? CjkDecision.DECISION_CHINESE : CjkDecision.DECISION_NONE;
       } else {
-        // We have a Japanese input
+        // We have a Japanese input.
+        // Therefore, if we passed the CJK threshold, we return decision Japanese
         final boolean decision =
             checkThreshold(
-                input, characterCounts.allJapanese(), characterCounts.irrelevant(), threshold);
+                input, characterCounts.allCjkCounts(), characterCounts.irrelevant(), threshold);
         return decision ? CjkDecision.DECISION_JAPANESE : CjkDecision.DECISION_NONE;
       }
     } else {
-      // We have some Katakana and/or some Hiragana and/or some Japanese Han Kanji
+      // We have some Katakana and/or some Hiragana and/or some Japanese Han Kanji.
+      // Therefore, if we passed the CJK threshold, we return decision Japanese
       final boolean decision =
           checkThreshold(
-              input, characterCounts.allJapanese(), characterCounts.irrelevant(), threshold);
+              input, characterCounts.allCjkCounts(), characterCounts.irrelevant(), threshold);
       return decision ? CjkDecision.DECISION_JAPANESE : CjkDecision.DECISION_NONE;
     }
   }
 
   private static CharType determineCharType(final int codePoint) {
     if (!Character.isValidCodePoint(codePoint)) {
-      return CharType.INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK;
+      return CharType.IRRELEVANT;
     }
     final char debugging = (char) codePoint;
 
@@ -75,7 +74,7 @@ class CjkDetector {
 
     // Check the UnicodeScripts
     if (charUnicodeScript == null) {
-      return CharType.INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK;
+      return CharType.IRRELEVANT;
     } else if (JapaneseHan.of(codePoint)) {
       return CharType.JAPANESE_HAN;
     } else if (UnicodeScript.HAN == charUnicodeScript) {
@@ -92,7 +91,7 @@ class CjkDetector {
     // Japanese forward slash '／'
     // - Half-width Katakana forms
     else if (charUnicodeBlock == null) {
-      return CharType.INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK;
+      return CharType.IRRELEVANT;
     } else if (UnicodeBlock.KATAKANA == charUnicodeBlock) {
       return CharType.KATAKANA;
     } else if (UnicodeBlock.HIRAGANA == charUnicodeBlock) {
@@ -108,7 +107,7 @@ class CjkDetector {
       return CharType.CJK_PUNCTUATION_AND_MISC;
     }
 
-    return CharType.INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK;
+    return CharType.NON_A_CJK_UNICODE_CODEPOINT;
   }
 
   /**
