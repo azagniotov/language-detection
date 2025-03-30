@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * The {@link LanguageDetector} class identifies the language (ISO 639-1 code) of a given text. An
@@ -33,6 +34,7 @@ class LanguageDetector {
       new Language(ISO_CODE_639_3_UND, ZERO_PROBABILITY);
   static final Language JAPANESE_LANGUAGE_RESPONSE = new Language("ja", PERFECT_PROBABILITY);
   static final Language CHINESE_LANGUAGE_RESPONSE = new Language("zh-cn", PERFECT_PROBABILITY);
+  private static final String ISO_639_1_CODE_VIETNAMESE = "vi";
 
   // return up to top 10 detected language when calling detectAll(String)
   private static final int MAX_DETECTED_CLASSES = 10;
@@ -48,7 +50,7 @@ class LanguageDetector {
   // If languageCorporaProbabilities has an entry for the n-gram "foo", then for
   // each ISO code in the supportedIsoCodes639_1 here it has a probability value there.
   // Language codes that don't know the n-gram have the value 0d (zero probability).
-  private final List<String> supportedIsoCodes639_1;
+  private final Map<Integer, String> supportedIsoCodes639_1;
 
   // This contains a mapping of all words from the language profiles (the profiles
   // which correspond to the configured ISO 639-1 code for detection), along with
@@ -65,6 +67,7 @@ class LanguageDetector {
   private final float alpha;
   private final float alphaWidth;
   private final float convergenceThreshold;
+  private final boolean isVietnameseConfigured;
 
   LanguageDetector(
       final Model model,
@@ -72,7 +75,10 @@ class LanguageDetector {
       final Map<String, float[]> languageCorporaProbabilities,
       final int minNGramLength,
       final int maxNGramLength) {
-    this.supportedIsoCodes639_1 = supportedIsoCodes639_1;
+    this.supportedIsoCodes639_1 =
+        supportedIsoCodes639_1.stream()
+            .collect(Collectors.toMap(supportedIsoCodes639_1::indexOf, item -> item));
+    this.isVietnameseConfigured = supportedIsoCodes639_1.contains(ISO_639_1_CODE_VIETNAMESE);
     this.languageCorporaProbabilities = languageCorporaProbabilities;
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
@@ -96,8 +102,12 @@ class LanguageDetector {
     // Do not .trim() the input nor the result, otherwise accuracy unit tests will fail
     final String sanitizedInput = filterOutNonWords(text);
 
-    // Do not .trim() the input nor the result, otherwise accuracy unit tests will fail
-    final String normalizedText = NGram.normalizeVietnamese(sanitizedInput);
+    final String normalizedText =
+        this.isVietnameseConfigured
+            ?
+            // Do not .trim() the input nor the result, otherwise accuracy unit tests will fail
+            NGram.normalizeVietnamese(sanitizedInput)
+            : sanitizedInput;
 
     final float[] probabilities = detectBlock(normalizedText);
     final List<Language> languages = sortProbability(probabilities);
