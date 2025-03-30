@@ -32,12 +32,10 @@ public class CjkDetectorTest {
     assertEquals(CjkDetector.decide(sz("東 ABCDEF"), 0.1), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("東京に行き"), 1.0), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("東京に行き"), 1.1), DECISION_JAPANESE);
-    assertEquals(CjkDetector.decide(sz("報告 123.xls"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertEquals(
         CjkDetector.decide(sz("七月の報告 1234567890.pptx"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertEquals(
         CjkDetector.decide(sz("七月の報告 １２３４５６７８９０.pptx"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
-    assertEquals(CjkDetector.decide(sz("２０２４七月　報告.pptx"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
   }
 
   @Test
@@ -51,9 +49,11 @@ public class CjkDetectorTest {
         CjkDetector.decide(sz("     7         "), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(sz("東京に行き"), 0), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(sz("東京に行き"), -0.1), DECISION_JAPANESE);
+    assertNotEquals(CjkDetector.decide(sz("報告 123.xls"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(sz("report.xls"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(sz("123.xls"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
     assertNotEquals(CjkDetector.decide(sz("12345"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
+    assertNotEquals(CjkDetector.decide(sz("２０２４七月　報告.pptx"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
 
     // Not in Japanese Han. Simplified Chinese random characters
     assertNotEquals(CjkDetector.decide(sz("爱云发见"), DEFAULT_THRESHOLD), DECISION_JAPANESE);
@@ -145,8 +145,6 @@ public class CjkDetectorTest {
   public void shouldDetectJapaneseInput_Threshold_0_5() throws Exception {
     final double threshold = 0.5;
     assertEquals(CjkDetector.decide(sz("QRコード"), threshold), DECISION_JAPANESE);
-    assertEquals(CjkDetector.decide(sz("in1729x01_J-LCM刷新プロジェクト"), threshold), DECISION_JAPANESE);
-    assertEquals(CjkDetector.decide(sz("\"ヨキ\" AND \"杉山\""), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("RG-12　仕様書"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("発注-営推契-オ-第24-01905号"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("西条寺家Ⅲ１３号地ＳＲ８６０００３２"), threshold), DECISION_JAPANESE);
@@ -159,6 +157,7 @@ public class CjkDetectorTest {
   @Test
   public void shouldDetectJapaneseInput_Threshold_0_4() throws Exception {
     final double threshold = 0.4;
+    assertEquals(CjkDetector.decide(sz("in1729x01_J-LCM刷新プロジェクト"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("CAD　キー"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("自動dys"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("SKS活動"), threshold), DECISION_JAPANESE);
@@ -167,32 +166,33 @@ public class CjkDetectorTest {
   @Test
   public void shouldDetectJapaneseInput_Threshold_0_3() throws Exception {
     final double threshold = 0.3;
+    assertEquals(CjkDetector.decide(sz("\"ヨキ\" AND \"杉山\""), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("CHAINON上熊本"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("T-LINK判定書"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("RV  20UB　膜厚"), threshold), DECISION_JAPANESE);
-    assertEquals(CjkDetector.decide(sz("【MANGO】_当月_9161_[CI][I]"), threshold), DECISION_JAPANESE);
-    assertEquals(CjkDetector.decide(sz("#4_pj_23D002_HCMJ_デジ戦"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("Microsoft　インポート"), threshold), DECISION_JAPANESE);
   }
 
   @Test
   public void shouldDetectJapaneseInput_Threshold_0_2() throws Exception {
     final double threshold = 0.2;
-    assertEquals(CjkDetector.decide(sz("\"BH34\"AND\"PCT\"紹介"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("TOEIC 分布"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("BP3棟3階 FCU-302"), threshold), DECISION_JAPANESE);
-    assertEquals(
-        CjkDetector.decide(sz("(Ts-Hf3 OR Hf-PAH) AND (気化器"), threshold), DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("ミニWebinar 最新FE-SEM"), threshold), DECISION_JAPANESE);
+    assertEquals(CjkDetector.decide(sz("#4_pj_23D002_HCMJ_デジ戦"), threshold), DECISION_JAPANESE);
   }
 
   @Test
   public void shouldDetectJapaneseInput_Threshold_0_1() throws Exception {
     final double threshold = 0.1;
+    assertEquals(CjkDetector.decide(sz("\"BH34\"AND\"PCT\"紹介"), threshold), DECISION_JAPANESE);
+    assertEquals(
+        CjkDetector.decide(sz("(Ts-Hf3 OR Hf-PAH) AND (気化器"), threshold), DECISION_JAPANESE);
     assertEquals(
         CjkDetector.decide(sz("TAB-Therapeutic Procedure、All Acronyms、2017年3月27日閲覧"), threshold),
         DECISION_JAPANESE);
     assertEquals(CjkDetector.decide(sz("㈱_(株)_①②③_㈱㈲㈹"), threshold), DECISION_JAPANESE);
+    assertEquals(CjkDetector.decide(sz("【MANGO】_当月_9161_[CI][I]"), threshold), DECISION_JAPANESE);
   }
 
   @Test
@@ -210,7 +210,7 @@ public class CjkDetectorTest {
     if (input == null || input.trim().isEmpty()) {
       return EMPTY_STRING;
     } else {
-      return InputSanitizer.sanitize(input);
+      return input;
     }
   }
 }

@@ -9,7 +9,7 @@ class CharacterCounts {
     CJK_PUNCTUATION_AND_MISC,
     IRRELEVANT,
     CHINESE_HAN,
-    INVALID_CODEPOINT_OR_NULL_UNCODE_BLOCK
+    NON_A_CJK_UNICODE_CODEPOINT
   }
 
   private final int[] charTypeCounts;
@@ -18,10 +18,11 @@ class CharacterCounts {
     charTypeCounts = new int[CharType.values().length];
   }
 
-  double allJapanese() {
+  double allCjkCounts() {
     return get(CharType.KATAKANA)
         + get(CharType.HIRAGANA)
         + get(CharType.JAPANESE_HAN)
+        + get(CharType.CHINESE_HAN)
         + get(CharType.CJK_PUNCTUATION_AND_MISC);
   }
 

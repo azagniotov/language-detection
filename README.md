@@ -357,11 +357,11 @@ Once the process is complete, a report will be generated and displayed, similar 
 Total runtime: 14 seconds and 419 millis. Detection results:
 
 {
-  Dataset-DE : { de=58910 , en=173   , es=2     , fr=7     , it=4     , ja=2     , und=1 }
-  Dataset-EN : { de=18    , en=59041 , es=9     , fr=22    , it=6     , ja=2     , und=1 }
-  Dataset-ES : { de=7     , en=151   , es=58905 , fr=11    , it=22    , ja=2     , und=1 }
-  Dataset-FR : { de=17    , en=139   , es=11    , fr=58925 , it=4     , ja=2     , und=1 }
-  Dataset-IT : { de=6     , en=209   , es=7     , fr=4     , it=58870 , ja=2     , und=1 }
+  Dataset-DE : { de=58914 , en=171   , es=3     , fr=5     , it=3     , ja=2     , und=1 }
+  Dataset-EN : { de=17    , en=59041 , es=8     , fr=22    , it=8     , ja=2     , und=1 }
+  Dataset-ES : { de=6     , en=154   , es=58906 , fr=11    , it=19    , ja=2     , und=1 }
+  Dataset-FR : { de=12    , en=144   , es=7     , fr=58930 , it=3     , ja=2     , und=1 }
+  Dataset-IT : { de=6     , en=214   , es=7     , fr=5     , it=58864 , ja=2     , und=1 }
   Dataset-JA : { en=2     , it=1     , ja=59095 , und=1 }
 }
 ```
