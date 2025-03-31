@@ -245,7 +245,7 @@ LanguageDetectionSettings
 #### Skipping input sanitization
 
 `.withoutInputSanitize()`
-- **Default**: `false` (input sanitization is enabled by default). By default, the library sanitizes input strings by removing file extensions from any part of the text, URLs and filtering out Solr boolean operators (AND, NOT, and OR), as these elements are irrelevant to language detection.
+- **Default**: `false` (`false` means that input sanitization is enabled by default). By default, the library sanitizes input strings by removing URLs from any part of the input text, as these elements are irrelevant to language detection.
 - **Description**: Invoking the API bypasses this input sanitization process for, allowing the text to be processed without such modifications.
 
 
@@ -277,7 +277,7 @@ LanguageDetectionSettings
 #### Classify any Chinese content as Japanese
 
 `.withClassifyChineseAsJapanese()`
-- **Default**: `false` (does not classify Chinese text as Japanese)
+- **Default**: `false` (`false` means that Chinese text is not classified as Japanese)
 - **Description**: Invoking this API enables the classification of Kanji-only text (text containing only Chinese characters, without any Japanese Hiragana or Katakana characters) or mixed text containing both Latin and Kanji characters as Japanese. This functionality is particularly important when we aim to optimize for more accurate language detection to minimize the misclassification of Japanese text. Additionally, this approach proves useful when indexing short strings such as `#7_pj_12345_ABCD_戦` or `SOMETHING_2010下_詳細_20130304.xls`.
 
 
@@ -354,7 +354,7 @@ In this example, the argument `<ISO_639-1_CODE_CSV>` specifies a comma-separated
 Once the process is complete, a report will be generated and displayed, similar to the example below:
 
 ``` bash
-Total runtime: 14 seconds and 419 millis. Detection results:
+Total runtime: 13 seconds and 262 millis. Detection results:
 
 {
   Dataset-DE : { de=58914 , en=171   , es=3     , fr=5     , it=3     , ja=2     , und=1 }
