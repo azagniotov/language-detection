@@ -36,6 +36,20 @@ testing {
         implementation "junit:junit:${junitVersion}"
       }
     }
+
+    benchmarkTest(JvmTestSuite) {
+      sources {
+        resources {
+          srcDirs += [
+                  "src/main/resources"
+          ]
+        }
+      }
+      useJUnit()
+      dependencies {
+        implementation project()
+      }
+    }
   }
 }
 

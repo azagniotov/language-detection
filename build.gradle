@@ -60,16 +60,24 @@ ext {
     githubPackagesToken = project.findProperty("githubPackagesToken") ?: ""
 }
 
+apply from: "$rootDir/conf/gradle/tests.gradle"
+
 dependencies {
     implementation "com.google.code.gson:gson:2.12.1"
-
     testImplementation "junit:junit:${junitVersion}"
+
+    benchmarkTestImplementation "org.slf4j:slf4j-nop:2.0.17"
+    benchmarkTestImplementation "com.github.pemistahl:lingua:1.2.2"
+    benchmarkTestImplementation "io.github.azagniotov:language-detection:12.2.0"
+    benchmarkTestImplementation "com.optimaize.languagedetector:language-detector:0.6"
+    benchmarkTestImplementation "org.apache.tika:tika-core:3.1.0"
+    benchmarkTestImplementation "org.apache.tika:tika-langdetect-optimaize:3.1.0"
 }
 
 apply from: "$rootDir/conf/gradle/jacoco.gradle"
-apply from: "$rootDir/conf/gradle/tests.gradle"
 apply from: "$rootDir/conf/gradle/jar.gradle"
 apply from: "$rootDir/conf/gradle/publish.gradle"
+apply from: "$rootDir/conf/gradle/benchmarks.gradle"
 
 tasks.register('copyPreCommitHook', Copy) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
