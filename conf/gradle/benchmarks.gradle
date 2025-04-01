@@ -1,0 +1,34 @@
+tasks.register("conditionallyUntarDataset") {
+	mustRunAfter compileBenchmarkTestJava
+
+	def tarFile = file("${layout.projectDirectory.asFile.absolutePath}/src/benchmarkTest/dataset.tar.gz")
+	def benchmarkTestDir = "${layout.buildDirectory.get().asFile.absolutePath}/resources/benchmarkTest"
+	def targetDir = file(benchmarkTestDir)
+	def datasetDir = file("${benchmarkTestDir}/dataset")
+
+	inputs.file(tarFile)
+	outputs.dir(targetDir)
+
+	doLast {
+		if (!datasetDir.exists()) {
+			println "Untarring ${tarFile.name} to ${targetDir.absolutePath}"
+			copy {
+				from tarTree(resources.gzip(tarFile))
+				into targetDir
+			}
+		} else {
+			println "Target directory '${datasetDir.absolutePath}' already exists. Skipping untar."
+		}
+	}
+}
+
+task runBenchmarks(type: JavaExec, dependsOn: conditionallyUntarDataset) {
+	getMainClass().set("io.github.azagniotov.language.Runner")
+	classpath = sourceSets.benchmarkTest.runtimeClasspath
+
+	def detector = project.hasProperty("detector") ? project.detector : "all"
+	def isoCodesCsv = project.hasProperty("isoCodesCsv") ? project.isoCodesCsv : "all"
+	def verbose = project.hasProperty("verbose") ? project.verbose : false
+
+	args = [detector, isoCodesCsv, verbose]
+}

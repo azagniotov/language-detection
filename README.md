@@ -25,7 +25,10 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
       * [Classify any Chinese content as Japanese](#classify-any-chinese-content-as-japanese)
       * [General minimum detection certainty](#general-minimum-detection-certainty)
       * [Minimum detection certainty for top language with a fallback](#minimum-detection-certainty-for-top-language-with-a-fallback)
-  * [Running language detection benchmarks](#running-language-detection-benchmarks)
+  * [Language detection benchmarks against other libraries](#language-detection-benchmarks-against-other-libraries)
+    * [Running the benchmarks](#running-the-benchmarks)
+    * [Benchmark accuracy report](#benchmark-accuracy-report)
+    * [Benchmark speed of execution](#benchmark-speed-of-execution)
   * [Local development](#local-development)
     * [System requirements](#system-requirements)
     * [Pre-commit Hook](#pre-commit-hook)
@@ -324,47 +327,143 @@ LanguageDetectionSettings
 
 [`Back to top`](#table-of-contents)
 
-## Running language detection benchmarks
+## Language detection benchmarks against other libraries
 
-This library provides an executable Uber JAR, which can be invoked from the command line to perform language detection. The JAR file contains a main method that enables it to be run directly, making it easy to detect languages from files in the local filesystem.
+This library provides a suite of benchmarks to assess its performance against other language detection libraries. The benchmark uses a fixed set of languages, including `Japanese (ja)`, `English (en)`, `French (fr)`, `Spanish (es)`, `Italian (it)`, and `German (de)`. These languages are part of the [multilingual mMARCO dataset](https://github.com/unicamp-dl/mMARCO). The dataset consists of `59,097` files per language, with each file containing one to four sentence paragraphs.
 
-To use the library, direct the JAR to a parent directory on your computer that holds subdirectories for each language. Each subdirectory should be named using the appropriate ISO 639-1 code for that language. Inside each subdirectory, you'll place .txt files that will be used for language detection.
+Currently, the following libraries are evaluated in terms of accuracy and speed of execution:
 
-The datasets you provide will be checked against a fixed set of languages: `Japanese (ja)`, `English (en)`, `French (fr)`, `Spanish (es)`, `Italian (it)`, and `German (de)`. For now this is not configurable. PR is pending.
+1. Default (the current library)
+2. Optimaize [Optimaize GitHub](https://github.com/optimaize/language-detector)
+3. Lingua with a low accuracy mode on [Lingua GitHub](https://github.com/pemistahl/lingua)
+4. Lingua with the default high accuracy mode on [Lingua GitHub](https://github.com/pemistahl/lingua)
+5. Apache Tike with Optimaize Language Detector [Apache Tika](https://tika.apache.org)
 
-The JAR file accepts the following command-line arguments:
+### Running the benchmarks
 
-| Status     | Argument name                  |
-|------------|--------------------------------|
-| `REQUIRED` | `<NUM_OF_WORKERS>`             |
-| `REQUIRED` | `<ISO_639-1_CODE_CSV>`         |
-| `REQUIRED` | `<ABSOLUTE_PATH_TO_DIRECTORY>` |
-| `OPTIONAL` | `<VERBOSE_MODE>`               |
+Please note that the test dataset is quite large when unzipped. When running the benchmarks for the first time, the dataset located in [src/benchmarkTest/dataset.tar.gz](src/benchmarkTest/dataset.tar.gz) (approximately 95 MB) will be extracted into the `build/resources/benchmarkTest` directory. This extraction requires about **1.05 GB** of disk space.
+
+To run benchmarks across all the libraries and datasets, execute the following Gradle command:
 
 ```bash
-java -jar build/libs/language-detection-x.x.x.jar <NUM_OF_WORKERS> <ISO_639-1_CODE_CSV> <ABSOLUTE_PATH_TO_DIRECTORY> <VERBOSE_MODE>
+./gradlew runBenchmarks
 ```
 
-Example usage:
+Please note, by default all the benchmarks run on a single worker thread. Currently, this is not configurable. PR pending.
+
+Alternatively, you can run benchmarks for specific language detectors and datasets by specifying the desired options. The following `-Pdetector` arguments are currently supported:
+
+1. `default` - The current library.
+2. `optimaize` - Optimaize Language Detector [Optimaize GitHub](https://github.com/optimaize/language-detector)
+3. `lingua_low` - Lingua with low accuracy mode enabled [Lingua GitHub](https://github.com/pemistahl/lingua)
+4. `lingua_high` - Lingua with default high accuracy mode enabled [Lingua GitHub](https://github.com/pemistahl/lingua)
+5. `tika_optimaize` - Apache Tike with Optimaize Language Detector [Apache Tika](https://tika.apache.org)
+
+For example, to run benchmarks using the Optimaize, Apache Tika with Optimaize and Default language detectors on the `en` (English) and `ja` (Japanese) datasets, use the following command:
+
 ```bash
-java -jar build/libs/language-detection-3.1.0.jar 2 ja,en /Users/aschwarzenegger/datasets true
+./gradlew runBenchmarks -Pdetector=optimaize,default,tika_optimaize -PisoCodesCsv=en,ja
 ```
-In this example, the argument `<ISO_639-1_CODE_CSV>` specifies a comma-separated list of ISO 639-1 language codes (such as `ja`, `en`, `fr`, etc.). These codes must correspond to the names of the subdirectories located within the specified directory (`<ABSOLUTE_PATH_TO_DIRECTORY>`).
 
-Once the process is complete, a report will be generated and displayed, similar to the example below:
+### Benchmark accuracy report
 
-``` bash
-Total runtime: 13 seconds and 262 millis. Detection results:
+Once the benchmark process completes, a report will be generated showing the accuracy of each detector. Here's an example of how to interpret the results:
 
-{
-  Dataset-DE : { de=58914 , en=171   , es=3     , fr=5     , it=3     , ja=2     , und=1 }
-  Dataset-EN : { de=17    , en=59041 , es=8     , fr=22    , it=8     , ja=2     , und=1 }
-  Dataset-ES : { de=6     , en=154   , es=58906 , fr=11    , it=19    , ja=2     , und=1 }
-  Dataset-FR : { de=12    , en=144   , es=7     , fr=58930 , it=3     , ja=2     , und=1 }
-  Dataset-IT : { de=6     , en=214   , es=7     , fr=5     , it=58864 , ja=2     , und=1 }
-  Dataset-JA : { en=2     , it=1     , ja=59095 , und=1 }
-}
+For instance, in a row like `DE-optimaize`, the output indicates that the **Optimaize** detector processed the German dataset of `59,097` files. Out of those, `58,880` files were correctly identified as German, while the remaining files were misidentified as other languages.
+
+```bash
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| Dataset-to-Detector | en      | ja      | fr      | de      | it      | es      | unknown |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| DE-default          | 171     | 0       | 5       | 58914   | 3       | 3       | 0       |
+| DE-lingua_high      | 163     | 0       | 11      | 58916   | 2       | 4       | 0       |
+| DE-lingua_low       | 184     | 0       | 13      | 58889   | 5       | 4       | 1       |
+| DE-optimaize        | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
+| DE-tika_optimaize   | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| EN-default          | 59041   | 0       | 22      | 17      | 8       | 8       | 0       |
+| EN-lingua_high      | 58972   | 0       | 35      | 50      | 9       | 30      | 0       |
+| EN-lingua_low       | 58942   | 0       | 48      | 62      | 11      | 33      | 0       |
+| EN-optimaize        | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
+| EN-tika_optimaize   | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| ES-default          | 154     | 0       | 11      | 6       | 19      | 58906   | 0       |
+| ES-lingua_high      | 173     | 0       | 10      | 8       | 16      | 58889   | 0       |
+| ES-lingua_low       | 180     | 0       | 17      | 10      | 18      | 58871   | 0       |
+| ES-optimaize        | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
+| ES-tika_optimaize   | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| FR-default          | 144     | 0       | 58930   | 12      | 3       | 7       | 0       |
+| FR-lingua_high      | 239     | 0       | 58822   | 23      | 3       | 9       | 0       |
+| FR-lingua_low       | 257     | 0       | 58786   | 37      | 4       | 12      | 0       |
+| FR-optimaize        | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
+| FR-tika_optimaize   | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| IT-default          | 214     | 0       | 5       | 6       | 58864   | 7       | 0       |
+| IT-lingua_high      | 467     | 0       | 17      | 19      | 58535   | 58      | 0       |
+| IT-lingua_low       | 492     | 0       | 24      | 26      | 58489   | 65      | 0       |
+| IT-optimaize        | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
+| IT-tika_optimaize   | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
+| JA-default          | 2       | 59093   | 0       | 0       | 1       | 0       | 0       |
+| JA-lingua_high      | 36      | 59047   | 3       | 7       | 1       | 2       | 0       |
+| JA-lingua_low       | 31      | 59049   | 1       | 10      | 1       | 4       | 0       |
+| JA-optimaize        | 5421    | 51289   | 534     | 1055    | 440     | 351     | 6       |
+| JA-tika_optimaize   | 5421    | 51287   | 535     | 1054    | 441     | 352     | 6       |
+|---------------------|---------|---------|---------|---------|---------|---------|---------|
 ```
+
+### Benchmark speed of execution
+
+As the benchmarks are running, the console will display the execution times for each language detector on the selected datasets.
+
+Here's an example output that displays the execution times:
+
+```bash
+Will process datasets for 6 ISO 639-1 code names: [de, en, es, fr, it, ja]
+
+default processes dataset [de]
+default processes dataset [en]
+default processes dataset [es]
+default processes dataset [fr]
+default processes dataset [it]
+default processes dataset [ja]
+Detector default total runtime: 34 seconds and 115 millis
+
+lingua_high processes dataset [de]
+lingua_high processes dataset [en]
+lingua_high processes dataset [es]
+lingua_high processes dataset [fr]
+lingua_high processes dataset [it]
+lingua_high processes dataset [ja]
+Detector lingua_high total runtime: 91 seconds and 038 millis
+
+lingua_low processes dataset [de]
+lingua_low processes dataset [en]
+lingua_low processes dataset [es]
+lingua_low processes dataset [fr]
+lingua_low processes dataset [it]
+lingua_low processes dataset [ja]
+Detector lingua_low total runtime: 97 seconds and 423 millis
+
+optimaize processes dataset [de]
+optimaize processes dataset [en]
+optimaize processes dataset [es]
+optimaize processes dataset [fr]
+optimaize processes dataset [it]
+optimaize processes dataset [ja]
+Detector optimaize total runtime: 34 seconds and 019 millis
+
+tika_optimaize processes dataset [de]
+tika_optimaize processes dataset [en]
+tika_optimaize processes dataset [es]
+tika_optimaize processes dataset [fr]
+tika_optimaize processes dataset [it]
+tika_optimaize processes dataset [ja]
+Detector tika_optimaize total runtime: 33 seconds and 244 millis
+```
+
+From this, you can observe that Optimaize is the fastest, while Lingua, regardless of its accuracy mode, tends to be slower in comparison.
 
 [`Back to top`](#table-of-contents)
 
