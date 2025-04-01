@@ -51,7 +51,7 @@ public class OptimaizeDetector implements ThirdPartyDetector {
   public String detect(final String input) {
     final List<DetectedLanguage> probabilities = this.languageDetector.getProbabilities(input);
     if (probabilities.isEmpty()) {
-      return "none";
+      return LANGUAGE_CODE_NONE;
     }
     final DetectedLanguage detectedLanguage = probabilities.get(0);
     final LdLocale locale = detectedLanguage.getLocale();
