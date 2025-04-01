@@ -1,5 +1,6 @@
 package io.github.azagniotov.language;
 
+import static io.github.azagniotov.language.benchmark.ThirdPartyDetector.LANGUAGE_CODE_NONE;
 import static java.util.Objects.requireNonNull;
 
 import io.github.azagniotov.language.annotations.GeneratedCodeClassCoverageExclusion;
@@ -264,10 +265,8 @@ public class Runner {
       final String iso639_1Code, final Map<String, Integer> datasetCounts) {
     final String sanitizedIsCode;
     if (iso639_1Code.equals("unknown")) {
-      if (datasetCounts.containsKey("und")) {
-        sanitizedIsCode = "und";
-      } else if (datasetCounts.containsKey("none")) {
-        sanitizedIsCode = "none";
+      if (datasetCounts.containsKey(LANGUAGE_CODE_NONE)) {
+        sanitizedIsCode = LANGUAGE_CODE_NONE;
       } else {
         sanitizedIsCode = iso639_1Code;
       }

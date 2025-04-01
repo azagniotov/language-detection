@@ -329,7 +329,7 @@ LanguageDetectionSettings
 
 ## Language detection benchmarks against other libraries
 
-This library provides a suite of benchmarks to assess its performance against other language detection libraries. The benchmark uses a fixed set of languages, including `Japanese (ja)`, `English (en)`, `French (fr)`, `Spanish (es)`, `Italian (it)`, and `German (de)`. These languages are part of the [multilingual mMARCO dataset](https://github.com/unicamp-dl/mMARCO). The dataset consists of `59,097` files per language, with each file containing one to four sentence paragraphs.
+This library provides a suite of benchmarks to assess its performance against other language detection libraries. The benchmark uses a fixed set of languages, including `Japanese (ja)`, `English (en)`, `French (fr)`, `Spanish (es)`, `Italian (it)`, and `German (de)`. These languages are part of the [multilingual mMARCO dataset](https://github.com/unicamp-dl/mMARCO). The dataset consists of `59,096` files per language, with each file containing one to four sentence paragraphs.
 
 Currently, the following libraries are evaluated in terms of accuracy and speed of execution:
 
@@ -337,7 +337,10 @@ Currently, the following libraries are evaluated in terms of accuracy and speed 
 2. Optimaize [Optimaize GitHub](https://github.com/optimaize/language-detector)
 3. Lingua with a low accuracy mode on [Lingua GitHub](https://github.com/pemistahl/lingua)
 4. Lingua with the default high accuracy mode on [Lingua GitHub](https://github.com/pemistahl/lingua)
-5. Apache Tike with Optimaize Language Detector [Apache Tika](https://tika.apache.org)
+5. Apache OpenNLP language detector [Apache OpenNLP](https://opennlp.apache.org/)
+6. Apache Tika with original language detector that uses tri-grams only [Apache Tika](https://tika.apache.org)
+7. Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
+8. Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
 
 ### Running the benchmarks
 
@@ -354,12 +357,15 @@ Please note, by default all the benchmarks run on a single worker thread. Curren
 Alternatively, you can run benchmarks for specific language detectors and datasets by specifying the desired options. The following `-Pdetector` arguments are currently supported:
 
 1. `default` - The current library.
-2. `optimaize` - Optimaize Language Detector [Optimaize GitHub](https://github.com/optimaize/language-detector)
+2. `optimaize` - Optimaize language detector [Optimaize GitHub](https://github.com/optimaize/language-detector)
 3. `lingua_low` - Lingua with low accuracy mode enabled [Lingua GitHub](https://github.com/pemistahl/lingua)
 4. `lingua_high` - Lingua with default high accuracy mode enabled [Lingua GitHub](https://github.com/pemistahl/lingua)
-5. `tika_optimaize` - Apache Tike with Optimaize Language Detector [Apache Tika](https://tika.apache.org)
+5. `opennlp` - Apache OpenNLP language detector [Apache OpenNLP](https://opennlp.apache.org)
+6. `tika_original` - Apache Tika with original language detector that uses tri-grams only, thus, not really suitable for short texts [Apache Tika](https://tika.apache.org)
+7. `tika_optimaize` - Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
+8. `tika_opennlp` - Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
 
-For example, to run benchmarks using the Optimaize, Apache Tika with Optimaize and Default language detectors on the `en` (English) and `ja` (Japanese) datasets, use the following command:
+For example, to run benchmarks using the `Optimaize`, `Apache Tika with Optimaize` and `Default` language detectors on the `en` (English) and `ja` (Japanese) datasets, use the following command:
 
 ```bash
 ./gradlew runBenchmarks -Pdetector=optimaize,default,tika_optimaize -PisoCodesCsv=en,ja
@@ -369,7 +375,7 @@ For example, to run benchmarks using the Optimaize, Apache Tika with Optimaize a
 
 Once the benchmark process completes, a report will be generated showing the accuracy of each detector. Here's an example of how to interpret the results:
 
-For instance, in a row like `DE-optimaize`, the output indicates that the **Optimaize** detector processed the German dataset of `59,097` files. Out of those, `58,880` files were correctly identified as German, while the remaining files were misidentified as other languages.
+For instance, in a row like `DE-optimaize`, the output indicates that the **Optimaize** detector processed the German dataset of `59,096` files. Out of those, `58,880` files were correctly identified as German, while the remaining files were misidentified as other languages.
 
 ```bash
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
@@ -378,38 +384,56 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | DE-default          | 171     | 0       | 5       | 58914   | 3       | 3       | 0       |
 | DE-lingua_high      | 163     | 0       | 11      | 58916   | 2       | 4       | 0       |
 | DE-lingua_low       | 184     | 0       | 13      | 58889   | 5       | 4       | 1       |
+| DE-opennlp          | 257     | 0       | 3       | 58633   | 3       | 1       | 199     |
 | DE-optimaize        | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
+| DE-tika_opennlp     | 307     | 0       | 3       | 58434   | 4       | 0       | 348     |
 | DE-tika_optimaize   | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
+| DE-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | EN-default          | 59041   | 0       | 22      | 17      | 8       | 8       | 0       |
 | EN-lingua_high      | 58972   | 0       | 35      | 50      | 9       | 30      | 0       |
 | EN-lingua_low       | 58942   | 0       | 48      | 62      | 11      | 33      | 0       |
+| EN-opennlp          | 58976   | 0       | 0       | 0       | 2       | 2       | 116     |
 | EN-optimaize        | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
+| EN-tika_opennlp     | 58794   | 0       | 4       | 1       | 6       | 4       | 287     |
 | EN-tika_optimaize   | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
+| EN-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | ES-default          | 154     | 0       | 11      | 6       | 19      | 58906   | 0       |
 | ES-lingua_high      | 173     | 0       | 10      | 8       | 16      | 58889   | 0       |
 | ES-lingua_low       | 180     | 0       | 17      | 10      | 18      | 58871   | 0       |
+| ES-opennlp          | 200     | 0       | 5       | 0       | 16      | 58351   | 524     |
 | ES-optimaize        | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
+| ES-tika_opennlp     | 146     | 0       | 4       | 0       | 17      | 58644   | 285     |
 | ES-tika_optimaize   | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
+| ES-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | FR-default          | 144     | 0       | 58930   | 12      | 3       | 7       | 0       |
 | FR-lingua_high      | 239     | 0       | 58822   | 23      | 3       | 9       | 0       |
 | FR-lingua_low       | 257     | 0       | 58786   | 37      | 4       | 12      | 0       |
+| FR-opennlp          | 117     | 0       | 58909   | 1       | 2       | 1       | 66      |
 | FR-optimaize        | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
+| FR-tika_opennlp     | 184     | 0       | 58706   | 2       | 11      | 3       | 190     |
 | FR-tika_optimaize   | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
+| FR-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | IT-default          | 214     | 0       | 5       | 6       | 58864   | 7       | 0       |
 | IT-lingua_high      | 467     | 0       | 17      | 19      | 58535   | 58      | 0       |
 | IT-lingua_low       | 492     | 0       | 24      | 26      | 58489   | 65      | 0       |
+| IT-opennlp          | 248     | 0       | 0       | 0       | 58742   | 3       | 103     |
 | IT-optimaize        | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
+| IT-tika_opennlp     | 235     | 0       | 1       | 1       | 58667   | 4       | 188     |
 | IT-tika_optimaize   | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
+| IT-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | JA-default          | 2       | 59093   | 0       | 0       | 1       | 0       | 0       |
 | JA-lingua_high      | 36      | 59047   | 3       | 7       | 1       | 2       | 0       |
 | JA-lingua_low       | 31      | 59049   | 1       | 10      | 1       | 4       | 0       |
+| JA-opennlp          | 51      | 58742   | 9       | 5       | 9       | 14      | 266     |
 | JA-optimaize        | 5421    | 51289   | 534     | 1055    | 440     | 351     | 6       |
+| JA-tika_opennlp     | 110     | 58386   | 3       | 8       | 13      | 14      | 562     |
 | JA-tika_optimaize   | 5421    | 51287   | 535     | 1054    | 441     | 352     | 6       |
+| JA-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 ```
 
@@ -446,6 +470,14 @@ lingua_low processes dataset [it]
 lingua_low processes dataset [ja]
 Detector lingua_low total runtime: 97 seconds and 423 millis
 
+opennlp processes dataset [de]
+opennlp processes dataset [en]
+opennlp processes dataset [es]
+opennlp processes dataset [fr]
+opennlp processes dataset [it]
+opennlp processes dataset [ja]
+Detector opennlp total runtime: 98 seconds and 313 millis
+
 optimaize processes dataset [de]
 optimaize processes dataset [en]
 optimaize processes dataset [es]
@@ -454,6 +486,14 @@ optimaize processes dataset [it]
 optimaize processes dataset [ja]
 Detector optimaize total runtime: 34 seconds and 019 millis
 
+tika_opennlp processes dataset [de]
+tika_opennlp processes dataset [en]
+tika_opennlp processes dataset [es]
+tika_opennlp processes dataset [fr]
+tika_opennlp processes dataset [it]
+tika_opennlp processes dataset [ja]
+Detector tika_opennlp total runtime: 160 seconds and 808 millis
+
 tika_optimaize processes dataset [de]
 tika_optimaize processes dataset [en]
 tika_optimaize processes dataset [es]
@@ -461,9 +501,17 @@ tika_optimaize processes dataset [fr]
 tika_optimaize processes dataset [it]
 tika_optimaize processes dataset [ja]
 Detector tika_optimaize total runtime: 33 seconds and 244 millis
+
+tika_original processes dataset [de]
+tika_original processes dataset [en]
+tika_original processes dataset [es]
+tika_original processes dataset [fr]
+tika_original processes dataset [it]
+tika_original processes dataset [ja]
+Detector tika_original total runtime: 133 seconds and 006 millis
 ```
 
-From this, you can observe that Optimaize is the fastest, while Lingua, regardless of its accuracy mode, tends to be slower in comparison.
+From the above, you can observe that Optimaize and the current library are the fastest, while OpenNLP, Apache Tika OpenNLP & Lingua (regardless of its accuracy mode), tends to be slower in comparison.
 
 [`Back to top`](#table-of-contents)
 

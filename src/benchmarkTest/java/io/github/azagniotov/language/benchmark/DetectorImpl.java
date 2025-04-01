@@ -16,8 +16,19 @@ public enum DetectorImpl {
   // https://github.com/optimaize/language-detector
   OPTIMAIZE,
 
+  // https://opennlp.apache.org/
+  OPENNLP,
+
+  // https://tika.apache.org This is based on OpenNLP's language detector. However,
+  // they've built their own ProbingLanguageDetector and their own language models.
+  TIKA_OPENNLP,
+
   // https://tika.apache.org
-  TIKA_OPTIMAIZE;
+  TIKA_OPTIMAIZE,
+
+  // https://tika.apache.org Tika original detector that uses tri-grams only, thus, not really
+  // suitable for short texts
+  TIKA_ORIGINAL;
 
   public static String[] valuesLowerCased;
 

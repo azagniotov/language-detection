@@ -31,7 +31,7 @@ public class TikaOptimaizeDetector implements ThirdPartyDetector {
   public String detect(final String input) {
     final LanguageResult languageResult = this.languageDetector.detect(input);
     if (languageResult.isUnknown()) {
-      return "none";
+      return LANGUAGE_CODE_NONE;
     }
 
     return languageResult.getLanguage();
