@@ -467,7 +467,7 @@ default processes dataset [es]
 default processes dataset [fr]
 default processes dataset [it]
 default processes dataset [ja]
-Detector default completed in 36 seconds and 887 millis
+Detector default completed in 32 seconds and 834 millis
 
 jfasttext processes dataset [de]
 jfasttext processes dataset [en]
@@ -475,7 +475,7 @@ jfasttext processes dataset [es]
 jfasttext processes dataset [fr]
 jfasttext processes dataset [it]
 jfasttext processes dataset [ja]
-Detector jfasttext completed in 37 seconds and 183 millis
+Detector jfasttext completed in 35 seconds and 625 millis
 
 lingua_high processes dataset [de]
 lingua_high processes dataset [en]
@@ -483,7 +483,7 @@ lingua_high processes dataset [es]
 lingua_high processes dataset [fr]
 lingua_high processes dataset [it]
 lingua_high processes dataset [ja]
-Detector lingua_high completed in 89 seconds and 631 millis
+Detector lingua_high completed in 91 seconds and 540 millis
 
 lingua_low processes dataset [de]
 lingua_low processes dataset [en]
@@ -491,7 +491,7 @@ lingua_low processes dataset [es]
 lingua_low processes dataset [fr]
 lingua_low processes dataset [it]
 lingua_low processes dataset [ja]
-Detector lingua_low completed in 94 seconds and 553 millis
+Detector lingua_low completed in 92 seconds and 164 millis
 
 opennlp processes dataset [de]
 opennlp processes dataset [en]
@@ -499,7 +499,7 @@ opennlp processes dataset [es]
 opennlp processes dataset [fr]
 opennlp processes dataset [it]
 opennlp processes dataset [ja]
-Detector opennlp completed in 84 seconds and 932 millis
+Detector opennlp completed in 86 seconds and 247 millis
 
 optimaize processes dataset [de]
 optimaize processes dataset [en]
@@ -507,7 +507,7 @@ optimaize processes dataset [es]
 optimaize processes dataset [fr]
 optimaize processes dataset [it]
 optimaize processes dataset [ja]
-Detector optimaize completed in 35 seconds and 292 millis
+Detector optimaize completed in 34 seconds and 823 millis
 
 tika_opennlp processes dataset [de]
 tika_opennlp processes dataset [en]
@@ -515,7 +515,7 @@ tika_opennlp processes dataset [es]
 tika_opennlp processes dataset [fr]
 tika_opennlp processes dataset [it]
 tika_opennlp processes dataset [ja]
-Detector tika_opennlp completed in 158 seconds and 343 millis
+Detector tika_opennlp completed in 169 seconds and 209 millis
 
 tika_optimaize processes dataset [de]
 tika_optimaize processes dataset [en]
@@ -523,7 +523,7 @@ tika_optimaize processes dataset [es]
 tika_optimaize processes dataset [fr]
 tika_optimaize processes dataset [it]
 tika_optimaize processes dataset [ja]
-Detector tika_optimaize completed in 34 seconds and 761 millis
+Detector tika_optimaize completed in 38 seconds and 451 millis
 
 tika_original processes dataset [de]
 tika_original processes dataset [en]
@@ -531,7 +531,7 @@ tika_original processes dataset [es]
 tika_original processes dataset [fr]
 tika_original processes dataset [it]
 tika_original processes dataset [ja]
-Detector tika_original completed in 131 seconds and 581 millis
+Detector tika_original completed in 148 seconds and 615 millis
 ```
 
 [`Back to top`](#table-of-contents)
