@@ -538,12 +538,10 @@ Detector tika_original completed in 148 seconds and 615 millis
 
 ### Key takeaways
 
-From the above [Accuracy report](#accuracy-report) and [Speed of execution](#speed-of-execution) sections, we can observe and deduce that:
+From the [Accuracy report](#accuracy-report) and [Speed of execution](#speed-of-execution) sections, we can conclude:
 
-- `Optimaize`, `jFastText` and the `Default` (the current library) are noticeably fastest
-- `OpenNLP`, `Apache Tika OpenNLP` & `Lingua` (regardless of its accuracy mode), tends to be much slower in comparison
-
-Overall, the `jFastText` has demonstrated a good combination of high accuracy & speed.
+- `Optimaize`, `jFastText`, and the `Default`, the current library, are the fastest. They also provide a strong balance between high accuracy and speed, performing better than the other libraries in both areas.
+- `OpenNLP`, `Apache Tika OpenNLP`, and `Lingua` (regardless of its accuracy mode) are noticeably slower in comparison, which may affect efficiency.
 
 [`Back to top`](#table-of-contents)
 
