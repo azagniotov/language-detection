@@ -23,6 +23,11 @@ public class TikaOpenNLPDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.TIKA_OPENNLP.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     final LanguageResult languageResult = this.languageDetector.detect(input);
     final String detectedLanguage = languageResult.getLanguage();

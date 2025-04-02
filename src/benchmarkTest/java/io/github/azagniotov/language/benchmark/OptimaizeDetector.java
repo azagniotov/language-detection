@@ -48,6 +48,11 @@ public class OptimaizeDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.OPTIMAIZE.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     final List<DetectedLanguage> probabilities = this.languageDetector.getProbabilities(input);
     if (probabilities.isEmpty()) {

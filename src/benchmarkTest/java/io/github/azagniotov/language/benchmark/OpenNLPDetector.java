@@ -36,6 +36,11 @@ public class OpenNLPDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.OPENNLP.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     final Language language = this.languageDetector.predictLanguage(input);
     final String detectedLanguage = language.getLang();
