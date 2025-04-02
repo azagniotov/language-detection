@@ -58,6 +58,11 @@ public class LinguaHighDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.LINGUA_HIGH.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     return this.languageDetector.detectLanguageOf(input).getIsoCode639_1().name().toLowerCase();
   }

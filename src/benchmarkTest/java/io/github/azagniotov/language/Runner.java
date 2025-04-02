@@ -1,6 +1,8 @@
 package io.github.azagniotov.language;
 
-import static io.github.azagniotov.language.benchmark.ThirdPartyDetector.LANGUAGE_CODE_NONE;
+import static io.github.azagniotov.language.benchmark.ThirdPartyDetector.detectorFor;
+import static java.lang.String.format;
+import static java.nio.file.Paths.get;
 import static java.util.Objects.requireNonNull;
 
 import io.github.azagniotov.language.annotations.GeneratedCodeClassCoverageExclusion;
@@ -10,9 +12,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -22,20 +21,17 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @GeneratedCodeClassCoverageExclusion
 public class Runner {
 
-  private static final String SUBSET_OF_LANGUAGES = "en,ja,fr,de,it,es";
+  static final String SUBSET_OF_LANGUAGES = "en,ja,fr,de,it,es";
 
   private static final String ANSI_RESET = "\u001B[0m";
   private static final String ANSI_CYAN = "\u001B[36m";
   private static final String ANSI_BOLD = "\u001B[1m";
   private static final String ANSI_GREEN = "\u001B[32m";
-  public static final String TABLE_COLUMN_SEPARATOR =
-      "|---------------------|---------|---------|---------|---------|---------|---------|---------|";
 
   private static boolean verbose = false;
   private static final String DIRECTORY_PATH =
@@ -102,7 +98,7 @@ public class Runner {
     final ExecutorService executor = Executors.newFixedThreadPool(1);
     CompletableFuture.allOf(
             CompletableFuture.runAsync(
-                () -> detect(detectorDatasetCounts, targetDetectors, targetCodes), executor))
+                () -> benchmark(detectorDatasetCounts, targetDetectors, targetCodes), executor))
         .thenRun(
             () -> {
               try {
@@ -111,7 +107,7 @@ public class Runner {
                         + "\nAll detection tasks completed successfully!"
                         + ANSI_RESET
                         + "\n");
-                printReportTable(detectorDatasetCounts);
+                new Reporter().printReportTable(detectorDatasetCounts);
                 executor.shutdown();
                 if (!executor.awaitTermination(100, TimeUnit.MILLISECONDS)) {
                   executor.shutdownNow();
@@ -125,60 +121,20 @@ public class Runner {
             });
   }
 
-  private static void detect(
+  private static void benchmark(
       final Map<String, Map<String, Map<String, Integer>>> detectorDetectionCounts,
       final TreeSet<String> targetDetectors,
       final TreeSet<String> targetCodes) {
 
-    for (final String detector : targetDetectors) {
+    for (final String detectorName : targetDetectors) {
 
       final Map<String, Map<String, Integer>> detectionCounts =
-          detectorDetectionCounts.get(detector);
-
-      final ThirdPartyDetector thirdPartyDetector =
-          ThirdPartyDetector.get(detector, SUBSET_OF_LANGUAGES);
+          detectorDetectionCounts.get(detectorName);
+      final ThirdPartyDetector thirdPartyDetector = detectorFor(detectorName, SUBSET_OF_LANGUAGES);
 
       final long startTime = System.nanoTime();
       for (final String targetCode : targetCodes) {
-        System.out.println(detector + " processes dataset [" + targetCode + "]");
-
-        final Path languageDatasetPath =
-            Paths.get(String.format("%s/%s", DIRECTORY_PATH, targetCode));
-        if (!Files.exists(languageDatasetPath)) {
-          System.out.println("\nLanguage dataset path is missing. Skipping detection.\n");
-          return;
-        }
-
-        try {
-          try (final Stream<Path> paths = Files.list(languageDatasetPath)) {
-            paths
-                .filter(path -> path.toString().endsWith(".txt"))
-                .forEach(
-                    path -> {
-                      try {
-                        final String key = thirdPartyDetector.detect(Files.readString(path));
-                        if (!key.equals(targetCode)) {
-                          if (verbose) {
-                            System.out.println(
-                                String.format(
-                                    "Misdetected for %s: %s => %s",
-                                    targetCode.toUpperCase(), path, key));
-                          }
-                        }
-                        final Map<String, Integer> languageCount =
-                            detectionCounts.get(targetCode.toUpperCase());
-                        languageCount.put(key, languageCount.getOrDefault(key, 0) + 1);
-                      } catch (Exception e) {
-                        throw new RuntimeException(e);
-                      }
-                    });
-          }
-
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
+        detectDataset(targetCode, thirdPartyDetector, detectionCounts);
       }
       final long endTime = System.nanoTime();
       final long elapsedTime = endTime - startTime;
@@ -188,7 +144,7 @@ public class Runner {
               + ANSI_RESET
               + ANSI_BOLD
               + ANSI_CYAN
-              + detector
+              + detectorName
               + ANSI_RESET
               + ANSI_GREEN
               + " total runtime: "
@@ -201,78 +157,52 @@ public class Runner {
     }
   }
 
-  public static String formatElapsedTime(long elapsedTimeNano) {
-    double elapsedTimeSeconds = (double) elapsedTimeNano / 1_000_000_000.0;
-    long milliseconds = (long) ((elapsedTimeSeconds - (long) elapsedTimeSeconds) * 1000);
+  private static void detectDataset(
+      final String targetCode,
+      final ThirdPartyDetector thirdPartyDetector,
+      final Map<String, Map<String, Integer>> detectionCounts) {
+    System.out.println(thirdPartyDetector.name() + " processes dataset [" + targetCode + "]");
 
-    return String.format("%d seconds and %03d millis", (long) elapsedTimeSeconds, milliseconds);
+    final Path languageDatasetPath = get(format("%s/%s", DIRECTORY_PATH, targetCode));
+    if (!Files.exists(languageDatasetPath)) {
+      System.out.println("\nLanguage dataset path is missing. Skipping detection.\n");
+      throw new UncheckedIOException(new IOException("Language dataset path is missing."));
+    }
+
+    try {
+      try (final Stream<Path> paths = Files.list(languageDatasetPath)) {
+        paths
+            .filter(path -> path.toString().endsWith(".txt"))
+            .forEach(
+                path -> {
+                  try {
+                    final String key = thirdPartyDetector.detect(Files.readString(path));
+                    if (!key.equals(targetCode)) {
+                      if (verbose) {
+                        System.out.printf(
+                            "Misdetected for %s: %s => %s%n", targetCode.toUpperCase(), path, key);
+                      }
+                    }
+                    final Map<String, Integer> countPerIsoCode =
+                        detectionCounts.get(targetCode.toUpperCase());
+                    countPerIsoCode.put(key, countPerIsoCode.getOrDefault(key, 0) + 1);
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                });
+      }
+
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  private static void printReportTable(
-      final Map<String, Map<String, Map<String, Integer>>> detectorDatasetCounts) {
-    final String[] isoCodes = (SUBSET_OF_LANGUAGES + ",unknown").split(",");
+  public static String formatElapsedTime(final long elapsedTimeNano) {
+    final double elapsedSeconds = (double) elapsedTimeNano / 1_000_000_000.0;
+    final long milliseconds = (long) ((elapsedSeconds - (long) elapsedSeconds) * 1000);
 
-    System.out.println(TABLE_COLUMN_SEPARATOR);
-    System.out.printf("| %-20s", "Dataset-to-Detector");
-    for (final String isoCode : isoCodes) {
-      System.out.printf("| %-8s", isoCode);
-    }
-    System.out.println("|");
-    System.out.println(TABLE_COLUMN_SEPARATOR);
-
-    final List<String> detectorKeys =
-        detectorDatasetCounts.entrySet().stream()
-            .flatMap(
-                detectorEntry ->
-                    detectorEntry.getValue().keySet().stream()
-                        .map(dataset -> dataset + "-" + detectorEntry.getKey()))
-            .sorted()
-            .collect(Collectors.toList());
-
-    final Set<String> datasetSeparators = new HashSet<>();
-    datasetSeparators.add("DE"); // the first in the sorted list
-
-    for (final String datasetToDetectorName : detectorKeys) {
-      final String[] split = datasetToDetectorName.split("-", 2);
-      final String dataset = split[0];
-      final String detectorName = split[1];
-
-      if (!datasetSeparators.contains(dataset)) {
-        System.out.println(TABLE_COLUMN_SEPARATOR);
-        datasetSeparators.add(dataset);
-      }
-
-      final Map<String, Map<String, Integer>> allDatasetCounts =
-          detectorDatasetCounts.get(detectorName);
-      final Map<String, Integer> datasetCounts = allDatasetCounts.get(dataset);
-
-      // Print the detector-dataset combo
-      System.out.printf("| %-20s", dataset + "-" + detectorName);
-
-      // Print the counts for each language
-      for (final String iso639_1Code : isoCodes) {
-        final String sanitizedIsCode = sanitizeIsoCode(iso639_1Code, datasetCounts);
-        final Integer count = datasetCounts.getOrDefault(sanitizedIsCode, 0);
-        System.out.printf("| %-8d", count);
-      }
-      System.out.println("|");
-    }
-
-    System.out.println(TABLE_COLUMN_SEPARATOR);
-  }
-
-  private static String sanitizeIsoCode(
-      final String iso639_1Code, final Map<String, Integer> datasetCounts) {
-    final String sanitizedIsCode;
-    if (iso639_1Code.equals("unknown")) {
-      if (datasetCounts.containsKey(LANGUAGE_CODE_NONE)) {
-        sanitizedIsCode = LANGUAGE_CODE_NONE;
-      } else {
-        sanitizedIsCode = iso639_1Code;
-      }
-    } else {
-      sanitizedIsCode = iso639_1Code;
-    }
-    return sanitizedIsCode;
+    return format("%d seconds and %03d millis", (long) elapsedSeconds, milliseconds);
   }
 }

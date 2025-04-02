@@ -21,7 +21,8 @@ public interface ThirdPartyDetector {
         }
       };
 
-  static ThirdPartyDetector get(final String supportedDetector, final String iso639_1CodesCsv) {
+  static ThirdPartyDetector detectorFor(
+      final String supportedDetector, final String iso639_1CodesCsv) {
     final DetectorImpl detector = DetectorImpl.valueOf(supportedDetector.toUpperCase());
     switch (detector) {
       case LINGUA_LOW:
@@ -42,6 +43,8 @@ public interface ThirdPartyDetector {
         return DefaultDetector.from(iso639_1CodesCsv);
     }
   }
+
+  String name();
 
   String detect(final String input);
 }

@@ -24,6 +24,11 @@ public class TikaOriginalDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.TIKA_ORIGINAL.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     final List<LanguageResult> languageResults = this.languageDetector.detectAll(input);
     if (languageResults.isEmpty()) {

@@ -452,7 +452,7 @@ default processes dataset [es]
 default processes dataset [fr]
 default processes dataset [it]
 default processes dataset [ja]
-Detector default total runtime: 34 seconds and 115 millis
+Detector default total runtime: 32 seconds and 984 millis
 
 lingua_high processes dataset [de]
 lingua_high processes dataset [en]
@@ -460,7 +460,7 @@ lingua_high processes dataset [es]
 lingua_high processes dataset [fr]
 lingua_high processes dataset [it]
 lingua_high processes dataset [ja]
-Detector lingua_high total runtime: 91 seconds and 038 millis
+Detector lingua_high total runtime: 91 seconds and 837 millis
 
 lingua_low processes dataset [de]
 lingua_low processes dataset [en]
@@ -468,7 +468,7 @@ lingua_low processes dataset [es]
 lingua_low processes dataset [fr]
 lingua_low processes dataset [it]
 lingua_low processes dataset [ja]
-Detector lingua_low total runtime: 97 seconds and 423 millis
+Detector lingua_low total runtime: 91 seconds and 769 millis
 
 opennlp processes dataset [de]
 opennlp processes dataset [en]
@@ -476,7 +476,7 @@ opennlp processes dataset [es]
 opennlp processes dataset [fr]
 opennlp processes dataset [it]
 opennlp processes dataset [ja]
-Detector opennlp total runtime: 98 seconds and 313 millis
+Detector opennlp total runtime: 82 seconds and 487 millis
 
 optimaize processes dataset [de]
 optimaize processes dataset [en]
@@ -484,7 +484,7 @@ optimaize processes dataset [es]
 optimaize processes dataset [fr]
 optimaize processes dataset [it]
 optimaize processes dataset [ja]
-Detector optimaize total runtime: 34 seconds and 019 millis
+Detector optimaize total runtime: 34 seconds and 767 millis
 
 tika_opennlp processes dataset [de]
 tika_opennlp processes dataset [en]
@@ -492,7 +492,7 @@ tika_opennlp processes dataset [es]
 tika_opennlp processes dataset [fr]
 tika_opennlp processes dataset [it]
 tika_opennlp processes dataset [ja]
-Detector tika_opennlp total runtime: 160 seconds and 808 millis
+Detector tika_opennlp total runtime: 155 seconds and 238 millis
 
 tika_optimaize processes dataset [de]
 tika_optimaize processes dataset [en]
@@ -500,7 +500,7 @@ tika_optimaize processes dataset [es]
 tika_optimaize processes dataset [fr]
 tika_optimaize processes dataset [it]
 tika_optimaize processes dataset [ja]
-Detector tika_optimaize total runtime: 33 seconds and 244 millis
+Detector tika_optimaize total runtime: 34 seconds and 601 millis
 
 tika_original processes dataset [de]
 tika_original processes dataset [en]
@@ -508,10 +508,10 @@ tika_original processes dataset [es]
 tika_original processes dataset [fr]
 tika_original processes dataset [it]
 tika_original processes dataset [ja]
-Detector tika_original total runtime: 133 seconds and 006 millis
+Detector tika_original total runtime: 129 seconds and 778 millis
 ```
 
-From the above, you can observe that Optimaize and the current library are the fastest, while OpenNLP, Apache Tika OpenNLP & Lingua (regardless of its accuracy mode), tends to be slower in comparison.
+From the above, you can observe that Optimaize and the current library are the fastest, while OpenNLP, Apache Tika OpenNLP & Lingua (regardless of its accuracy mode), tends to be much slower in comparison.
 
 [`Back to top`](#table-of-contents)
 

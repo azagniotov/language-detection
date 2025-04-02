@@ -28,6 +28,11 @@ public class TikaOptimaizeDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.TIKA_OPTIMAIZE.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     final LanguageResult languageResult = this.languageDetector.detect(input);
     if (languageResult.isUnknown()) {

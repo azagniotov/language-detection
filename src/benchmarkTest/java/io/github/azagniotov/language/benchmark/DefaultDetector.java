@@ -25,6 +25,11 @@ public class DefaultDetector implements ThirdPartyDetector {
   }
 
   @Override
+  public String name() {
+    return DetectorImpl.DEFAULT.name().toLowerCase();
+  }
+
+  @Override
   public String detect(final String input) {
     final String isoCode6391 = this.languageDetectionOrchestrator.detect(input).getIsoCode639_1();
     return isoCode6391.equals("und") ? LANGUAGE_CODE_NONE : isoCode6391;
