@@ -27,8 +27,9 @@ This is a refined and re-implemented version of the archived plugin for ElasticS
       * [Minimum detection certainty for top language with a fallback](#minimum-detection-certainty-for-top-language-with-a-fallback)
   * [Language detection benchmarks against other libraries](#language-detection-benchmarks-against-other-libraries)
     * [Running the benchmarks](#running-the-benchmarks)
-    * [Benchmark accuracy report](#benchmark-accuracy-report)
-    * [Benchmark speed of execution](#benchmark-speed-of-execution)
+    * [Accuracy report](#accuracy-report)
+    * [Speed of execution](#speed-of-execution)
+    * [Key takeaways](#key-takeaways)
   * [Local development](#local-development)
     * [System requirements](#system-requirements)
     * [Pre-commit Hook](#pre-commit-hook)
@@ -341,6 +342,9 @@ Currently, the following libraries are evaluated in terms of accuracy and speed 
 6. Apache Tika with original language detector that uses tri-grams only [Apache Tika](https://tika.apache.org)
 7. Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
 8. Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
+9. [jFastText](https://github.com/vinhkhuc/JFastText). A Java wrapper for Facebook's [fastText](https://github.com/facebookresearch/fastText)
+
+[`Back to top`](#table-of-contents)
 
 ### Running the benchmarks
 
@@ -364,6 +368,7 @@ Alternatively, you can run benchmarks for specific language detectors and datase
 6. `tika_original` - Apache Tika with original language detector that uses tri-grams only, thus, not really suitable for short texts [Apache Tika](https://tika.apache.org)
 7. `tika_optimaize` - Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
 8. `tika_opennlp` - Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
+9. `jfasttext` - [jFastText](https://github.com/vinhkhuc/JFastText) is a Java wrapper for Facebook's [fastText](https://github.com/facebookresearch/fastText)
 
 For example, to run benchmarks using the `Optimaize`, `Apache Tika with Optimaize` and `Default` language detectors on the `en` (English) and `ja` (Japanese) datasets, use the following command:
 
@@ -371,7 +376,9 @@ For example, to run benchmarks using the `Optimaize`, `Apache Tika with Optimaiz
 ./gradlew runBenchmarks -Pdetector=optimaize,default,tika_optimaize -PisoCodesCsv=en,ja
 ```
 
-### Benchmark accuracy report
+[`Back to top`](#table-of-contents)
+
+### Accuracy report
 
 Once the benchmark process completes, a report will be generated showing the accuracy of each detector. Here's an example of how to interpret the results:
 
@@ -382,6 +389,7 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | Dataset-to-Detector | en      | ja      | fr      | de      | it      | es      | unknown |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | DE-default          | 171     | 0       | 5       | 58914   | 3       | 3       | 0       |
+| DE-jfasttext        | 73      | 0       | 2       | 59008   | 0       | 5       | 8       |
 | DE-lingua_high      | 163     | 0       | 11      | 58916   | 2       | 4       | 0       |
 | DE-lingua_low       | 184     | 0       | 13      | 58889   | 5       | 4       | 1       |
 | DE-opennlp          | 257     | 0       | 3       | 58633   | 3       | 1       | 199     |
@@ -391,6 +399,7 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | DE-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | EN-default          | 59041   | 0       | 22      | 17      | 8       | 8       | 0       |
+| EN-jfasttext        | 59068   | 0       | 2       | 9       | 2       | 5       | 10      |
 | EN-lingua_high      | 58972   | 0       | 35      | 50      | 9       | 30      | 0       |
 | EN-lingua_low       | 58942   | 0       | 48      | 62      | 11      | 33      | 0       |
 | EN-opennlp          | 58976   | 0       | 0       | 0       | 2       | 2       | 116     |
@@ -400,6 +409,7 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | EN-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | ES-default          | 154     | 0       | 11      | 6       | 19      | 58906   | 0       |
+| ES-jfasttext        | 27      | 0       | 23      | 4       | 0       | 59025   | 17      |
 | ES-lingua_high      | 173     | 0       | 10      | 8       | 16      | 58889   | 0       |
 | ES-lingua_low       | 180     | 0       | 17      | 10      | 18      | 58871   | 0       |
 | ES-opennlp          | 200     | 0       | 5       | 0       | 16      | 58351   | 524     |
@@ -409,6 +419,7 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | ES-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | FR-default          | 144     | 0       | 58930   | 12      | 3       | 7       | 0       |
+| FR-jfasttext        | 30      | 0       | 59063   | 1       | 0       | 0       | 2       |
 | FR-lingua_high      | 239     | 0       | 58822   | 23      | 3       | 9       | 0       |
 | FR-lingua_low       | 257     | 0       | 58786   | 37      | 4       | 12      | 0       |
 | FR-opennlp          | 117     | 0       | 58909   | 1       | 2       | 1       | 66      |
@@ -418,6 +429,7 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | FR-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | IT-default          | 214     | 0       | 5       | 6       | 58864   | 7       | 0       |
+| IT-jfasttext        | 52      | 0       | 1       | 9       | 59025   | 4       | 5       |
 | IT-lingua_high      | 467     | 0       | 17      | 19      | 58535   | 58      | 0       |
 | IT-lingua_low       | 492     | 0       | 24      | 26      | 58489   | 65      | 0       |
 | IT-opennlp          | 248     | 0       | 0       | 0       | 58742   | 3       | 103     |
@@ -427,6 +439,7 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | IT-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | JA-default          | 2       | 59093   | 0       | 0       | 1       | 0       | 0       |
+| JA-jfasttext        | 8       | 59076   | 0       | 0       | 1       | 0       | 11      |
 | JA-lingua_high      | 36      | 59047   | 3       | 7       | 1       | 2       | 0       |
 | JA-lingua_low       | 31      | 59049   | 1       | 10      | 1       | 4       | 0       |
 | JA-opennlp          | 51      | 58742   | 9       | 5       | 9       | 14      | 266     |
@@ -437,7 +450,9 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 ```
 
-### Benchmark speed of execution
+[`Back to top`](#table-of-contents)
+
+### Speed of execution
 
 As the benchmarks are running, the console will display the execution times for each language detector on the selected datasets.
 
@@ -452,7 +467,15 @@ default processes dataset [es]
 default processes dataset [fr]
 default processes dataset [it]
 default processes dataset [ja]
-Detector default total runtime: 32 seconds and 984 millis
+Detector default completed in 36 seconds and 887 millis
+
+jfasttext processes dataset [de]
+jfasttext processes dataset [en]
+jfasttext processes dataset [es]
+jfasttext processes dataset [fr]
+jfasttext processes dataset [it]
+jfasttext processes dataset [ja]
+Detector jfasttext completed in 37 seconds and 183 millis
 
 lingua_high processes dataset [de]
 lingua_high processes dataset [en]
@@ -460,7 +483,7 @@ lingua_high processes dataset [es]
 lingua_high processes dataset [fr]
 lingua_high processes dataset [it]
 lingua_high processes dataset [ja]
-Detector lingua_high total runtime: 91 seconds and 837 millis
+Detector lingua_high completed in 89 seconds and 631 millis
 
 lingua_low processes dataset [de]
 lingua_low processes dataset [en]
@@ -468,7 +491,7 @@ lingua_low processes dataset [es]
 lingua_low processes dataset [fr]
 lingua_low processes dataset [it]
 lingua_low processes dataset [ja]
-Detector lingua_low total runtime: 91 seconds and 769 millis
+Detector lingua_low completed in 94 seconds and 553 millis
 
 opennlp processes dataset [de]
 opennlp processes dataset [en]
@@ -476,7 +499,7 @@ opennlp processes dataset [es]
 opennlp processes dataset [fr]
 opennlp processes dataset [it]
 opennlp processes dataset [ja]
-Detector opennlp total runtime: 82 seconds and 487 millis
+Detector opennlp completed in 84 seconds and 932 millis
 
 optimaize processes dataset [de]
 optimaize processes dataset [en]
@@ -484,7 +507,7 @@ optimaize processes dataset [es]
 optimaize processes dataset [fr]
 optimaize processes dataset [it]
 optimaize processes dataset [ja]
-Detector optimaize total runtime: 34 seconds and 767 millis
+Detector optimaize completed in 35 seconds and 292 millis
 
 tika_opennlp processes dataset [de]
 tika_opennlp processes dataset [en]
@@ -492,7 +515,7 @@ tika_opennlp processes dataset [es]
 tika_opennlp processes dataset [fr]
 tika_opennlp processes dataset [it]
 tika_opennlp processes dataset [ja]
-Detector tika_opennlp total runtime: 155 seconds and 238 millis
+Detector tika_opennlp completed in 158 seconds and 343 millis
 
 tika_optimaize processes dataset [de]
 tika_optimaize processes dataset [en]
@@ -500,7 +523,7 @@ tika_optimaize processes dataset [es]
 tika_optimaize processes dataset [fr]
 tika_optimaize processes dataset [it]
 tika_optimaize processes dataset [ja]
-Detector tika_optimaize total runtime: 34 seconds and 601 millis
+Detector tika_optimaize completed in 34 seconds and 761 millis
 
 tika_original processes dataset [de]
 tika_original processes dataset [en]
@@ -508,10 +531,19 @@ tika_original processes dataset [es]
 tika_original processes dataset [fr]
 tika_original processes dataset [it]
 tika_original processes dataset [ja]
-Detector tika_original total runtime: 129 seconds and 778 millis
+Detector tika_original completed in 131 seconds and 581 millis
 ```
 
-From the above, you can observe that Optimaize and the current library are the fastest, while OpenNLP, Apache Tika OpenNLP & Lingua (regardless of its accuracy mode), tends to be much slower in comparison.
+[`Back to top`](#table-of-contents)
+
+### Key takeaways
+
+From the above [Accuracy report](#accuracy-report) and [Speed of execution](#speed-of-execution) sections, we can observe and deduce that:
+
+- `Optimaize`, `jFastText` and the `Default` (the current library) are noticeably fastest
+- `OpenNLP`, `Apache Tika OpenNLP` & `Lingua` (regardless of its accuracy mode), tends to be much slower in comparison
+
+Overall, the `jFastText` has demonstrated a good combination of high accuracy & speed.
 
 [`Back to top`](#table-of-contents)
 

@@ -7,6 +7,9 @@ public enum DetectorImpl {
   // The current libary, language-detection by azagniotov
   DEFAULT,
 
+  // https://github.com/vinhkhuc/JFastText Java wrapper around Facebook's FastText
+  JFASTTEXT,
+
   // https://github.com/pemistahl/lingua with a low accuracy mode on
   LINGUA_LOW,
 

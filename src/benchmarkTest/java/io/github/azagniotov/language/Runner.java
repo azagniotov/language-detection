@@ -12,15 +12,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @GeneratedCodeClassCoverageExclusion
@@ -82,43 +77,32 @@ public class Runner {
             + "\n");
 
     final Map<String, Map<String, Map<String, Integer>>> detectorDatasetCounts =
-        new ConcurrentSkipListMap<>();
-    for (final String detector : targetDetectors) {
-      final Map<String, Map<String, Integer>> detectionCounts = new ConcurrentSkipListMap<>();
-      if (!detectorDatasetCounts.containsKey(detector)) {
-        detectorDatasetCounts.put(detector, detectionCounts);
-      }
-      for (final String targetCode : targetCodes) {
-        if (!detectionCounts.containsKey(targetCode.toUpperCase())) {
-          detectionCounts.put(targetCode.toUpperCase(), new TreeMap<>());
-        }
-      }
-    }
+        initCountMap(targetDetectors, targetCodes);
 
-    final ExecutorService executor = Executors.newFixedThreadPool(1);
-    CompletableFuture.allOf(
-            CompletableFuture.runAsync(
-                () -> benchmark(detectorDatasetCounts, targetDetectors, targetCodes), executor))
-        .thenRun(
-            () -> {
-              try {
-                System.out.println(
-                    ANSI_GREEN
-                        + "\nAll detection tasks completed successfully!"
-                        + ANSI_RESET
-                        + "\n");
-                new Reporter().printReportTable(detectorDatasetCounts);
-                executor.shutdown();
-                if (!executor.awaitTermination(100, TimeUnit.MILLISECONDS)) {
-                  executor.shutdownNow();
-                }
-              } catch (final InterruptedException ex) {
-                executor.shutdownNow();
-                // Re-interrupt the thread to avoid losing its interruption status
-                Thread.currentThread().interrupt();
-              }
-              System.out.println("\nDone!\n");
-            });
+    benchmark(detectorDatasetCounts, targetDetectors, targetCodes);
+
+    System.out.println(
+        ANSI_GREEN
+            + "\nAll detection tasks completed successfully! Detection results:"
+            + ANSI_RESET
+            + "\n");
+    new Reporter().printReportTable(detectorDatasetCounts);
+    System.out.println("\nDone!\n");
+  }
+
+  private static Map<String, Map<String, Map<String, Integer>>> initCountMap(
+      final Set<String> targetDetectors, final Set<String> targetCodes) {
+
+    final Map<String, Map<String, Map<String, Integer>>> detectorDatasetCounts = new HashMap<>();
+
+    for (final String detector : targetDetectors) {
+      final Map<String, Map<String, Integer>> detectedDatasetCounts = new HashMap<>();
+      for (final String targetCode : targetCodes) {
+        detectedDatasetCounts.put(targetCode.toUpperCase(), new HashMap<>());
+      }
+      detectorDatasetCounts.put(detector, detectedDatasetCounts);
+    }
+    return detectorDatasetCounts;
   }
 
   private static void benchmark(
@@ -147,7 +131,7 @@ public class Runner {
               + detectorName
               + ANSI_RESET
               + ANSI_GREEN
-              + " total runtime: "
+              + " completed in "
               + ANSI_RESET
               + ANSI_BOLD
               + ANSI_GREEN
