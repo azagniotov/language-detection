@@ -339,10 +339,9 @@ Currently, the following libraries are evaluated in terms of accuracy and speed 
 3. Lingua with a low accuracy mode on [Lingua GitHub](https://github.com/pemistahl/lingua)
 4. Lingua with the default high accuracy mode on [Lingua GitHub](https://github.com/pemistahl/lingua)
 5. Apache OpenNLP language detector [Apache OpenNLP](https://opennlp.apache.org/)
-6. Apache Tika with original language detector that uses tri-grams only [Apache Tika](https://tika.apache.org)
-7. Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
-8. Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
-9. [jFastText](https://github.com/vinhkhuc/JFastText). A Java wrapper for Facebook's [fastText](https://github.com/facebookresearch/fastText)
+6. Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
+7. Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
+8. [jFastText](https://github.com/vinhkhuc/JFastText). A Java wrapper for Facebook's [fastText](https://github.com/facebookresearch/fastText)
 
 [`Back to top`](#table-of-contents)
 
@@ -365,10 +364,9 @@ Alternatively, you can run benchmarks for specific language detectors and datase
 3. `lingua_low` - Lingua with low accuracy mode enabled [Lingua GitHub](https://github.com/pemistahl/lingua)
 4. `lingua_high` - Lingua with default high accuracy mode enabled [Lingua GitHub](https://github.com/pemistahl/lingua)
 5. `opennlp` - Apache OpenNLP language detector [Apache OpenNLP](https://opennlp.apache.org)
-6. `tika_original` - Apache Tika with original language detector that uses tri-grams only, thus, not really suitable for short texts [Apache Tika](https://tika.apache.org)
-7. `tika_optimaize` - Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
-8. `tika_opennlp` - Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
-9. `jfasttext` - [jFastText](https://github.com/vinhkhuc/JFastText) is a Java wrapper for Facebook's [fastText](https://github.com/facebookresearch/fastText)
+6. `tika_optimaize` - Apache Tika with Optimaize language detector [Apache Tika](https://tika.apache.org)
+7. `tika_opennlp` - Apache Tika with OpenNLP language detector. This is based on OpenNLP's language detector. However, they've built their own ProbingLanguageDetector and their own language models. [Apache Tika](https://tika.apache.org)
+8. `jfasttext` - [jFastText](https://github.com/vinhkhuc/JFastText) is a Java wrapper for Facebook's [fastText](https://github.com/facebookresearch/fastText)
 
 For example, to run benchmarks using the `Optimaize`, `Apache Tika with Optimaize` and `Default` language detectors on the `en` (English) and `ja` (Japanese) datasets, use the following command:
 
@@ -396,7 +394,6 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | DE-optimaize        | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
 | DE-tika_opennlp     | 307     | 0       | 3       | 58434   | 4       | 0       | 348     |
 | DE-tika_optimaize   | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
-| DE-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | EN-default          | 59041   | 0       | 22      | 17      | 8       | 8       | 0       |
 | EN-jfasttext        | 59068   | 0       | 2       | 9       | 2       | 5       | 10      |
@@ -406,7 +403,6 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | EN-optimaize        | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
 | EN-tika_opennlp     | 58794   | 0       | 4       | 1       | 6       | 4       | 287     |
 | EN-tika_optimaize   | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
-| EN-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | ES-default          | 154     | 0       | 11      | 6       | 19      | 58906   | 0       |
 | ES-jfasttext        | 27      | 0       | 23      | 4       | 0       | 59025   | 17      |
@@ -416,7 +412,6 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | ES-optimaize        | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
 | ES-tika_opennlp     | 146     | 0       | 4       | 0       | 17      | 58644   | 285     |
 | ES-tika_optimaize   | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
-| ES-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | FR-default          | 144     | 0       | 58930   | 12      | 3       | 7       | 0       |
 | FR-jfasttext        | 30      | 0       | 59063   | 1       | 0       | 0       | 2       |
@@ -426,7 +421,6 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | FR-optimaize        | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
 | FR-tika_opennlp     | 184     | 0       | 58706   | 2       | 11      | 3       | 190     |
 | FR-tika_optimaize   | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
-| FR-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | IT-default          | 214     | 0       | 5       | 6       | 58864   | 7       | 0       |
 | IT-jfasttext        | 52      | 0       | 1       | 9       | 59025   | 4       | 5       |
@@ -436,7 +430,6 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | IT-optimaize        | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
 | IT-tika_opennlp     | 235     | 0       | 1       | 1       | 58667   | 4       | 188     |
 | IT-tika_optimaize   | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
-| IT-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 | JA-default          | 2       | 59093   | 0       | 0       | 1       | 0       | 0       |
 | JA-jfasttext        | 8       | 59076   | 0       | 0       | 1       | 0       | 11      |
@@ -446,7 +439,6 @@ For instance, in a row like `DE-optimaize`, the output indicates that the **Opti
 | JA-optimaize        | 5421    | 51289   | 534     | 1055    | 440     | 351     | 6       |
 | JA-tika_opennlp     | 110     | 58386   | 3       | 8       | 13      | 14      | 562     |
 | JA-tika_optimaize   | 5421    | 51287   | 535     | 1054    | 441     | 352     | 6       |
-| JA-tika_original    | 0       | 0       | 0       | 0       | 0       | 0       | 59096   |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 ```
 
@@ -524,14 +516,6 @@ tika_optimaize processes dataset [fr]
 tika_optimaize processes dataset [it]
 tika_optimaize processes dataset [ja]
 Detector tika_optimaize completed in 38 seconds and 451 millis
-
-tika_original processes dataset [de]
-tika_original processes dataset [en]
-tika_original processes dataset [es]
-tika_original processes dataset [fr]
-tika_original processes dataset [it]
-tika_original processes dataset [ja]
-Detector tika_original completed in 148 seconds and 615 millis
 ```
 
 [`Back to top`](#table-of-contents)

@@ -35,8 +35,6 @@ public interface ThirdPartyDetector {
         return TikaOpenNLPDetector.from(iso639_1CodesCsv);
       case TIKA_OPTIMAIZE:
         return TikaOptimaizeDetector.from(iso639_1CodesCsv);
-      case TIKA_ORIGINAL:
-        return TikaOriginalDetector.from(iso639_1CodesCsv);
       case OPENNLP:
         return OpenNLPDetector.from(iso639_1CodesCsv);
       case JFASTTEXT:
