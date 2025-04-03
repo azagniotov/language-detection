@@ -27,11 +27,7 @@ public enum DetectorImpl {
   TIKA_OPENNLP,
 
   // https://tika.apache.org
-  TIKA_OPTIMAIZE,
-
-  // https://tika.apache.org Tika original detector that uses tri-grams only, thus, not really
-  // suitable for short texts
-  TIKA_ORIGINAL;
+  TIKA_OPTIMAIZE;
 
   public static String[] valuesLowerCased;
 
