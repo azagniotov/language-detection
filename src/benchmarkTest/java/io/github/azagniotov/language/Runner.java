@@ -183,7 +183,7 @@ public class Runner {
     }
   }
 
-  public static String formatElapsedTime(final long elapsedTimeNano) {
+  private static String formatElapsedTime(final long elapsedTimeNano) {
     final double elapsedSeconds = (double) elapsedTimeNano / 1_000_000_000.0;
     final long milliseconds = (long) ((elapsedSeconds - (long) elapsedSeconds) * 1000);
 
