@@ -18,16 +18,19 @@ public class LanguageDetectionOrchestrator {
 
   public static LanguageDetectionOrchestrator fromSettings(
       final LanguageDetectionSettings settings) {
-    // Fake call to the class to cause it to be loaded and the static initializer executed
-    NGram.normalize('\u0000');
-    NGram.normalize('高');
-    JapaneseHan.of('高');
-    UnicodeCache.scriptOf('高');
-    UnicodeCache.blockOf('高');
+
+    // Fake call to the following classes to cause it to be loaded
+    // so that their static initializer would run during class load
+    final char normalized = NGram.normalize('高');
+    final boolean kanji = JapaneseHan.of('高');
+    final Character.UnicodeScript unicodeScript = UnicodeCache.scriptOf('高');
+    final Character.UnicodeBlock unicodeBlock = UnicodeCache.blockOf('高');
+    final boolean isUpper = UnicodeCache.isUpper('A');
+    final String stringOf = UnicodeCache.stringOf('高');
 
     try {
       // Will load and unzip GZipped JSON language profiles from the resource directory
-      LanguageDetectorFactory.detector(settings);
+      final LanguageDetector detector = LanguageDetectorFactory.detector(settings);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
