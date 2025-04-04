@@ -382,63 +382,65 @@ Once the benchmark process completes, a report will be generated showing the acc
 
 For instance, in a row like `DE-optimaize`, the output indicates that the **Optimaize** detector processed the German dataset of `59,096` files. Out of those, `58,880` files were correctly identified as German, while the remaining files were misidentified as other languages.
 
+Each group of `<UPPERCASE_ISO-CODE-639-1>-<DETECTOR_NAME>` rows is organized in descending order based on the count in the corresponding **ISO 639-1 code column**, reflecting a sorting by the **detection accuracy** in descending order.
+
 ```bash
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| Dataset-to-Detector | en      | ja      | fr      | de      | it      | es      | unknown |
+| Dataset-to-Detector | de      | en      | es      | fr      | it      | ja      | unknown |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| DE-default          | 171     | 0       | 5       | 58914   | 3       | 3       | 0       |
-| DE-jfasttext        | 73      | 0       | 2       | 59008   | 0       | 5       | 8       |
-| DE-lingua_high      | 163     | 0       | 11      | 58916   | 2       | 4       | 0       |
-| DE-lingua_low       | 184     | 0       | 13      | 58889   | 5       | 4       | 1       |
-| DE-opennlp          | 257     | 0       | 3       | 58633   | 3       | 1       | 199     |
-| DE-optimaize        | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
-| DE-tika_opennlp     | 307     | 0       | 3       | 58434   | 4       | 0       | 348     |
-| DE-tika_optimaize   | 209     | 0       | 1       | 58880   | 3       | 3       | 0       |
+| DE-jfasttext        | 59008   | 73      | 5       | 2       | 0       | 0       | 8       |
+| DE-lingua_high      | 58916   | 163     | 4       | 11      | 2       | 0       | 0       |
+| DE-default          | 58914   | 171     | 3       | 5       | 3       | 0       | 0       |
+| DE-lingua_low       | 58889   | 184     | 4       | 13      | 5       | 0       | 1       |
+| DE-optimaize        | 58880   | 209     | 3       | 1       | 3       | 0       | 0       |
+| DE-tika_optimaize   | 58880   | 209     | 3       | 1       | 3       | 0       | 0       |
+| DE-opennlp          | 58633   | 257     | 1       | 3       | 3       | 0       | 199     |
+| DE-tika_opennlp     | 58434   | 307     | 0       | 3       | 4       | 0       | 348     |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| EN-default          | 59041   | 0       | 22      | 17      | 8       | 8       | 0       |
-| EN-jfasttext        | 59068   | 0       | 2       | 9       | 2       | 5       | 10      |
-| EN-lingua_high      | 58972   | 0       | 35      | 50      | 9       | 30      | 0       |
-| EN-lingua_low       | 58942   | 0       | 48      | 62      | 11      | 33      | 0       |
-| EN-opennlp          | 58976   | 0       | 0       | 0       | 2       | 2       | 116     |
-| EN-optimaize        | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
-| EN-tika_opennlp     | 58794   | 0       | 4       | 1       | 6       | 4       | 287     |
-| EN-tika_optimaize   | 59070   | 0       | 5       | 8       | 8       | 5       | 0       |
+| EN-optimaize        | 8       | 59070   | 5       | 5       | 8       | 0       | 0       |
+| EN-tika_optimaize   | 8       | 59070   | 5       | 5       | 8       | 0       | 0       |
+| EN-jfasttext        | 9       | 59068   | 5       | 2       | 2       | 0       | 10      |
+| EN-default          | 17      | 59041   | 8       | 22      | 8       | 0       | 0       |
+| EN-opennlp          | 0       | 58976   | 2       | 0       | 2       | 0       | 116     |
+| EN-lingua_high      | 50      | 58972   | 30      | 35      | 9       | 0       | 0       |
+| EN-lingua_low       | 62      | 58942   | 33      | 48      | 11      | 0       | 0       |
+| EN-tika_opennlp     | 1       | 58794   | 4       | 4       | 6       | 0       | 287     |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| ES-default          | 154     | 0       | 11      | 6       | 19      | 58906   | 0       |
-| ES-jfasttext        | 27      | 0       | 23      | 4       | 0       | 59025   | 17      |
-| ES-lingua_high      | 173     | 0       | 10      | 8       | 16      | 58889   | 0       |
-| ES-lingua_low       | 180     | 0       | 17      | 10      | 18      | 58871   | 0       |
-| ES-opennlp          | 200     | 0       | 5       | 0       | 16      | 58351   | 524     |
-| ES-optimaize        | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
-| ES-tika_opennlp     | 146     | 0       | 4       | 0       | 17      | 58644   | 285     |
-| ES-tika_optimaize   | 160     | 0       | 9       | 9       | 12      | 58906   | 0       |
+| ES-jfasttext        | 4       | 27      | 59025   | 23      | 0       | 0       | 17      |
+| ES-default          | 6       | 154     | 58906   | 11      | 19      | 0       | 0       |
+| ES-optimaize        | 9       | 160     | 58906   | 9       | 12      | 0       | 0       |
+| ES-tika_optimaize   | 9       | 160     | 58906   | 9       | 12      | 0       | 0       |
+| ES-lingua_high      | 8       | 173     | 58889   | 10      | 16      | 0       | 0       |
+| ES-lingua_low       | 10      | 180     | 58871   | 17      | 18      | 0       | 0       |
+| ES-tika_opennlp     | 0       | 146     | 58644   | 4       | 17      | 0       | 285     |
+| ES-opennlp          | 0       | 200     | 58351   | 5       | 16      | 0       | 524     |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| FR-default          | 144     | 0       | 58930   | 12      | 3       | 7       | 0       |
-| FR-jfasttext        | 30      | 0       | 59063   | 1       | 0       | 0       | 2       |
-| FR-lingua_high      | 239     | 0       | 58822   | 23      | 3       | 9       | 0       |
-| FR-lingua_low       | 257     | 0       | 58786   | 37      | 4       | 12      | 0       |
-| FR-opennlp          | 117     | 0       | 58909   | 1       | 2       | 1       | 66      |
-| FR-optimaize        | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
-| FR-tika_opennlp     | 184     | 0       | 58706   | 2       | 11      | 3       | 190     |
-| FR-tika_optimaize   | 161     | 0       | 58907   | 13      | 3       | 12      | 0       |
+| FR-jfasttext        | 1       | 30      | 0       | 59063   | 0       | 0       | 2       |
+| FR-default          | 12      | 144     | 7       | 58930   | 3       | 0       | 0       |
+| FR-opennlp          | 1       | 117     | 1       | 58909   | 2       | 0       | 66      |
+| FR-optimaize        | 13      | 161     | 12      | 58907   | 3       | 0       | 0       |
+| FR-tika_optimaize   | 13      | 161     | 12      | 58907   | 3       | 0       | 0       |
+| FR-lingua_high      | 23      | 239     | 9       | 58822   | 3       | 0       | 0       |
+| FR-lingua_low       | 37      | 257     | 12      | 58786   | 4       | 0       | 0       |
+| FR-tika_opennlp     | 2       | 184     | 3       | 58706   | 11      | 0       | 190     |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| IT-default          | 214     | 0       | 5       | 6       | 58864   | 7       | 0       |
-| IT-jfasttext        | 52      | 0       | 1       | 9       | 59025   | 4       | 5       |
-| IT-lingua_high      | 467     | 0       | 17      | 19      | 58535   | 58      | 0       |
-| IT-lingua_low       | 492     | 0       | 24      | 26      | 58489   | 65      | 0       |
-| IT-opennlp          | 248     | 0       | 0       | 0       | 58742   | 3       | 103     |
-| IT-optimaize        | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
-| IT-tika_opennlp     | 235     | 0       | 1       | 1       | 58667   | 4       | 188     |
-| IT-tika_optimaize   | 257     | 0       | 2       | 6       | 58827   | 4       | 0       |
+| IT-jfasttext        | 9       | 52      | 4       | 1       | 59025   | 0       | 5       |
+| IT-default          | 6       | 214     | 7       | 5       | 58864   | 0       | 0       |
+| IT-optimaize        | 6       | 257     | 4       | 2       | 58827   | 0       | 0       |
+| IT-tika_optimaize   | 6       | 257     | 4       | 2       | 58827   | 0       | 0       |
+| IT-opennlp          | 0       | 248     | 3       | 0       | 58742   | 0       | 103     |
+| IT-tika_opennlp     | 1       | 235     | 4       | 1       | 58667   | 0       | 188     |
+| IT-lingua_high      | 19      | 467     | 58      | 17      | 58535   | 0       | 0       |
+| IT-lingua_low       | 26      | 492     | 65      | 24      | 58489   | 0       | 0       |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
-| JA-default          | 2       | 59093   | 0       | 0       | 1       | 0       | 0       |
-| JA-jfasttext        | 8       | 59076   | 0       | 0       | 1       | 0       | 11      |
-| JA-lingua_high      | 36      | 59047   | 3       | 7       | 1       | 2       | 0       |
-| JA-lingua_low       | 31      | 59049   | 1       | 10      | 1       | 4       | 0       |
-| JA-opennlp          | 51      | 58742   | 9       | 5       | 9       | 14      | 266     |
-| JA-optimaize        | 5421    | 51289   | 534     | 1055    | 440     | 351     | 6       |
-| JA-tika_opennlp     | 110     | 58386   | 3       | 8       | 13      | 14      | 562     |
-| JA-tika_optimaize   | 5421    | 51287   | 535     | 1054    | 441     | 352     | 6       |
+| JA-default          | 0       | 2       | 0       | 0       | 1       | 59093   | 0       |
+| JA-jfasttext        | 0       | 8       | 0       | 0       | 1       | 59076   | 11      |
+| JA-lingua_low       | 10      | 31      | 4       | 1       | 1       | 59049   | 0       |
+| JA-lingua_high      | 7       | 36      | 2       | 3       | 1       | 59047   | 0       |
+| JA-opennlp          | 5       | 51      | 14      | 9       | 9       | 58742   | 266     |
+| JA-tika_opennlp     | 8       | 110     | 14      | 3       | 13      | 58386   | 562     |
+| JA-optimaize        | 1055    | 5421    | 351     | 534     | 440     | 51289   | 6       |
+| JA-tika_optimaize   | 1054    | 5421    | 352     | 535     | 441     | 51287   | 6       |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 ```
 
@@ -524,8 +526,9 @@ Detector tika_optimaize completed in 38 seconds and 451 millis
 
 From the [Accuracy report](#accuracy-report) and [Speed of execution](#speed-of-execution) sections, we can conclude:
 
-- `Optimaize`, `jFastText`, and the `Default`, the current library, are the fastest. They also provide a strong balance between high accuracy and speed, performing better than the other libraries in both areas.
-- `OpenNLP`, `Apache Tika OpenNLP`, and `Lingua` (regardless of its accuracy mode) are noticeably slower in comparison, which may affect efficiency.
+- `jFastText` consistently ranks among the top three for detection accuracy, with `Default` (the current library) securing the second position, just behind `jFastText` in terms of accuracy.
+- `Default`, `jFastText`, and `Optimaize` are the fastest libraries, offering a robust balance of high accuracy and speed, outperforming other libraries in both categories.
+- `OpenNLP`, `Apache Tika OpenNLP`, and `Lingua` (across all accuracy modes) are noticeably slower in comparison, which may affect efficiency.
 
 [`Back to top`](#table-of-contents)
 
