@@ -211,12 +211,14 @@ class NGram {
   private StringBuilder grams;
 
   private boolean capitalWord;
+  private char lastChar;
 
   NGram(final String input, final int minNGramLength, final int maxNGramLength) {
     this.input = input;
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
     this.grams = new StringBuilder(BLANK_SPACE);
+    this.lastChar = BLANK_CHAR;
     this.capitalWord = false;
   }
 
@@ -324,54 +326,47 @@ class NGram {
     return ch;
   }
 
-  void addChar(char ch) {
-    ch = normalize(ch);
-    char lastchar = grams.charAt(grams.length() - 1);
-    if (lastchar == BLANK_CHAR) {
-      grams = new StringBuilder(BLANK_SPACE);
+  void addChar(char currentChar) {
+    currentChar = normalize(currentChar);
+
+    final boolean lastCharWasBlank = (this.lastChar == BLANK_CHAR);
+    final boolean currentCharIsBlank = (currentChar == BLANK_CHAR);
+    final boolean appendCurrentChar = !(lastCharWasBlank && currentCharIsBlank);
+
+    if (lastCharWasBlank) {
+      this.grams = new StringBuilder(BLANK_SPACE);
+      this.lastChar = BLANK_CHAR;
       this.capitalWord = false;
-      if (ch == BLANK_CHAR) {
-        return;
-      }
-    } else if (grams.length() >= this.maxNGramLength) {
-      grams.deleteCharAt(0);
     }
 
-    grams.append(ch);
-
-    if (Character.isUpperCase(ch)) {
-      if (Character.isUpperCase(lastchar)) {
-        capitalWord = true;
-      }
-    } else {
-      capitalWord = false;
+    if (appendCurrentChar) {
+      this.grams.append(currentChar);
+      this.capitalWord = UnicodeCache.isUpper(lastChar) && UnicodeCache.isUpper(currentChar);
+      this.lastChar = currentChar;
     }
   }
 
-  String get(final int n) {
-    if (capitalWord) {
+  String get(final int nGramSize) {
+    if (this.capitalWord) {
       return EMPTY_STRING;
     }
 
-    int len = grams.length();
-    if (n < this.minNGramLength || n > this.maxNGramLength || len < n) {
+    final int len = grams.length();
+    if (nGramSize < this.minNGramLength || nGramSize > this.maxNGramLength || len < nGramSize) {
       return EMPTY_STRING;
     }
 
-    if (n == this.minNGramLength) {
-      char ch = grams.charAt(len - 1);
-      if (ch == BLANK_CHAR) {
-        return EMPTY_STRING;
-      }
-
-      if (this.minNGramLength == UNIGRAM_SIZE) {
-        return Character.toString(ch);
-      } else {
-        return grams.substring(len - n, len);
-      }
-    } else {
-      return grams.substring(len - n, len);
+    if (nGramSize == this.minNGramLength && this.lastChar == BLANK_CHAR) {
+      return EMPTY_STRING;
     }
+
+    // Special Case: Handle Unigrams (nGramSize=1) explicitly if minNGramLength is also 1.
+    if (nGramSize == UNIGRAM_SIZE && this.minNGramLength == UNIGRAM_SIZE) {
+      // No need to check for BLANK_CHAR again, it was handled by the guard clause above.
+      return UnicodeCache.stringOf(this.lastChar);
+    }
+
+    return this.grams.substring(len - nGramSize, len);
   }
 
   @Deprecated
