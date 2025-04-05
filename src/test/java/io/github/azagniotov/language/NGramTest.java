@@ -24,9 +24,9 @@ public class NGramTest {
 
   @Test
   public final void testDefaultValue() {
-    final NGram ngram = new NGram("input", 5, 7);
-    assertEquals(ngram.getMinNGramLength(), 5);
-    assertEquals(ngram.getMaxNGramLength(), 7);
+    final NGram ngram = new NGram("input", 1, 3);
+    assertEquals(ngram.getMinNGramLength(), 1);
+    assertEquals(ngram.getMaxNGramLength(), 3);
   }
 
   @Test
@@ -147,7 +147,6 @@ public class NGramTest {
   @Test
   public final void testNGram() {
     final NGram ngram = new NGram("input", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
-    assertEquals(ngram.get(0), EMPTY_STRING);
     assertEquals(ngram.get(1), EMPTY_STRING);
     assertEquals(ngram.get(2), EMPTY_STRING);
     assertEquals(ngram.get(3), EMPTY_STRING);
@@ -205,7 +204,7 @@ public class NGramTest {
   }
 
   @Test
-  public final void testExtractNGrams_v0() {
+  public final void testExtractNGrams() {
     final NGram ngram =
         new NGram(
             "A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);

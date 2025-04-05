@@ -37,7 +37,21 @@ public class NGramParametizedTest {
   public static Collection<Object[]> data() {
     final List<Object[]> data = new ArrayList<>();
 
+    data.add(new Object[] {"a", asList(" a", "a")});
+    data.add(new Object[] {"ab", asList(" a", " ab", "a", "ab", "b")});
+    data.add(new Object[] {" abc", asList(" a", " ab", "a", "ab", "abc", "b", "bc", "c")});
+    data.add(new Object[] {"Ab", asList(" A", " Ab", "A", "Ab", "b")});
+    data.add(new Object[] {"aB", asList(" a", " aB", "B", "a", "aB")});
+    data.add(new Object[] {"aBc", asList(" a", " aB", "B", "Bc", "a", "aB", "aBc", "c")});
     data.add(new Object[] {"AB", asList(" A", "A")});
+    data.add(
+        new Object[] {
+          "AbcD", asList(" A", " Ab", "A", "Ab", "Abc", "D", "b", "bc", "bcD", "c", "cD")
+        });
+    data.add(
+        new Object[] {
+          "Abc D", asList(" A", " Ab", " D", "A", "Ab", "Abc", "D", "b", "bc", "bc ", "c", "c ")
+        });
     data.add(new Object[] {"aBCd", asList(" a", " aB", "B", "BCd", "Cd", "a", "aB", "d")});
     data.add(new Object[] {" z aBC", asList(" a", " aB", " z", " z ", "B", "a", "aB", "z", "z ")});
     data.add(
@@ -57,6 +71,7 @@ public class NGramParametizedTest {
     final List<String> actual = ngram.extractNGrams(Set.of());
     Collections.sort(actual);
 
+    Collections.sort(expected);
     assertEquals(expected, actual);
   }
 }
