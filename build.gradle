@@ -68,7 +68,7 @@ dependencies {
 
     benchmarkTestImplementation "org.slf4j:slf4j-nop:2.0.17"
     benchmarkTestImplementation "com.github.pemistahl:lingua:1.2.2"
-    benchmarkTestImplementation "io.github.azagniotov:language-detection:12.4.0"
+    benchmarkTestImplementation "io.github.azagniotov:language-detection:12.4.1"
     benchmarkTestImplementation "com.optimaize.languagedetector:language-detector:0.6"
     benchmarkTestImplementation "org.apache.tika:tika-core:3.1.0"
     benchmarkTestImplementation "org.apache.tika:tika-langdetect-opennlp:3.1.0"
