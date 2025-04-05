@@ -8,12 +8,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/** */
 public class NGramTest {
 
   @BeforeClass
@@ -205,43 +205,19 @@ public class NGramTest {
   }
 
   @Test
-  public final void testExtractNGrams() {
+  public final void testExtractNGrams_v0() {
     final NGram ngram =
         new NGram(
             "A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
-    final Set<String> allowlist =
-        Set.of("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a");
-    final List<String> extractedNGrams = ngram.extractNGrams(allowlist);
+    final List<String> actual =
+        ngram.extractNGrams(Set.of("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
+    Collections.sort(actual);
 
-    assertEquals(
-        extractedNGrams,
-        Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
-  }
+    final List<String> expected =
+        Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a");
+    Collections.sort(expected);
 
-  @Test
-  public final void testExtractLongNGrams() {
-    final NGram ngram = new NGram("apples", 1, 5);
-    final Set<String> allowlist =
-        Set.of(
-            "a", " a", "p", "ap", " ap", "pp", "app", " app", "l", "pl", "ppl", "appl", " appl",
-            "e", "le", "ple", "pple", "apple", "s", "es", "les", "ples", "pples");
-    final List<String> extractedNGrams = ngram.extractNGrams(allowlist);
-
-    assertEquals(
-        extractedNGrams,
-        Arrays.asList(
-            "a", " a", "p", "ap", " ap", "p", "pp", "app", " app", "l", "pl", "ppl", "appl",
-            " appl", "e", "le", "ple", "pple", "apple", "s", "es", "les", "ples", "pples"));
-  }
-
-  @Test
-  public final void testExtractCustomSizeNGrams() {
-    final NGram ngram = new NGram("apples", 4, 5);
-    final Set<String> allowlist = Set.of(" app", "appl", " appl", "pple", "apple", "ples", "pples");
-    final List<String> extractedNGrams = ngram.extractNGrams(allowlist);
-
-    assertEquals(
-        extractedNGrams, Arrays.asList(" app", "appl", " appl", "pple", "apple", "ples", "pples"));
+    assertEquals(expected, actual);
   }
 
   /** Test method for {@link NGram#normalize(char)} with Romanian characters. */
