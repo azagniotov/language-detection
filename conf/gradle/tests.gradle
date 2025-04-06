@@ -17,9 +17,6 @@ testing {
   suites {
     test {
       useJUnit()
-      dependencies {
-        implementation "junit:junit:${junitVersion}"
-      }
     }
 
     accuracyTest(JvmTestSuite) {
@@ -33,7 +30,6 @@ testing {
       useJUnit()
       dependencies {
         implementation project()
-        implementation "junit:junit:${junitVersion}"
       }
     }
 
@@ -44,10 +40,6 @@ testing {
                   "src/main/resources"
           ]
         }
-      }
-      useJUnit()
-      dependencies {
-        implementation project()
       }
     }
   }

@@ -442,7 +442,7 @@ Each group of `<UPPERCASE_ISO-CODE-639-1>-<DETECTOR_NAME>` rows is organized in 
 | JA-lingua_high      | 7       | 36      | 2       | 3       | 1       | 59047   | 0       |
 | JA-opennlp          | 5       | 51      | 14      | 9       | 9       | 58742   | 266     |
 | JA-tika_opennlp     | 8       | 110     | 14      | 3       | 13      | 58386   | 562     |
-| JA-optimaize        | 1055    | 5421    | 351     | 534     | 440     | 51289   | 6       |
+| JA-optimaize        | 1054    | 5421    | 352     | 535     | 441     | 51287   | 6       |
 | JA-tika_optimaize   | 1054    | 5421    | 352     | 535     | 441     | 51287   | 6       |
 |---------------------|---------|---------|---------|---------|---------|---------|---------|
 ```
@@ -464,7 +464,7 @@ default processes dataset [es]
 default processes dataset [fr]
 default processes dataset [it]
 default processes dataset [ja]
-Detector default completed in 32 seconds and 834 millis
+Detector default completed in 29 seconds and 054 millis
 
 jfasttext processes dataset [de]
 jfasttext processes dataset [en]
@@ -472,7 +472,7 @@ jfasttext processes dataset [es]
 jfasttext processes dataset [fr]
 jfasttext processes dataset [it]
 jfasttext processes dataset [ja]
-Detector jfasttext completed in 35 seconds and 625 millis
+Detector jfasttext completed in 32 seconds and 700 millis
 
 lingua_high processes dataset [de]
 lingua_high processes dataset [en]
@@ -480,7 +480,7 @@ lingua_high processes dataset [es]
 lingua_high processes dataset [fr]
 lingua_high processes dataset [it]
 lingua_high processes dataset [ja]
-Detector lingua_high completed in 91 seconds and 540 millis
+Detector lingua_high completed in 94 seconds and 833 millis
 
 lingua_low processes dataset [de]
 lingua_low processes dataset [en]
@@ -488,7 +488,7 @@ lingua_low processes dataset [es]
 lingua_low processes dataset [fr]
 lingua_low processes dataset [it]
 lingua_low processes dataset [ja]
-Detector lingua_low completed in 92 seconds and 164 millis
+Detector lingua_low completed in 92 seconds and 096 millis
 
 opennlp processes dataset [de]
 opennlp processes dataset [en]
@@ -496,7 +496,7 @@ opennlp processes dataset [es]
 opennlp processes dataset [fr]
 opennlp processes dataset [it]
 opennlp processes dataset [ja]
-Detector opennlp completed in 86 seconds and 247 millis
+Detector opennlp completed in 85 seconds and 664 millis
 
 optimaize processes dataset [de]
 optimaize processes dataset [en]
@@ -504,7 +504,7 @@ optimaize processes dataset [es]
 optimaize processes dataset [fr]
 optimaize processes dataset [it]
 optimaize processes dataset [ja]
-Detector optimaize completed in 34 seconds and 823 millis
+Detector optimaize completed in 32 seconds and 195 millis
 
 tika_opennlp processes dataset [de]
 tika_opennlp processes dataset [en]
