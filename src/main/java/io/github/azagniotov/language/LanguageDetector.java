@@ -176,6 +176,9 @@ class LanguageDetector {
 
         // Retrieving the probabilities for a specific n-gram appears in each language.
         final float[] wordProbabilities = languageCorporaProbabilities.get(nGram);
+        if (wordProbabilities == null) {
+          continue;
+        }
         float probSum = 0.0f;
         for (int probIdx = 0; probIdx < probabilities.length; ++probIdx) {
 
@@ -238,7 +241,7 @@ class LanguageDetector {
   List<String> extractNGrams(final String input) {
     final NGram ngram = new NGram(input, this.minNGramLength, this.maxNGramLength);
 
-    return ngram.extractNGrams(languageCorporaProbabilities.keySet());
+    return ngram.extractNGrams();
   }
 
   /**
