@@ -38,6 +38,12 @@ public class OptimaizeDetector implements ThirdPartyDetector {
           new LanguageProfileReader().readBuiltIn(ldLocales);
       final LanguageDetector languageDetector =
           LanguageDetectorBuilder.create(NgramExtractors.standard())
+              // The JavaDocs say:
+              // "Defaults to 0, which means don't use this feature. That's the old behavior."
+              // but, the default value for shortTextAlgorithm is actually 50. Just in case,
+              // setting this to zero.
+              .shortTextAlgorithm(0)
+              .minimalConfidence(0.1)
               .withProfiles(languageProfiles)
               .build();
 
