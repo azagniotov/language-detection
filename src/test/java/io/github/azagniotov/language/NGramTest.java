@@ -7,6 +7,10 @@ import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGT
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -197,6 +201,22 @@ public class NGramTest {
     assertEquals(ngram.get(1), "a");
     assertEquals(ngram.get(2), " a");
     assertEquals(ngram.get(3), EMPTY_STRING);
+  }
+
+  @Test
+  public final void testExtractNGrams() {
+    final NGram ngram =
+        new NGram(
+            "A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
+    final List<String> actual =
+        ngram.extractNGrams(Set.of("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
+    Collections.sort(actual);
+
+    final List<String> expected =
+        Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a");
+    Collections.sort(expected);
+
+    assertEquals(expected, actual);
   }
 
   /** Test method for {@link NGram#normalize(char)} with Romanian characters. */

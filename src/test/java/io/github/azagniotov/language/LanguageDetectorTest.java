@@ -89,6 +89,10 @@ public class LanguageDetectorTest {
     assertEquals(
         DEFAULT_DETECTOR.extractNGrams("alex"),
         Arrays.asList("a", " a", "l", "al", " al", "e", "le", "ale", "x", "ex", "lex"));
+
+    assertEquals(
+        DEFAULT_DETECTOR.extractNGrams("A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a"),
+        Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
   }
 
   @Test
@@ -394,9 +398,8 @@ public class LanguageDetectorTest {
 
   @Test
   public final void languageDetectorRespondsWithUndeterminedLanguage() throws Exception {
-    // We want to detect a language which does not make sense, based on the inputs
     final LanguageDetectionSettings supportedLanguages =
-        LanguageDetectionSettings.fromIsoCodes639_1("en,ja").build();
+        LanguageDetectionSettings.fromIsoCodes639_1("en,de").build();
     final LanguageDetectorFactory factory =
         LanguageDetectorFactory.fromSettings(supportedLanguages);
     final LanguageDetector detector =
@@ -407,12 +410,12 @@ public class LanguageDetectorTest {
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
-    assertEquals("ja", detector.detectAll("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ").get(0).getIsoCode639_1());
-    assertEquals("ja", detector.detectAll("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ").get(0).getIsoCode639_1());
-    assertEquals("ja", detector.detectAll("㈱_(株)_①②③_㈱㈲㈹").get(0).getIsoCode639_1());
+    assertEquals("und", detector.detectAll("ｼｰｻｲﾄﾞ_ﾗｲﾅｰ").get(0).getIsoCode639_1());
+    assertEquals("und", detector.detectAll("Ｃｕｌｔｕｒｅ　ｏｆ　Ｊａｐａｎ").get(0).getIsoCode639_1());
+    assertEquals("und", detector.detectAll("㈱_(株)_①②③_㈱㈲㈹").get(0).getIsoCode639_1());
     assertEquals("und", detector.detectAll("...").get(0).getIsoCode639_1());
     assertEquals("und", detector.detectAll("1234567").get(0).getIsoCode639_1());
-    assertEquals("ja", detector.detectAll("한국어").get(0).getIsoCode639_1());
+    assertEquals("und", detector.detectAll("한국어").get(0).getIsoCode639_1());
   }
 
   @Test
