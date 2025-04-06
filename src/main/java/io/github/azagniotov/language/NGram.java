@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.BLANK_CHAR;
-import static io.github.azagniotov.language.StringConstants.BLANK_SPACE;
 import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static java.lang.Character.UnicodeBlock.ARABIC;
 import static java.lang.Character.UnicodeBlock.BASIC_LATIN;
@@ -20,7 +19,6 @@ import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_ADDITIONAL;
 import static java.lang.Character.UnicodeBlock.LATIN_EXTENDED_B;
 import static java.lang.Character.UnicodeBlock.SUPPLEMENTAL_PUNCTUATION;
 
-import io.github.azagniotov.language.annotations.GeneratedCodeMethodCoverageExclusion;
 import java.lang.Character.UnicodeBlock;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +41,10 @@ class NGram {
           CJK_SYMBOLS_AND_PUNCTUATION,
           IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION,
           SUPPLEMENTAL_PUNCTUATION);
+
   private static final int UNIGRAM_SIZE = 1;
+  private static final int BIGRAM_SIZE = 2;
+  private static final int TRIGRAM_SIZE = 3;
 
   private static final String[] CJK_CLASS = {
     "\u4F7C\u6934",
@@ -208,23 +209,74 @@ class NGram {
   private final int minNGramLength;
   private final int maxNGramLength;
 
-  private final StringBuilder grams;
+  // Re-usable pre-allocated arrays. Characters from the circularBuffer will
+  // be copied into these pre-allocated temporary char[] (nGram) and then
+  // a final String will be created from that array using String.valueOf(nGram).
+  private final char[] nGramOfOne;
+  private final char[] nGramOfTwo;
+  private final char[] nGramOfThree;
 
+  private final char[] circularBuffer;
+  private final int circularBufferSize;
+
+  private int circularBufferIdx;
+  private int circularBufferTotalElements;
   private boolean capitalWord;
   private char lastChar;
 
+  /**
+   * The current implementation of n-gram extraction uses a circular buffer approach introduced in
+   * <a
+   * href="https://github.com/azagniotov/language-detection/pull/129">https://github.com/azagniotov/language-detection/pull/129</a>
+   *
+   * @param input text to extract n-grams from
+   * @param minNGramLength n-gram min size, i.e.: 1
+   * @param maxNGramLength n-gram min size, i.e.: 3
+   */
   NGram(final String input, final int minNGramLength, final int maxNGramLength) {
     this.input = input;
+
+    assert minNGramLength <= maxNGramLength;
+    assert minNGramLength == UNIGRAM_SIZE;
+    assert maxNGramLength == TRIGRAM_SIZE;
+
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
-    this.grams = new StringBuilder();
-    this.grams.append(BLANK_SPACE);
     this.lastChar = BLANK_CHAR;
     this.capitalWord = false;
+
+    this.circularBufferSize = this.maxNGramLength;
+    this.circularBuffer = new char[TRIGRAM_SIZE];
+
+    // Re-usable pre-allocated arrays. Characters from the circularBuffer will
+    // be copied into these pre-allocated temporary char[] (nGram) and then
+    // a final String will be created from that array using String.valueOf(nGram).
+    this.nGramOfOne = new char[UNIGRAM_SIZE];
+    this.nGramOfTwo = new char[BIGRAM_SIZE];
+    this.nGramOfThree = new char[TRIGRAM_SIZE];
+
+    resetBuffer();
   }
 
   static char normalize(final char c) {
     return NORMALIZED_BMP_CHARS[c];
+  }
+
+  private void resetBuffer() {
+    this.circularBufferIdx = 0;
+    this.circularBuffer[this.circularBufferIdx] = BLANK_CHAR;
+    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.circularBufferSize;
+    this.circularBufferTotalElements = 1;
+  }
+
+  private int previousOffset(final int relativePastPosition) {
+    return (this.circularBufferIdx + this.circularBufferSize - relativePastPosition)
+        % this.circularBufferSize;
+  }
+
+  private void incrementCircularBufferIdx() {
+    this.circularBufferIdx = (this.circularBufferIdx + 1) % this.circularBufferSize;
+    ++this.circularBufferTotalElements;
   }
 
   /**
@@ -262,6 +314,10 @@ class NGram {
           continue;
         }
 
+        // TODO: Investigate using a data structure like a Trie for the allowlist.
+        //  This would allow checking for n-gram validity directly character by
+        //  character from the circularBuffer without creating the intermediate
+        //  String unless a potential match is found in the Trie.
         if (allowlist.contains(word) || allowlist.isEmpty()) {
           extractedNWords.add(word);
         }
@@ -335,14 +391,14 @@ class NGram {
     final boolean appendCurrentChar = !(lastCharWasBlank && currentCharIsBlank);
 
     if (lastCharWasBlank) {
-      this.grams.setLength(0);
-      this.grams.append(BLANK_SPACE);
+      resetBuffer();
       this.lastChar = BLANK_CHAR;
       this.capitalWord = false;
     }
 
     if (appendCurrentChar) {
-      this.grams.append(currentChar);
+      this.circularBuffer[this.circularBufferIdx] = currentChar;
+      incrementCircularBufferIdx();
       this.capitalWord = UnicodeCache.isUpper(lastChar) && UnicodeCache.isUpper(currentChar);
       this.lastChar = currentChar;
     }
@@ -361,57 +417,31 @@ class NGram {
       }
     }
 
-    final int len = grams.length();
+    final int len = this.circularBufferTotalElements;
     if (len >= nGramSize) {
-      return this.grams.substring(len - nGramSize, len);
+      final char[] nGram = charArrayBySize(nGramSize);
+
+      final int startOffset = previousOffset(nGramSize);
+      nGram[0] = circularBuffer[startOffset];
+      if (nGramSize > 1) nGram[1] = circularBuffer[(startOffset + 1) % circularBufferSize];
+      if (nGramSize > 2) nGram[2] = circularBuffer[(startOffset + 2) % circularBufferSize];
+
+      return String.valueOf(nGram);
     } else {
       return EMPTY_STRING;
     }
   }
 
-  @Deprecated
-  @GeneratedCodeMethodCoverageExclusion
-  private void addChar_original(char ch) {
-    ch = normalize(ch);
-    char lastchar = grams.charAt(grams.length() - 1);
-    if (lastchar == BLANK_CHAR) {
-      // Commented out, because I made the grams 'final'
-      // grams = new StringBuilder(BLANK_SPACE);
-      capitalWord = false;
-      if (ch == BLANK_CHAR) {
-        return;
-      }
-    } else if (grams.length() >= this.maxNGramLength) {
-      grams.deleteCharAt(0);
-    }
-    grams.append(ch);
-    if (Character.isUpperCase(ch)) {
-      if (Character.isUpperCase(lastchar)) {
-        capitalWord = true;
-      }
-    } else {
-      capitalWord = false;
-    }
-  }
-
-  @Deprecated
-  @GeneratedCodeMethodCoverageExclusion
-  private String get_original(final int n) {
-    if (capitalWord) {
-      return EMPTY_STRING;
-    }
-    int len = grams.length();
-    if (n < this.minNGramLength || n > this.maxNGramLength || len < n) {
-      return EMPTY_STRING;
-    }
-    if (n == this.minNGramLength) {
-      char ch = grams.charAt(len - 1);
-      if (ch == BLANK_CHAR) {
-        return EMPTY_STRING;
-      }
-      return Character.toString(ch);
-    } else {
-      return grams.substring(len - n, len);
+  private char[] charArrayBySize(final int nGramSize) {
+    switch (nGramSize) {
+      case UNIGRAM_SIZE:
+        return this.nGramOfOne;
+      case BIGRAM_SIZE:
+        return this.nGramOfTwo;
+      case TRIGRAM_SIZE:
+        return this.nGramOfThree;
+      default:
+        throw new IllegalArgumentException("Unsupported nGramSize: " + nGramSize);
     }
   }
 
