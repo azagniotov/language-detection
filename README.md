@@ -62,7 +62,10 @@ For clarity, I'm linking these enhancements to the original implementation with 
 2. **Removing per-character normalization at runtime**. In the current implementation, instead of normalizing characters during execution, all `65,535` Unicode BMP characters are pre-normalized into a char[] array, making runtime normalization a simple array lookup.
 [See the original code here](https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/util/NGram.java#L75-L103).
 
-3. **Using a float-level precision**. Since Java's `double`-level precision is not neccessary for the current library, a switch to `float` type has been made when storing and computing probabilities. This will improve memory efficiency, and may also potentially provide a slight performance boost. Modern CPUs are very efficient at floating point calculations, so the performance increase may be small, but it will be there.
+3. **Circular buffer optimization when extracting n-grams**. This refined implementation optimizes the original `StringBuilder` approach by employing a fixed-size circular buffer. This aproach provides a deterministic memory footprint and significantly reduces the frequency of object allocations during processing, making it suitable for performance-sensitive applications or environments where garbage collection pauses are undesirable. As a result, this can lead to more consistent throughput and lower latency, particularly under sustained load. While the buffer management logic introduces greater implementation complexity, this represents a standard trade-off for achieving improved performance characteristics in resource-sensitive applications. [See the original code here](https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/util/NGram.java#L24-L68)
+
+4. **Using a float-level precision**. Since Java's `double`-level precision is not neccessary for the current library, a switch to `float` type has been made when storing and computing probabilities. This will improve memory efficiency, and may also potentially provide a slight performance boost. Modern CPUs are very efficient at floating point calculations, so the performance increase may be small, but it will be there.
+
 
 ### Supported ISO 639-1 codes
 
