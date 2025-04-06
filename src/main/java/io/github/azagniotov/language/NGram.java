@@ -288,7 +288,7 @@ class NGram {
    *
    * @return n-grams list
    */
-  List<String> extractNGrams() {
+  List<String> extractNGrams(final Set<String> allowlist) {
     // Unneccessary resizing of the ArrayList when adding many n-grams.
     //
     // To avoid unneccessary resizing of the ArrayList we can pre-allocated it, since
@@ -305,7 +305,7 @@ class NGram {
     //
     // The formula:
     // Total n-grams = N + (N − 1) + (N − 2) => Total n-grams = 3N - 3
-    // P.S. Dropping the  '- 3'
+    //    P.S. Dropping the  '- 3' from the above formula when computing.
     final int projectedTotalNGrams = this.maxNGramLength * input.length();
     final List<String> extractedNWords = new ArrayList<>(projectedTotalNGrams);
 
@@ -327,7 +327,13 @@ class NGram {
           continue;
         }
 
-        extractedNWords.add(word);
+        // TODO: Investigate using a data structure like a Trie for the allowlist.
+        //  This would allow checking for n-gram validity directly character by
+        //  character from the circularBuffer without creating the intermediate
+        //  String unless a potential match is found in the Trie.
+        if (allowlist.contains(word) || allowlist.isEmpty()) {
+          extractedNWords.add(word);
+        }
       }
     }
 
