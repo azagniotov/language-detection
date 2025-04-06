@@ -308,6 +308,14 @@ class NGram {
       char currentChar = input.charAt(idx);
       addChar(currentChar);
 
+      // Check capital word state: skip if last two characters were upper case
+      // This check was moved here from the .get(..) method which makes it more
+      // explicit and avoids returning an empty String, which incurrs a check
+      // by the below word.isEmpty()
+      if (this.capitalWord) {
+        continue;
+      }
+
       for (int n = this.minNGramLength; n <= this.maxNGramLength; ++n) {
         final String word = get(n);
         if (word.isEmpty()) {
@@ -405,10 +413,6 @@ class NGram {
   }
 
   String get(final int nGramSize) {
-    if (this.capitalWord) {
-      return EMPTY_STRING;
-    }
-
     if (nGramSize == UNIGRAM_SIZE) {
       if (this.lastChar == BLANK_CHAR) {
         return EMPTY_STRING;
