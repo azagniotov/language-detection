@@ -68,6 +68,8 @@ For clarity, I'm linking these enhancements to the original implementation with 
 
 For more information how this library compares against other open source language detectors, please see [Language detection benchmarks against other libraries](#language-detection-benchmarks-against-other-libraries)
 
+[`Back to top`](#table-of-contents)
+
 ### Supported ISO 639-1 codes
 
 The following is a list of languages and their ISO 639-1 language codes supported by the library:
@@ -155,6 +157,8 @@ The following is a list of languages and their ISO 639-1 language codes supporte
 | Zulu               | zu        | Niger–Congo / Atlantic–Congo        | South Africa    | &nbsp;&nbsp;🇿🇦&nbsp;&nbsp; |
 
 
+[`Back to top`](#table-of-contents)
+
 ### Model parameters
 
 The following model [src/main/resources/model/parameters.json](src/main/resources/model/parameters.json) can be configured as ENV vars to modify language detection at runtime.
@@ -180,6 +184,8 @@ The library bypasses the performance bottlenecks of traditional machine learning
 which are ill-suited for such limited / mixed text. By directly iterating over characters, the library efficiently
 identifies CJK script usage, enabling rapid and precise language classification. This direct character analysis is
 significantly faster and simpler for short texts, avoiding the complexities of statistical models.
+
+[`Back to top`](#table-of-contents)
 
 ## How to use?
 
