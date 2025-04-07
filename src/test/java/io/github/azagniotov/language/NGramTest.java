@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.BLANK_CHAR;
-import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static io.github.azagniotov.language.TestDefaultConstants.MAX_NGRAM_LENGTH;
 import static io.github.azagniotov.language.TestDefaultConstants.MIN_NGRAM_LENGTH;
 import static org.junit.Assert.assertEquals;
@@ -15,6 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class NGramTest {
+
+  private static final int ZERO_LENGTH = 0;
 
   @BeforeClass
   public static void setUp() throws IOException {
@@ -147,60 +148,60 @@ public class NGramTest {
   @Test
   public final void testNGram() {
     final NGram ngram = new NGram("input", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
-    assertEquals(ngram.get(1), EMPTY_STRING);
-    assertEquals(ngram.get(2), EMPTY_STRING);
-    assertEquals(ngram.get(3), EMPTY_STRING);
-    assertEquals(ngram.get(4), EMPTY_STRING);
+    assertEquals(ngram.get(1).length, ZERO_LENGTH);
+    assertEquals(ngram.get(2).length, ZERO_LENGTH);
+    assertEquals(ngram.get(3).length, ZERO_LENGTH);
+    assertEquals(ngram.get(4).length, ZERO_LENGTH);
 
     ngram.addChar(BLANK_CHAR);
-    assertEquals(ngram.get(1), EMPTY_STRING);
-    assertEquals(ngram.get(2), EMPTY_STRING);
-    assertEquals(ngram.get(3), EMPTY_STRING);
+    assertEquals(ngram.get(1).length, ZERO_LENGTH);
+    assertEquals(ngram.get(2).length, ZERO_LENGTH);
+    assertEquals(ngram.get(3).length, ZERO_LENGTH);
 
     ngram.addChar('A');
-    assertEquals(ngram.get(1), "A");
-    assertEquals(ngram.get(2), " A");
-    assertEquals(ngram.get(3), EMPTY_STRING);
+    assertEquals(String.valueOf(ngram.get(1)), "A");
+    assertEquals(String.valueOf(ngram.get(2)), " A");
+    assertEquals(ngram.get(3).length, ZERO_LENGTH);
 
     ngram.addChar('\u06cc');
-    assertEquals(ngram.get(1), "\u064a");
-    assertEquals(ngram.get(2), "A\u064a");
-    assertEquals(ngram.get(3), " A\u064a");
+    assertEquals(String.valueOf(ngram.get(1)), "\u064a");
+    assertEquals(String.valueOf(ngram.get(2)), "A\u064a");
+    assertEquals(String.valueOf(ngram.get(3)), " A\u064a");
 
     ngram.addChar('\u1ea0');
-    assertEquals(ngram.get(1), "\u1ec3");
-    assertEquals(ngram.get(2), "\u064a\u1ec3");
-    assertEquals(ngram.get(3), "A\u064a\u1ec3");
+    assertEquals(String.valueOf(ngram.get(1)), "\u1ec3");
+    assertEquals(String.valueOf(ngram.get(2)), "\u064a\u1ec3");
+    assertEquals(String.valueOf(ngram.get(3)), "A\u064a\u1ec3");
 
     ngram.addChar('\u3044');
-    assertEquals(ngram.get(1), "\u3042");
-    assertEquals(ngram.get(2), "\u1ec3\u3042");
-    assertEquals(ngram.get(3), "\u064a\u1ec3\u3042");
+    assertEquals(String.valueOf(ngram.get(1)), "\u3042");
+    assertEquals(String.valueOf(ngram.get(2)), "\u1ec3\u3042");
+    assertEquals(String.valueOf(ngram.get(3)), "\u064a\u1ec3\u3042");
 
     ngram.addChar('\u30a4');
-    assertEquals(ngram.get(1), "\u30a2");
-    assertEquals(ngram.get(2), "\u3042\u30a2");
-    assertEquals(ngram.get(3), "\u1ec3\u3042\u30a2");
+    assertEquals(String.valueOf(ngram.get(1)), "\u30a2");
+    assertEquals(String.valueOf(ngram.get(2)), "\u3042\u30a2");
+    assertEquals(String.valueOf(ngram.get(3)), "\u1ec3\u3042\u30a2");
 
     ngram.addChar('\u3106');
-    assertEquals(ngram.get(1), "\u3105");
-    assertEquals(ngram.get(2), "\u30a2\u3105");
-    assertEquals(ngram.get(3), "\u3042\u30a2\u3105");
+    assertEquals(String.valueOf(ngram.get(1)), "\u3105");
+    assertEquals(String.valueOf(ngram.get(2)), "\u30a2\u3105");
+    assertEquals(String.valueOf(ngram.get(3)), "\u3042\u30a2\u3105");
 
     ngram.addChar('\uac01');
-    assertEquals(ngram.get(1), "\uac00");
-    assertEquals(ngram.get(2), "\u3105\uac00");
-    assertEquals(ngram.get(3), "\u30a2\u3105\uac00");
+    assertEquals(String.valueOf(ngram.get(1)), "\uac00");
+    assertEquals(String.valueOf(ngram.get(2)), "\u3105\uac00");
+    assertEquals(String.valueOf(ngram.get(3)), "\u30a2\u3105\uac00");
 
     ngram.addChar('\u2010');
-    assertEquals(ngram.get(1), EMPTY_STRING);
-    assertEquals(ngram.get(2), "\uac00 ");
-    assertEquals(ngram.get(3), "\u3105\uac00 ");
+    assertEquals(ngram.get(1).length, ZERO_LENGTH);
+    assertEquals(String.valueOf(ngram.get(2)), "\uac00 ");
+    assertEquals(String.valueOf(ngram.get(3)), "\u3105\uac00 ");
 
     ngram.addChar('a');
-    assertEquals(ngram.get(1), "a");
-    assertEquals(ngram.get(2), " a");
-    assertEquals(ngram.get(3), EMPTY_STRING);
+    assertEquals(String.valueOf(ngram.get(1)), "a");
+    assertEquals(String.valueOf(ngram.get(2)), " a");
+    assertEquals(ngram.get(3).length, ZERO_LENGTH);
   }
 
   @Test
@@ -208,12 +209,36 @@ public class NGramTest {
     final NGram ngram =
         new NGram(
             "A\u06cc\u1ea0\u3044\u30a4\u3106\uac01\u2010a", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
-    final List<String> actual =
-        ngram.extractNGrams(Set.of("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a"));
+
+    final Set<String> allowedNGrams =
+        Set.of("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a");
+    final PrimitiveTrie charPrefixLookup = PrimitiveTrie.buildFromSet(allowedNGrams);
+    final List<String> actual = ngram.extractNGrams(charPrefixLookup);
     Collections.sort(actual);
 
     final List<String> expected =
         Arrays.asList("A", " A", "ي", "ể", "あ", "ア", "あア", "ㄅ", "가", "가 ", "a", " a");
+    Collections.sort(expected);
+
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public final void testExtractNGrams_v2() {
+    final NGram ngram = new NGram("apples", MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
+
+    final Set<String> allowedNGrams =
+        Set.of(
+            " a", " ap", "a", "ap", "app", "e", "es", "l", "le", "les", "p", "pl", "ple", "pp",
+            "ppl", "s");
+    final PrimitiveTrie charPrefixLookup = PrimitiveTrie.buildFromSet(allowedNGrams);
+    final List<String> actual = ngram.extractNGrams(charPrefixLookup);
+    Collections.sort(actual);
+
+    final List<String> expected =
+        Arrays.asList(
+            " a", " ap", "a", "ap", "app", "e", "es", "l", "le", "les", "p", "p", "pl", "ple", "pp",
+            "ppl", "s");
     Collections.sort(expected);
 
     assertEquals(expected, actual);

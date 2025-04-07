@@ -1,7 +1,6 @@
 package io.github.azagniotov.language;
 
 import static io.github.azagniotov.language.StringConstants.BLANK_CHAR;
-import static io.github.azagniotov.language.StringConstants.EMPTY_STRING;
 import static java.lang.Character.UnicodeBlock.ARABIC;
 import static java.lang.Character.UnicodeBlock.BASIC_LATIN;
 import static java.lang.Character.UnicodeBlock.BOPOMOFO;
@@ -50,10 +49,10 @@ import java.util.Set;
  *   <li>Using pre-allocated arrays for performance optimization when creating n-gram strings.
  * </ul>
  *
- * The primary entry point is the {@link #extractNGrams(Set)} method.
+ * The primary entry point is the {@link #extractNGrams(PrimitiveTrie)} method.
  *
  * @see #normalize(char)
- * @see #extractNGrams(Set)
+ * @see #extractNGrams(PrimitiveTrie)
  */
 class NGram {
 
@@ -241,6 +240,7 @@ class NGram {
   // Re-usable pre-allocated arrays. Characters from the circularBuffer will
   // be copied into these pre-allocated temporary char[] (nGram) and then
   // a final String will be created from that array using String.valueOf(nGram).
+  private final char[] emptyNGram;
   private final char[] nGramOfOne;
   private final char[] nGramOfTwo;
   private final char[] nGramOfThree;
@@ -293,6 +293,7 @@ class NGram {
     // Re-usable pre-allocated arrays. Characters from the circularBuffer will
     // be copied into these pre-allocated temporary char[] (nGram) and then
     // a final String will be created from that array using String.valueOf(nGram).
+    this.emptyNGram = new char[0];
     this.nGramOfOne = new char[UNIGRAM_SIZE];
     this.nGramOfTwo = new char[BIGRAM_SIZE];
     this.nGramOfThree = new char[TRIGRAM_SIZE];
@@ -364,12 +365,13 @@ class NGram {
    * <p>The method checks for capital words and skips generating n-grams when the last two
    * characters in the buffer are uppercase letters, ensuring that only valid n-grams are returned.
    *
-   * @param allowlist A set of allowed n-grams. The method will only add n-grams to the result that
-   *     are contained in this set. If the set is empty, all n-grams will be considered valid.
+   * @param charPrefixLookup A character prefix tree lookup, built from allowed n-grams. The method
+   *     will only add n-grams to the result if n-gram chars are contained in this prefix tree. If
+   *     the prefix tree is empty, all n-grams will be considered valid.
    * @return A list of n-grams extracted from the input string that match the allowlist. If the
    *     allowlist is empty, all valid n-grams are returned.
    */
-  List<String> extractNGrams(final Set<String> allowlist) {
+  List<String> extractNGrams(final PrimitiveTrie charPrefixLookup) {
     // To avoid unneccessary resizing of the ArrayList we can pre-allocated it, since
     // we can estimate of the number of n-grams based on the given input length. To get
     // the number of n-grams, we sum the possibilities for each value of N:
@@ -400,17 +402,39 @@ class NGram {
       }
 
       for (int n = this.minNGramLength; n <= this.maxNGramLength; ++n) {
-        final String word = get(n);
-        if (word.isEmpty()) {
+        final char[] nGramChars = get(n);
+        if (nGramChars.length == 0) {
           continue;
         }
 
-        // TODO: Investigate using a data structure like a Trie for the allowlist.
-        //  This would allow checking for n-gram validity directly character by
-        //  character from the circularBuffer without creating the intermediate
-        //  String unless a potential match is found in the Trie.
-        if (allowlist.contains(word) || allowlist.isEmpty()) {
-          extractedNWords.add(word);
+        if (charPrefixLookup.isEmpty()) {
+          extractedNWords.add(new String(nGramChars));
+        } else {
+          PrimitiveTrie.TrieNode current = charPrefixLookup.root();
+          boolean matchFound = false;
+
+          for (int charIdx = 0; charIdx < n; charIdx++) {
+            final char nGramChar = nGramChars[charIdx];
+            PrimitiveTrie.TrieNode nextNode = current.kids().get(nGramChar);
+            if (nextNode == null) {
+              // No path exists for this n-gram starting from this character
+              matchFound = false;
+              break;
+            }
+            current = nextNode;
+
+            if (charIdx == n - 1) {
+              // Check if this node marks the end of an allowed n-gram
+              if (current.endOfWord()) {
+                matchFound = true;
+                break;
+              }
+            }
+          }
+
+          if (matchFound) {
+            extractedNWords.add(String.valueOf(nGramChars));
+          }
         }
       }
     }
@@ -542,12 +566,14 @@ class NGram {
    * @return A string representing the requested n-gram, or an empty string if the conditions are
    *     not met.
    */
-  String get(final int nGramSize) {
+  char[] get(final int nGramSize) {
     if (nGramSize == UNIGRAM_SIZE) {
       if (this.lastChar == BLANK_CHAR) {
-        return EMPTY_STRING;
+        return emptyNGram;
       } else {
-        return UnicodeCache.stringOf(this.lastChar);
+        final char[] nGram = this.nGramOfOne;
+        nGram[0] = this.lastChar;
+        return nGram;
       }
     }
 
@@ -560,9 +586,9 @@ class NGram {
       if (nGramSize > 1) nGram[1] = circularBuffer[(startOffset + 1) % circularBufferSize];
       if (nGramSize > 2) nGram[2] = circularBuffer[(startOffset + 2) % circularBufferSize];
 
-      return String.valueOf(nGram);
+      return nGram;
     } else {
-      return EMPTY_STRING;
+      return emptyNGram;
     }
   }
 

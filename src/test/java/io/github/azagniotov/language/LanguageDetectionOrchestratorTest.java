@@ -49,8 +49,9 @@ public class LanguageDetectionOrchestratorTest {
     DEFAULT_DETECTOR =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
   }
@@ -166,8 +167,9 @@ public class LanguageDetectionOrchestratorTest {
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 

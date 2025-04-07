@@ -126,7 +126,7 @@ class LanguageProfile {
       final char currentChar = normalizedInput.charAt(i);
       gram.addChar(currentChar);
       for (int n = gram.getMinNGramLength(); n <= gram.getMaxNGramLength(); ++n) {
-        final String nGram = gram.get(n);
+        final String nGram = String.valueOf(gram.get(n));
 
         if (nGram.length() >= this.minNGramLength) {
           add(nGram, gram.getMinNGramLength(), gram.getMaxNGramLength());

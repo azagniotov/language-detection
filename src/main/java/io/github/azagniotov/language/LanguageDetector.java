@@ -57,6 +57,7 @@ class LanguageDetector {
   // between the word's frequency and the frequency of its N-grams.
   private final Map<String, float[]> languageCorporaProbabilities;
 
+  private final PrimitiveTrie charPrefixLookup;
   private final int minNGramLength;
   private final int maxNGramLength;
 
@@ -72,11 +73,13 @@ class LanguageDetector {
       final Model model,
       final List<String> supportedIsoCodes639_1,
       final Map<String, float[]> languageCorporaProbabilities,
+      final PrimitiveTrie charPrefixLookup,
       final int minNGramLength,
       final int maxNGramLength) {
     this.supportedIsoCodes639_1 = supportedIsoCodes639_1.toArray(new String[] {});
     this.isVietnameseConfigured = supportedIsoCodes639_1.contains(ISO_639_1_CODE_VIETNAMESE);
     this.languageCorporaProbabilities = languageCorporaProbabilities;
+    this.charPrefixLookup = charPrefixLookup;
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
 
@@ -238,7 +241,7 @@ class LanguageDetector {
   List<String> extractNGrams(final String input) {
     final NGram ngram = new NGram(input, this.minNGramLength, this.maxNGramLength);
 
-    return ngram.extractNGrams(languageCorporaProbabilities.keySet());
+    return ngram.extractNGrams(charPrefixLookup);
   }
 
   /**

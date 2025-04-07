@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Singleton factory responsible for loading, processing, and caching language model data required
@@ -54,6 +55,7 @@ class LanguageDetectorFactory {
   private final int maxNGramLength;
 
   private Model model;
+  private PrimitiveTrie charPrefixLookup;
 
   /**
    * Private constructor for the singleton pattern. Initializes internal collections and settings.
@@ -69,33 +71,40 @@ class LanguageDetectorFactory {
   }
 
   // Internal factory method to perform actual initialization
-  static LanguageDetectorFactory fromSettings(
-      final LanguageDetectionSettings languageDetectionSettings) throws IOException {
-    final LanguageDetectorFactory languageDetectorFactory =
-        new LanguageDetectorFactory(languageDetectionSettings);
+  static LanguageDetectorFactory fromSettings(final LanguageDetectionSettings settings)
+      throws IOException {
+    final LanguageDetectorFactory languageDetectorFactory = new LanguageDetectorFactory(settings);
+
     languageDetectorFactory.model = languageDetectorFactory.loadModelParameters();
     languageDetectorFactory.addProfiles();
+
+    final Set<String> nGrams = languageDetectorFactory.languageCorporaProbabilities.keySet();
+    languageDetectorFactory.charPrefixLookup = PrimitiveTrie.buildFromSet(nGrams);
 
     return languageDetectorFactory;
   }
 
-  Model getModel() {
+  Model model() {
     return model;
   }
 
-  List<String> getSupportedIsoCodes639_1() {
+  List<String> supportedIsoCodes639_1() {
     return supportedIsoCodes639_1;
   }
 
-  Map<String, float[]> getLanguageCorporaProbabilities() {
+  Map<String, float[]> languageCorporaProbabilities() {
     return languageCorporaProbabilities;
   }
 
-  int getMinNGramLength() {
+  PrimitiveTrie charPrefixLookup() {
+    return charPrefixLookup;
+  }
+
+  int minNGramLength() {
     return minNGramLength;
   }
 
-  int getMaxNGramLength() {
+  int maxNGramLength() {
     return maxNGramLength;
   }
 
@@ -216,6 +225,11 @@ class LanguageDetectorFactory {
     }
   }
 
+  void rebuildPrefixLookup() {
+    final Set<String> nGrams = this.languageCorporaProbabilities.keySet();
+    this.charPrefixLookup = PrimitiveTrie.buildFromSet(nGrams);
+  }
+
   /**
    * Gets a configured {@link LanguageDetector} instance.
    *
@@ -242,10 +256,11 @@ class LanguageDetectorFactory {
       instance = LanguageDetectorFactory.fromSettings(languageDetectionSettings);
     }
     return new LanguageDetector(
-        instance.getModel(),
-        instance.getSupportedIsoCodes639_1(),
-        instance.getLanguageCorporaProbabilities(),
-        instance.getMinNGramLength(),
-        instance.getMaxNGramLength());
+        instance.model(),
+        instance.supportedIsoCodes639_1(),
+        instance.languageCorporaProbabilities(),
+        instance.charPrefixLookup(),
+        instance.minNGramLength(),
+        instance.maxNGramLength());
   }
 }

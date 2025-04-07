@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +67,7 @@ public class NGramParametizedTest {
   @Test
   public final void extractNGrams() {
     final NGram ngram = new NGram(this.input, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
-    final List<String> actual = ngram.extractNGrams(Set.of());
+    final List<String> actual = ngram.extractNGrams(new PrimitiveTrie());
     Collections.sort(actual);
 
     Collections.sort(expected);

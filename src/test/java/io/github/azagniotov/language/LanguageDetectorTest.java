@@ -37,8 +37,9 @@ public class LanguageDetectorTest {
     DEFAULT_DETECTOR =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
   }
@@ -74,12 +75,14 @@ public class LanguageDetectorTest {
       jaProfile.add(w, MIN_NGRAM_LENGTH, MAX_NGRAM_LENGTH);
     }
     factory.addProfile(jaProfile, 2, 3);
+    factory.rebuildPrefixLookup();
 
     languageDetector =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
   }
@@ -128,8 +131,9 @@ public class LanguageDetectorTest {
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
@@ -405,8 +409,9 @@ public class LanguageDetectorTest {
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
@@ -427,8 +432,9 @@ public class LanguageDetectorTest {
     final LanguageDetector detector =
         new LanguageDetector(
             MODEL,
-            factory.getSupportedIsoCodes639_1(),
-            factory.getLanguageCorporaProbabilities(),
+            factory.supportedIsoCodes639_1(),
+            factory.languageCorporaProbabilities(),
+            factory.charPrefixLookup(),
             MIN_NGRAM_LENGTH,
             MAX_NGRAM_LENGTH);
 
