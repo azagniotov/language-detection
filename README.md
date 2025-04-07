@@ -66,6 +66,7 @@ For clarity, I'm linking these enhancements to the original implementation with 
 
 4. **Using a float-level precision**. Since Java's `double`-level precision is not neccessary for the current library, a switch to `float` type has been made when storing and computing probabilities. This will improve memory efficiency, and may also potentially provide a slight performance boost. Modern CPUs are very efficient at floating point calculations, so the performance increase may be small, but it will be there.
 
+For more information how this library compares against other open source language detectors, please see [Language detection benchmarks against other libraries](#language-detection-benchmarks-against-other-libraries)
 
 ### Supported ISO 639-1 codes
 
