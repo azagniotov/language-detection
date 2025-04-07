@@ -200,7 +200,7 @@ class NGram {
     //  valid character code point for a char in Java (which uses UTF-16 encoding).
     for (int codePoint = 0; codePoint <= Character.MAX_VALUE; codePoint++) {
       final char originalChar = (char) codePoint;
-      final char normalizedChar = normalizeOriginal(originalChar);
+      final char normalizedChar = preNormalizeChars(originalChar);
       NORMALIZED_BMP_CHARS[originalChar] = normalizedChar;
     }
 
@@ -266,6 +266,17 @@ class NGram {
     return NORMALIZED_BMP_CHARS[c];
   }
 
+  /**
+   * In the original implementation by Nakatani Shuyo, the input string was consistently prefixed
+   * with a leading space (i.e., a single blank character). The specific reasoning for this decision
+   * is unclear; however, to maintain consistency with the language n-gram profiles for JSON under
+   * the 'resources' directory, which were generated using this space-prefixed approach, this
+   * implementation adopts the same convention. This ensures parity in language detection behavior.
+   *
+   * <p><a
+   * href="https://github.com/shuyo/language-detection/blob/c92ca72192b79ac421e809de46d5d0dafaef98ef/src/com/cybozu/labs/langdetect/util/NGram.java#L25">
+   * View the original code here</a>
+   */
   private void resetBuffer() {
     this.circularBufferIdx = 0;
     this.circularBuffer[this.circularBufferIdx] = BLANK_CHAR;
@@ -273,20 +284,52 @@ class NGram {
     this.circularBufferTotalElements = 1;
   }
 
+  /**
+   * Calculates the offset position in the circular buffer relative to the given past position. The
+   * method determines the position by taking into account the current buffer index and the
+   * specified relative past position, ensuring that the result wraps around the circular buffer
+   * correctly using modular arithmetic.
+   *
+   * @param relativePastPosition The relative position in the past from the current circular buffer
+   *     index to calculate the offset. A value of 1 would represent the previous element, 2 the
+   *     element before that, and so on.
+   * @return The calculated offset position within the bounds of the circular buffer.
+   */
   private int previousOffset(final int relativePastPosition) {
     return (this.circularBufferIdx + this.circularBufferSize - relativePastPosition)
         % this.circularBufferSize;
   }
 
+  /**
+   * Increments the current index of the circular buffer, wrapping around to the beginning when the
+   * end of the buffer is reached. The method also increments the total element count, tracking the
+   * number of elements that have been added to the buffer.
+   *
+   * <p>This method ensures that the circular buffer behaves correctly by wrapping the index and
+   * updating the total element count.
+   */
   private void incrementCircularBufferIdx() {
     this.circularBufferIdx = (this.circularBufferIdx + 1) % this.circularBufferSize;
     ++this.circularBufferTotalElements;
   }
 
   /**
-   * Extract n-grams from input text, while fitering the extracted ngrams based on the allow list.
+   * Extracts valid n-grams from the input string, where n-grams are sequences of characters of
+   * varying lengths between a specified minimum and maximum size. The method uses a circular buffer
+   * to build and retrieve n-grams, checking each one against an allowlist of valid n-grams.
    *
-   * @return n-grams list
+   * <p>To optimize performance, the method pre-allocates an ArrayList to store the n-grams,
+   * estimating the total number of possible n-grams based on the length of the input string and the
+   * specified n-gram size range. It ensures that n-grams are only generated for valid positions in
+   * the string and avoids adding empty n-grams or those that do not match the allowlist.
+   *
+   * <p>The method checks for capital words and skips generating n-grams when the last two
+   * characters in the buffer are uppercase letters, ensuring that only valid n-grams are returned.
+   *
+   * @param allowlist A set of allowed n-grams. The method will only add n-grams to the result that
+   *     are contained in this set. If the set is empty, all n-grams will be considered valid.
+   * @return A list of n-grams extracted from the input string that match the allowlist. If the
+   *     allowlist is empty, all valid n-grams are returned.
    */
   List<String> extractNGrams(final Set<String> allowlist) {
     // Unneccessary resizing of the ArrayList when adding many n-grams.
@@ -305,8 +348,7 @@ class NGram {
     //
     // The formula:
     // Total n-grams = N + (N − 1) + (N − 2) => Total n-grams = 3N - 3
-    //    P.S. Dropping the  '- 3' from the above formula when computing.
-    final int projectedTotalNGrams = this.maxNGramLength * input.length();
+    final int projectedTotalNGrams = this.maxNGramLength * input.length() - 3;
     final List<String> extractedNWords = new ArrayList<>(projectedTotalNGrams);
 
     for (int idx = 0; idx < input.length(); ++idx) {
@@ -340,7 +382,25 @@ class NGram {
     return extractedNWords;
   }
 
-  private static char normalizeOriginal(char ch) {
+  /**
+   * Pre-normalizes Unicode characters from the Basic Multilingual Plane (BMP) based on their
+   * Unicode block. This method transforms characters according to specific rules for various
+   * Unicode blocks, returning either a normalized version of the character or a blank character
+   * (`BLANK_CHAR`) if the character should be excluded.
+   *
+   * <p>The normalization is performed for specific Unicode blocks, such as Latin, Arabic, CJK, and
+   * others. For example, characters in the Latin script may be mapped to blank characters if they
+   * are not part of the basic Latin alphabet, and certain characters from other languages may be
+   * mapped to specific variants (e.g., Romanian letters).
+   *
+   * <p>This method is used to prepare characters for a uniform lookup in a pre-normalized character
+   * array.
+   *
+   * @param ch The Unicode character to be pre-normalized. This is a character from the BMP.
+   * @return The normalized character. If no transformation is necessary, the original character is
+   *     returned. If the character is to be excluded, `BLANK_CHAR` is returned.
+   */
+  private static char preNormalizeChars(final char ch) {
     final UnicodeBlock block = UnicodeBlock.of(ch);
     if (block == null) {
       return ch;
@@ -396,6 +456,20 @@ class NGram {
     return ch;
   }
 
+  /**
+   * Processes and adds a character to the circular buffer, while managing word boundaries and
+   * capitalization detection. This method normalizes the input character, checks for consecutive
+   * spaces, and updates the state of the buffer accordingly. Special handling is performed when a
+   * space character is encountered.
+   *
+   * <p>The function ensures that: - Consecutive space characters are ignored. - Word boundaries
+   * (determined by space characters) trigger a reset of the buffer and associated flags. - The
+   * capitalization flag is updated based on the relationship between the last and current
+   * characters.
+   *
+   * @param currentChar The character to be processed and added to the circular buffer. This
+   *     character is normalized before processing.
+   */
   void addChar(char currentChar) {
     currentChar = normalize(currentChar);
 
@@ -417,6 +491,18 @@ class NGram {
     }
   }
 
+  /**
+   * Retrieves an n-gram of the specified size from the circular buffer. The method first checks if
+   * the requested n-gram size is a unigram (1-character n-gram), in which case it returns either
+   * the last character or an empty string if the last character is a blank space. For larger
+   * n-grams, the function extracts a sequence of characters from the circular buffer and returns it
+   * as a string. If the buffer does not contain enough characters to form the requested n-gram, an
+   * empty string is returned.
+   *
+   * @param nGramSize The size of the n-gram to be retrieved. This value must be greater than 0.
+   * @return A string representing the requested n-gram, or an empty string if the conditions are
+   *     not met.
+   */
   String get(final int nGramSize) {
     if (nGramSize == UNIGRAM_SIZE) {
       if (this.lastChar == BLANK_CHAR) {
@@ -441,6 +527,17 @@ class NGram {
     }
   }
 
+  /**
+   * Returns a character array of the appropriate size for the specified n-gram. The method selects
+   * an array of fixed size based on the requested n-gram size. Supported sizes are unigram (1),
+   * bigram (2), and trigram (3). If an unsupported size is requested, an IllegalArgumentException
+   * is thrown.
+   *
+   * @param nGramSize The size of the n-gram. Must be one of the supported values: UNIGRAM_SIZE,
+   *     BIGRAM_SIZE, or TRIGRAM_SIZE.
+   * @return A character array of the appropriate size for the requested n-gram.
+   * @throws IllegalArgumentException If an unsupported n-gram size is requested.
+   */
   private char[] charArrayBySize(final int nGramSize) {
     switch (nGramSize) {
       case UNIGRAM_SIZE:
