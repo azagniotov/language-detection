@@ -12,27 +12,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Language Detector Factory Class
+ * Singleton factory responsible for loading, processing, and caching language model data required
+ * by {@link LanguageDetector}.
  *
- * <p>This class manages an initialization and constructions of {@link LanguageDetector}.
+ * <p>Ensures that language profiles (N-Gram probabilities) and model parameters are loaded from
+ * resources and processed only once during the first initialization, triggered by {@link
+ * #detector(LanguageDetectionSettings)}. It then provides configured {@code LanguageDetector}
+ * instances that share this pre-processed data.
  *
- * <p>Upon calling the only public API {@link
- * LanguageDetectorFactory#detector(LanguageDetectionSettings)}, the following happens:
- *
- * <p>1. LanguageDetectorFactory instance is created.
- *
- * <p>2. Language JSON profiles are loaded (once only) which contain N-Gram words and probabilities.
- *
- * <p>3. A mapping between N-Gram words and probabilities is getting computed.
- *
- * <p>4. The created language detector factory singleton instance is then cached (via float-checked
- * locking pattern)
- *
- * <p>5. The {@link LanguageDetector} instance is created with the computed N-Gram words and
- * probabilities mapping and configured language codes (ISO 639-1 codes)
+ * <p>Initialization uses a lazy, volatile singleton pattern. Thread safety during the very first
+ * initialization in concurrent environments relies on external mechanisms like warm-up calls (see
+ * {@link LanguageDetectionOrchestrator#fromSettings(LanguageDetectionSettings)}).
  *
  * @see LanguageDetector
  * @see LanguageDetectionSettings
+ * @see LanguageProfile
  */
 class LanguageDetectorFactory {
 
@@ -61,6 +55,11 @@ class LanguageDetectorFactory {
 
   private Model model;
 
+  /**
+   * Private constructor for the singleton pattern. Initializes internal collections and settings.
+   *
+   * @param languageDetectionSettings Configuration settings provided by the user.
+   */
   private LanguageDetectorFactory(final LanguageDetectionSettings languageDetectionSettings) {
     this.languageDetectionSettings = languageDetectionSettings;
     this.supportedIsoCodes639_1 = new LinkedList<>();
@@ -69,6 +68,7 @@ class LanguageDetectorFactory {
     this.maxNGramLength = this.languageDetectionSettings.getMaxNGramLength();
   }
 
+  // Internal factory method to perform actual initialization
   static LanguageDetectorFactory fromSettings(
       final LanguageDetectionSettings languageDetectionSettings) throws IOException {
     final LanguageDetectorFactory languageDetectorFactory =
@@ -100,15 +100,27 @@ class LanguageDetectorFactory {
   }
 
   /**
-   * This method retrieves JSON language corpus profiles from the resourcse directory, using the ISO
-   * 639-1 language codes specified by the user.
+   * Loads language profiles from Gzipped JSON files located in the classpath resources.
    *
-   * <p>Once the language profiles are successfully loaded and deserialized, it computes a mapping
-   * of word probabilities. These probabilities are determined by the ratio of each word's frequency
-   * to the total N-Grams counts within the language corpus.
+   * <p>This method iterates through the ISO 639-1 language codes specified in the {@link
+   * LanguageDetectionSettings}. For each valid code, it constructs the expected resource path
+   * (within the configured 'profilesHome' directory), loads the corresponding Gzip-compressed JSON
+   * file, and deserializes it into a {@link LanguageProfile} object using {@link
+   * LanguageProfile#fromGzippedJson(InputStream)}.
    *
-   * <p>Since this operation is computationally intensive, it must be executed once prior to
-   * performing language detection.
+   * <p>After loading all specified profiles, it calls {@link #addProfile(LanguageProfile, int,
+   * int)} for each loaded profile to populate the factory's internal data structures ({@code
+   * supportedIsoCodes639_1} and {@code languageCorporaProbabilities}).
+   *
+   * <p>Since loading and processing profiles involves I/O and computation (especially if many
+   * profiles or large profiles are used), this operation is typically performed only once during
+   * the factory's initialization.
+   *
+   * @throws IOException If an I/O error occurs while reading from the Gzipped resource stream or
+   *     during JSON deserialization within {@code LanguageProfile.fromGzippedJson}.
+   * @throws UncheckedIOException If a specified language profile Gzip resource file cannot be found
+   *     or accessed via {@code getClass().getResourceAsStream()}, wrapping the underlying
+   *     IOException.
    */
   private void addProfiles() throws IOException {
     final List<String> supportedIsoCodes = this.languageDetectionSettings.getIsoCodes639_1();
@@ -134,6 +146,7 @@ class LanguageDetectorFactory {
     }
   }
 
+  /** Loads model parameters from a fixed resource path ("/model/parameters.json"). */
   private Model loadModelParameters() throws IOException {
     final String modelParametersPath = "/model/parameters.json";
     try (final InputStream in = getClass().getResourceAsStream(modelParametersPath)) {
@@ -146,6 +159,37 @@ class LanguageDetectorFactory {
     }
   }
 
+  /**
+   * Processes a single loaded {@link LanguageProfile} and incorporates its data into the factory's
+   * internal state.
+   *
+   * <p>Specifically, this method:
+   *
+   * <ol>
+   *   <li>Adds the profile's language code (ISO 639-1) to the {@code supportedIsoCodes639_1} list,
+   *       checking for duplicates.
+   *   <li>Iterates through the word (N-Gram) frequencies contained in the profile.
+   *   <li>For each word within the configured N-Gram length limits ({@code minNGramLength} to
+   *       {@code maxNGramLength}):
+   *       <ul>
+   *         <li>Ensures an entry exists for the word in the {@code languageCorporaProbabilities}
+   *             map.
+   *         <li>Calculates the word's probability within this language profile (word frequency /
+   *             total N-Gram count for its length).
+   *         <li>Stores this calculated probability in the float array associated with the word, at
+   *             the specified {@code index} corresponding to this language profile.
+   *       </ul>
+   * </ol>
+   *
+   * @param profile The {@link LanguageProfile} object containing data for one language.
+   * @param index The zero-based index representing this language's position in the list of all
+   *     loaded profiles. This index is used to place the calculated probability correctly within
+   *     the float arrays in {@code languageCorporaProbabilities}.
+   * @param totalProfiles The total number of language profiles being loaded. This is used to
+   *     initialize the size of the float arrays when a new word is encountered.
+   * @throws UncheckedIOException If a profile with the same language code has already been added,
+   *     indicating a duplicate configuration.
+   */
   void addProfile(final LanguageProfile profile, final int index, final int totalProfiles) {
     final String languageCode = profile.getIsoCode639_1();
     if (this.supportedIsoCodes639_1.contains(languageCode)) {
@@ -173,14 +217,22 @@ class LanguageDetectorFactory {
   }
 
   /**
-   * In general, this is not thread-safe for the first access, but I am opting for the lazy
-   * initialization without explicit synchronization to avoid a performance hit. But, since the
-   * {@link LanguageDetectionOrchestrator} constructor performs a warm-up, the non-thread safe first
-   * access is no longer an issue.
+   * Gets a configured {@link LanguageDetector} instance.
    *
-   * @param languageDetectionSettings settings for the language detector
-   * @return
-   * @throws IOException
+   * <p>Initializes the singleton factory instance on the first call by loading and processing
+   * language profiles and model parameters based on the provided settings. Subsequent calls reuse
+   * the cached factory data to configure new detector instances.
+   *
+   * <p><b>Threading Note:</b> The lazy initialization of the factory instance is not inherently
+   * thread-safe for the very first concurrent calls. It relies on external synchronization or
+   * warm-up calls (like those in {@link
+   * LanguageDetectionOrchestrator#fromSettings(LanguageDetectionSettings)}) to ensure safe
+   * initialization in multi-threaded environments.
+   *
+   * @param languageDetectionSettings settings for the language detector.
+   * @return A configured {@link LanguageDetector} instance.
+   * @throws IOException if loading profiles or model parameters fails during first initialization.
+   * @throws UncheckedIOException wraps IOException from profile/model loading.
    * @see LanguageDetector
    * @see LanguageDetectionOrchestrator
    */

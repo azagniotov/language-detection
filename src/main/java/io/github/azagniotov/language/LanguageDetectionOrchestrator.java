@@ -11,11 +11,38 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Orchestrates the language detection process using configured settings.
+ *
+ * <p>Combines a CJK heuristic check with statistical language detection (Naive Bayes) to determine
+ * the language(s) of an input text. Handles input preprocessing (truncation, sanitization) and
+ * applies confidence thresholds to results.
+ *
+ * <p>Use the static factory method {@link #fromSettings(LanguageDetectionSettings)} to obtain a
+ * configured and initialized instance.
+ */
 public class LanguageDetectionOrchestrator {
 
   private final LanguageDetectionSettings settings;
   private static final List<Language> EMPTY_RESULTS = Collections.emptyList();
 
+  /**
+   * Creates and fully initializes a LanguageDetectionOrchestrator instance.
+   *
+   * <p>This factory method handles necessary setup, including:
+   *
+   * <ul>
+   *   <li>Triggering static initializers of dependent utility classes (like NGram, UnicodeCache) to
+   *       ensure their internal caches are ready.
+   *   <li>Loading language profiles via {@link LanguageDetectorFactory}.
+   *   <li>Performing initial "warm-up" detection calls to potentially improve performance of
+   *       subsequent calls (i.e., lookup arrays are populated).
+   * </ul>
+   *
+   * @param settings Configuration settings for language detection.
+   * @return A fully initialized LanguageDetectionOrchestrator instance.
+   * @throws UncheckedIOException if loading language profiles fails.
+   */
   public static LanguageDetectionOrchestrator fromSettings(
       final LanguageDetectionSettings settings) {
 
@@ -32,10 +59,12 @@ public class LanguageDetectionOrchestrator {
       // Will load and unzip GZipped JSON language profiles from the resource directory
       final LanguageDetector detector = LanguageDetectorFactory.detector(settings);
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      throw new UncheckedIOException("Failed to load language profiles", e);
     }
 
     final LanguageDetectionOrchestrator orchestrator = new LanguageDetectionOrchestrator(settings);
+
+    // Perform warm-up calls to optimize subsequent detections.
 
     final String udhrJapanese =
         "世界人権宣言 人類社会の全部の構成員の固有の尊厳と平等で譲れない権利とを承認することは、"
@@ -85,14 +114,40 @@ public class LanguageDetectionOrchestrator {
     return orchestrator;
   }
 
+  /**
+   * Private constructor to initialize with settings. Use factory method {@link #fromSettings}.
+   *
+   * @param settings Configuration settings.
+   */
   private LanguageDetectionOrchestrator(final LanguageDetectionSettings settings) {
     this.settings = settings;
   }
 
+  /**
+   * Detects the single most likely language of the input text.
+   *
+   * @param input The text to analyze.
+   * @return The most likely detected {@link Language}. Returns an undetermined language if input is
+   *     empty/invalid or detection is inconclusive based on settings.
+   * @see #detectAll(String)
+   */
   public Language detect(final String input) {
+    // detectAll ensures the list is never empty (returns undetermined if needed)
     return detectAll(input).get(0);
   }
 
+  /**
+   * Detects a list of possible languages for the input text, ordered by likelihood.
+   *
+   * <p>Performs input validation, truncation, optional sanitization, then applies CJK heuristics
+   * followed by statistical detection if necessary. Results may be filtered or modified based on
+   * configured certainty thresholds.
+   *
+   * @param input The text to analyze.
+   * @return A list of detected {@link Language} objects, ordered by probability. Returns a list
+   *     containing only the undetermined language if input is empty/invalid or detection is
+   *     inconclusive based on settings.
+   */
   public List<Language> detectAll(final String input) {
     if (input == null || input.trim().isEmpty()) {
       return Collections.singletonList(UNDETERMINED_LANGUAGE_RESPONSE);
@@ -114,6 +169,14 @@ public class LanguageDetectionOrchestrator {
     }
   }
 
+  /**
+   * Performs a heuristic check for Chinese or Japanese language presence. Active only if {@code
+   * cjkDetectionThreshold > 0} in settings.
+   *
+   * @param sanitizedInput The preprocessed input text.
+   * @return A list containing the detected CJK language (respecting the 'classifyChineseAsJapanese'
+   *     setting) if found above threshold, otherwise an empty list.
+   */
   private List<Language> doCjkHeuristic(final String sanitizedInput) {
     // Do a quick heuristic to check if this is a Chinese / Japanese input
     if (this.settings.getCjkDetectionThreshold() > 0) {
@@ -131,9 +194,21 @@ public class LanguageDetectionOrchestrator {
         }
       }
     }
+
+    // No CJK detected above threshold or check disabled
     return EMPTY_RESULTS;
   }
 
+  /**
+   * Performs statistical language detection using the configured {@link LanguageDetector}. Applies
+   * certainty thresholds from settings to filter or adjust results.
+   *
+   * @param sanitizedInput The preprocessed input text.
+   * @return A list of detected languages, potentially filtered or containing fallback/undetermined
+   *     results based on confidence scores and settings.
+   * @throws UncheckedIOException if creating the language detector fails here (should ideally be
+   *     created once in {@code fromSettings}).
+   */
   private List<Language> doStatisticalDetection(final String sanitizedInput) {
     // For non-Chinese/Japanese decisions we are going through
     // Naive Bayes below (the original LangDetect flow)
@@ -179,6 +254,12 @@ public class LanguageDetectionOrchestrator {
     return languages;
   }
 
+  /**
+   * Sanitizes the input string using {@link InputSanitizer} if enabled in settings.
+   *
+   * @param truncatedInput The input string (already truncated).
+   * @return The sanitized string, or the original string if sanitization is disabled.
+   */
   private String conditionallySanitizeInput(final String truncatedInput) {
     if (this.settings.isSanitizeInput()) {
       return InputSanitizer.sanitize(truncatedInput);

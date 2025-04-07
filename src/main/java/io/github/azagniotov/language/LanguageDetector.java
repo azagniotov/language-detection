@@ -103,7 +103,7 @@ class LanguageDetector {
         this.isVietnameseConfigured
             ?
             // Do not .trim() the input nor the result, otherwise accuracy unit tests will fail
-            NGram.normalizeVietnamese(sanitizedInput)
+            VietnameseUtils.normalizeVietnamese(sanitizedInput)
             : sanitizedInput;
 
     final float[] probabilities = detectBlock(normalizedText);
