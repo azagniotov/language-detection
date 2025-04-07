@@ -119,7 +119,7 @@ class LanguageProfile {
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
     final String sanitizedInput = filterOutNonWords(input);
-    final String normalizedInput = NGram.normalizeVietnamese(sanitizedInput);
+    final String normalizedInput = VietnameseUtils.normalizeVietnamese(sanitizedInput);
     final NGram gram = new NGram(normalizedInput, minNGramLength, maxNGramLength);
 
     for (int i = 0; i < normalizedInput.length(); ++i) {

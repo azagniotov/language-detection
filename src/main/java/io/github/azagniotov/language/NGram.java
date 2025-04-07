@@ -25,12 +25,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * The current implementation of n-gram extraction uses a circular buffer approach introduced in <a
- * href="https://github.com/azagniotov/language-detection/pull/132">https://github.com/azagniotov/language-detection/pull/132</a>
+ * Extracts n-grams (specifically unigrams, bigrams, and trigrams) from an input string.
+ *
+ * <p>Before extraction, the class performs significant character normalization based on Unicode
+ * properties and specific rules. This involves filtering punctuation, mapping equivalent characters
+ * (e.g., within CJK scripts or Latin variants), and simplifying characters from various scripts
+ * (like Hiragana, Katakana, Hangul) to representative characters or blank spaces. Normalization
+ * rules are pre-computed into a lookup table for efficient processing within the Unicode Basic
+ * Multilingual Plane (BMP).
+ *
+ * <p>N-gram extraction uses a fixed-size circular buffer for efficient character processing. Key
+ * behaviors include:
+ *
+ * <ul>
+ *   <li>Extracting n-grams of lengths 1 to 3 (min/max configurable at construction).
+ *   <li>Mimicking the behavior of the original (by Nakatani Shuyo) implementation's behavior by
+ *       effectively prepending a space to the input for compatibility with existing language
+ *       profiles.
+ *   <li>Handling word boundaries and ignoring consecutive spaces.
+ *   <li>Detecting consecutive uppercase letters to potentially adjust n-gram generation.
+ *   <li>Optional filtering of results against a provided {@code allowlist} (Set<String>).
+ *   <li>Using pre-allocated arrays for performance optimization when creating n-gram strings.
+ * </ul>
+ *
+ * The primary entry point is the {@link #extractNGrams(Set)} method.
+ *
+ * @see #normalize(char)
+ * @see #extractNGrams(Set)
  */
 class NGram {
 
@@ -50,6 +73,8 @@ class NGram {
   private static final int BIGRAM_SIZE = 2;
   private static final int TRIGRAM_SIZE = 3;
 
+  // Groups of visually similar or related CJK characters
+  // mapped to a single representative for normalization
   private static final String[] CJK_CLASS = {
     "\u4F7C\u6934",
     "\u88CF\u95B2",
@@ -189,10 +214,10 @@ class NGram {
   private static final String LATIN1_EXCLUDED = "\u00A0\u00AB\u00B0\u00BB";
 
   static {
-    for (final String cjk_list : CJK_CLASS) {
-      final char representative = cjk_list.charAt(0);
-      for (int i = 0; i < cjk_list.length(); ++i) {
-        CJK_CHAR_TO_CHAR_MAP.put(cjk_list.charAt(i), representative);
+    for (final String cjkList : CJK_CLASS) {
+      final char representative = cjkList.charAt(0);
+      for (int i = 0; i < cjkList.length(); ++i) {
+        CJK_CHAR_TO_CHAR_MAP.put(cjkList.charAt(i), representative);
       }
     }
 
@@ -204,7 +229,7 @@ class NGram {
       NORMALIZED_BMP_CHARS[originalChar] = normalizedChar;
     }
 
-    // We do not need this anymore
+    // Clear map: CJK character mappings are now baked into NORMALIZED_BMP_CHARS
     CJK_CHAR_TO_CHAR_MAP.clear();
   }
 
@@ -229,26 +254,39 @@ class NGram {
   private char lastChar;
 
   /**
-   * The current implementation of n-gram extraction uses a circular buffer approach introduced in
-   * <a
-   * href="https://github.com/azagniotov/language-detection/pull/132">https://github.com/azagniotov/language-detection/pull/132</a>
+   * Constructs an NGram processor instance for the given input text and n-gram size range.
    *
-   * @param input text to extract n-grams from
-   * @param minNGramLength n-gram min size, i.e.: 1
-   * @param maxNGramLength n-gram min size, i.e.: 3
+   * <p>Initializes the internal state, setting up the circular buffer used for efficient character
+   * processing and n-gram generation.
+   *
+   * <p>It also pre-allocates internal character arrays to store generated n-grams of sizes 1, 2,
+   * and 3 for performance optimization, and initializes the buffer by calling {@link
+   * #resetBuffer()}.
+   *
+   * <p><b>Note:</b> While the parameters allow specifying minimum and maximum n-gram lengths, the
+   * current implementation includes assertions that require {@code minNGramLength} to be 1 ({@link
+   * #UNIGRAM_SIZE}) and {@code maxNGramLength} to be 3 ({@link #TRIGRAM_SIZE}). Internal structures
+   * are sized based on these fixed limits.
+   *
+   * @param input The text from which n-grams will be extracted. Must not be null.
+   * @param minNGramLength The minimum size of n-grams to extract (currently enforced to be 1).
+   * @param maxNGramLength The maximum size of n-grams to extract (currently enforced to be 3).
+   * @throws AssertionError if minNGramLength is not 1 or maxNGramLength is not 3.
    */
   NGram(final String input, final int minNGramLength, final int maxNGramLength) {
     this.input = input;
 
-    assert minNGramLength <= maxNGramLength;
-    assert minNGramLength == UNIGRAM_SIZE;
-    assert maxNGramLength == TRIGRAM_SIZE;
+    assert minNGramLength <= maxNGramLength : "minNGramLength must be <= maxNGramLength";
+    assert minNGramLength == UNIGRAM_SIZE : "Current implementation requires minNGramLength = 1";
+    assert maxNGramLength == TRIGRAM_SIZE : "Current implementation requires maxNGramLength = 3";
 
     this.minNGramLength = minNGramLength;
     this.maxNGramLength = maxNGramLength;
     this.lastChar = BLANK_CHAR;
     this.capitalWord = false;
 
+    // The current implementation of n-gram extraction uses a circular buffer
+    // approach introduced in https://github.com/azagniotov/language-detection/pull/132
     this.circularBufferSize = this.maxNGramLength;
     this.circularBuffer = new char[TRIGRAM_SIZE];
 
@@ -332,8 +370,6 @@ class NGram {
    *     allowlist is empty, all valid n-grams are returned.
    */
   List<String> extractNGrams(final Set<String> allowlist) {
-    // Unneccessary resizing of the ArrayList when adding many n-grams.
-    //
     // To avoid unneccessary resizing of the ArrayList we can pre-allocated it, since
     // we can estimate of the number of n-grams based on the given input length. To get
     // the number of n-grams, we sum the possibilities for each value of N:
@@ -486,6 +522,9 @@ class NGram {
     if (appendCurrentChar) {
       this.circularBuffer[this.circularBufferIdx] = currentChar;
       incrementCircularBufferIdx();
+
+      // If capitalWord is true, the exact consequence of this
+      // is character skipping, which is happens in extractNGrams(..)
       this.capitalWord = UnicodeCache.isUpper(lastChar) && UnicodeCache.isUpper(currentChar);
       this.lastChar = currentChar;
     }
@@ -557,36 +596,5 @@ class NGram {
 
   int getMaxNGramLength() {
     return maxNGramLength;
-  }
-
-  private static final String[] VI_NORMALIZED_CHARS = {
-    "\u00C0\u00C8\u00CC\u00D2\u00D9\u1EF2\u00E0\u00E8\u00EC\u00F2\u00F9\u1EF3\u1EA6\u1EC0\u1ED2\u1EA7\u1EC1\u1ED3\u1EB0\u1EB1\u1EDC\u1EDD\u1EEA\u1EEB",
-    "\u00C1\u00C9\u00CD\u00D3\u00DA\u00DD\u00E1\u00E9\u00ED\u00F3\u00FA\u00FD\u1EA4\u1EBE\u1ED0\u1EA5\u1EBF\u1ED1\u1EAE\u1EAF\u1EDA\u1EDB\u1EE8\u1EE9",
-    "\u00C3\u1EBC\u0128\u00D5\u0168\u1EF8\u00E3\u1EBD\u0129\u00F5\u0169\u1EF9\u1EAA\u1EC4\u1ED6\u1EAB\u1EC5\u1ED7\u1EB4\u1EB5\u1EE0\u1EE1\u1EEE\u1EEF",
-    "\u1EA2\u1EBA\u1EC8\u1ECE\u1EE6\u1EF6\u1EA3\u1EBB\u1EC9\u1ECF\u1EE7\u1EF7\u1EA8\u1EC2\u1ED4\u1EA9\u1EC3\u1ED5\u1EB2\u1EB3\u1EDE\u1EDF\u1EEC\u1EED",
-    "\u1EA0\u1EB8\u1ECA\u1ECC\u1EE4\u1EF4\u1EA1\u1EB9\u1ECB\u1ECD\u1EE5\u1EF5\u1EAC\u1EC6\u1ED8\u1EAD\u1EC7\u1ED9\u1EB6\u1EB7\u1EE2\u1EE3\u1EF0\u1EF1"
-  };
-  private static final String VI_CHARS =
-      "AEIOUYaeiouy\u00c2\u00ca\u00d4\u00e2\u00ea\u00f4\u0102\u0103\u01a0\u01a1\u01af\u01b0";
-  private static final String VI_DIACRITICS = "\u0300\u0301\u0303\u0309\u0323";
-  private static final Pattern VI_CHARS_WITH_DIACRITIC_PATTERN =
-      Pattern.compile("([" + VI_CHARS + "])([" + VI_DIACRITICS + "])");
-
-  /** Normalize Vietnamese letter + diacritical mark (U+03xx) to a single character (U+1Exx). */
-  static String normalizeVietnamese(String text) {
-    Matcher matcher = VI_CHARS_WITH_DIACRITIC_PATTERN.matcher(text);
-    final StringBuilder stringBuilder = new StringBuilder();
-    while (matcher.find()) {
-      int charIndex = VI_CHARS.indexOf(matcher.group(1));
-      matcher.appendReplacement(
-          stringBuilder,
-          VI_NORMALIZED_CHARS[VI_DIACRITICS.indexOf(matcher.group(2))].substring(
-              charIndex, charIndex + 1));
-    }
-    if (stringBuilder.length() == 0) {
-      return text;
-    }
-    matcher.appendTail(stringBuilder);
-    return stringBuilder.toString();
   }
 }
