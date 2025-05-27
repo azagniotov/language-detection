@@ -72,7 +72,7 @@ dependencies {
     benchmarkTestImplementation "com.optimaize.languagedetector:language-detector:0.6"
     benchmarkTestImplementation "org.apache.tika:tika-core:3.1.0"
     benchmarkTestImplementation "org.apache.tika:tika-langdetect-opennlp:3.1.0"
-    benchmarkTestImplementation "org.apache.tika:tika-langdetect-optimaize:3.1.0"
+    benchmarkTestImplementation "org.apache.tika:tika-langdetect-optimaize:3.2.0"
     benchmarkTestImplementation "org.apache.opennlp:opennlp-tools:2.5.4"
     benchmarkTestImplementation "com.github.vinhkhuc:jfasttext:0.5"
 }
