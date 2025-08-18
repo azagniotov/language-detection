@@ -19,7 +19,7 @@ jobs:
     steps:
 
       - name: Checkout project sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         # https://github.com/marketplace/actions/git-semantic-version#important-note-regarding-the-checkout-action
         with:
           fetch-depth: 0
