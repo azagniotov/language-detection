@@ -1,6 +1,16 @@
 name: Greetings
 
-on: [pull_request, issues]
+on:
+  pull_request:
+    types:
+      - opened
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   greeting:
@@ -8,6 +18,5 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
           issue-message: "Thanks for opening your first issue. Pull requests are always welcome too! :)"
           pr-message: "Thank you for your contribution. We will be reviewing your PR shortly! In the meantime, please make sure all status checks have passed."
