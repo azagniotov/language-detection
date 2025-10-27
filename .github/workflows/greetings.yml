@@ -18,5 +18,5 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          issue-message: "Thanks for opening your first issue. Pull requests are always welcome too! :)"
-          pr-message: "Thank you for your contribution. We will be reviewing your PR shortly! In the meantime, please make sure all status checks have passed."
+          issue_message: "Thanks for opening your first issue. Pull requests are always welcome too! :)"
+          pr_message: "Thank you for your contribution. We will be reviewing your PR shortly! In the meantime, please make sure all status checks have passed."
