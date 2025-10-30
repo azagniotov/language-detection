@@ -357,7 +357,7 @@ Currently, the following libraries are evaluated in terms of accuracy and speed 
 
 ### Running the benchmarks
 
-Please note that the test dataset is quite large when unzipped. When running the benchmarks for the first time, the dataset located in [src/benchmarkTest/dataset.tar.gz](src/benchmarkTest/dataset.tar.gz) (approximately 95 MB) will be extracted into the `build/resources/benchmarkTest` directory. This extraction requires about **1.05 GB** of disk space.
+Please note that the test dataset is quite large when unzipped. When running the benchmarks for the first time, the dataset located in [src/benchmarkTest/dataset.tar.gz](src/benchmarkTest/dataset.tar.gz) (approximately 95 MB) will be extracted into the `build/benchmarkTestDataset` directory. This extraction requires about **1.05 GB** of disk space.
 
 To run benchmarks across all the libraries and datasets, execute the following Gradle command:
 

@@ -2,7 +2,8 @@ tasks.register("conditionallyUntarDataset") {
 	mustRunAfter compileBenchmarkTestJava
 
 	def tarFile = file("${layout.projectDirectory.asFile.absolutePath}/src/benchmarkTest/dataset.tar.gz")
-	def benchmarkTestDir = "${layout.buildDirectory.get().asFile.absolutePath}/resources/benchmarkTest"
+	// Don't extract to `build/resources/...`, Gradle would redundantly spend large amount of time processing the files
+	def benchmarkTestDir = "${layout.buildDirectory.get().asFile.absolutePath}/benchmarkTestDataset"
 	def targetDir = file(benchmarkTestDir)
 	def datasetDir = file("${benchmarkTestDir}/dataset")
 

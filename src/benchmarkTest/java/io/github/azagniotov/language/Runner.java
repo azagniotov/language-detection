@@ -3,7 +3,6 @@ package io.github.azagniotov.language;
 import static io.github.azagniotov.language.benchmark.ThirdPartyDetector.detectorFor;
 import static java.lang.String.format;
 import static java.nio.file.Paths.get;
-import static java.util.Objects.requireNonNull;
 
 import io.github.azagniotov.language.annotations.GeneratedCodeClassCoverageExclusion;
 import io.github.azagniotov.language.benchmark.DetectorImpl;
@@ -29,8 +28,7 @@ public class Runner {
   private static final String ANSI_GREEN = "\u001B[32m";
 
   private static boolean verbose = false;
-  private static final String DIRECTORY_PATH =
-      requireNonNull(Runner.class.getResource("/dataset")).getPath();
+  private static final Path DATASET_DIRECTORY = get("build/benchmarkTestDataset/dataset");
 
   public static void main(final String[] args) {
 
@@ -49,10 +47,10 @@ public class Runner {
             + iso639_1Codes
             + ANSI_RESET);
     System.out.println(
-        "- Datasets parent directory absolute path: "
+        "- Datasets parent directory path: "
             + ANSI_BOLD
             + ANSI_CYAN
-            + DIRECTORY_PATH
+            + DATASET_DIRECTORY
             + ANSI_RESET);
     System.out.println("- Verbose mode: " + ANSI_BOLD + ANSI_CYAN + verbose + ANSI_RESET);
 
@@ -147,7 +145,7 @@ public class Runner {
       final Map<String, Map<String, Integer>> detectionCounts) {
     System.out.println(thirdPartyDetector.name() + " processes dataset [" + targetCode + "]");
 
-    final Path languageDatasetPath = get(format("%s/%s", DIRECTORY_PATH, targetCode));
+    final Path languageDatasetPath = DATASET_DIRECTORY.resolve(targetCode);
     if (!Files.exists(languageDatasetPath)) {
       System.out.println("\nLanguage dataset path is missing. Skipping detection.\n");
       throw new UncheckedIOException(new IOException("Language dataset path is missing."));
@@ -171,7 +169,7 @@ public class Runner {
                         detectionCounts.get(targetCode.toUpperCase());
                     countPerIsoCode.put(key, countPerIsoCode.getOrDefault(key, 0) + 1);
                   } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Failed processing: " + path, e);
                   }
                 });
       }
