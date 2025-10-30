@@ -41,6 +41,9 @@ public class JFastTextDetector implements ThirdPartyDetector {
   @Override
   public String detect(final String input) {
     final JFastText.ProbLabel probLabel = languageDetector.predictProba(input);
+    if (probLabel == null) {
+      return LANGUAGE_CODE_NONE;
+    }
 
     final String detectedIso639_1Code =
         probLabel.label.replaceAll(languageDetector.getLabelPrefix(), "");
