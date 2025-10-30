@@ -160,6 +160,7 @@ jobs:
           git push
 
   dependency-submission:
+    if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
