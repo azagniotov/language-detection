@@ -2,14 +2,18 @@ tasks.register("conditionallyUntarDataset") {
 	mustRunAfter compileBenchmarkTestJava
 
 	def tarFile = file("${layout.projectDirectory.asFile.absolutePath}/src/benchmarkTest/dataset.tar.gz")
-	def benchmarkTestDir = "${layout.buildDirectory.get().asFile.absolutePath}/resources/benchmarkTest"
+	// Don't extract to `build/resources/...`, Gradle would redundantly spend large amount of time processing the files
+	def benchmarkTestDir = "${layout.buildDirectory.get().asFile.absolutePath}/benchmarkTestDataset"
 	def targetDir = file(benchmarkTestDir)
 	def datasetDir = file("${benchmarkTestDir}/dataset")
 
 	inputs.file(tarFile)
-	outputs.dir(targetDir)
+	outputs.upToDateWhen { datasetDir.exists() }
 
 	doLast {
+		// Keep this additional `datasetDir.exists()` check here despite it already being checked above,
+		// because Gradle might for other reasons consider the task to be not up-to-date, but in that case
+		// should not try to extract into existing dir; instead rely on user to delete it manually
 		if (!datasetDir.exists()) {
 			println "Untarring ${tarFile.name} to ${targetDir.absolutePath}"
 			copy {
