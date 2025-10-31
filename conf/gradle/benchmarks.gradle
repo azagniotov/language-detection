@@ -8,9 +8,12 @@ tasks.register("conditionallyUntarDataset") {
 	def datasetDir = file("${benchmarkTestDir}/dataset")
 
 	inputs.file(tarFile)
-	outputs.dir(targetDir)
+	outputs.upToDateWhen { datasetDir.exists() }
 
 	doLast {
+		// Keep this additional `datasetDir.exists()` check here despite it already being checked above,
+		// because Gradle might for other reasons consider the task to be not up-to-date, but in that case
+		// should not try to extract into existing dir; instead rely on user to delete it manually
 		if (!datasetDir.exists()) {
 			println "Untarring ${tarFile.name} to ${targetDir.absolutePath}"
 			copy {
