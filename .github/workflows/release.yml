@@ -46,7 +46,7 @@ jobs:
           tag_prefix: ""
 
       - name: Create a GitHub release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           tag: ${{ steps.semantic_version.outputs.version_tag }}
           name: ${{ steps.semantic_version.outputs.version_tag }}
