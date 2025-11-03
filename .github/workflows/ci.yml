@@ -36,7 +36,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Build
         run: ./gradlew build
@@ -103,7 +103,7 @@ jobs:
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Run accuracy tests
         run: ./gradlew clean accuracyTest
@@ -176,4 +176,4 @@ jobs:
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@d9e39adac83414bf94447ae3ccab3d4639128362 # v4.0.0
+      uses: gradle/actions/dependency-submission@5e26c0741140516467d799e38395adf08a518755 # v4.0.0
